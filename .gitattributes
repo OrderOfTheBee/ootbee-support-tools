@@ -1,0 +1,22 @@
+* text=auto
+
+*.txt text
+*.java text
+*.xml text
+*.ftl text
+*.xml.sample text
+*.css text
+*.js text
+*.properties text
+
+*.html text
+
+*.acp binary
+*.exe binary
+*.png binary
+*.jpeg binary
+*.jpg binary
+*.keystore binary
+*.jar binary
+*.zip binary
+*.amp binary
