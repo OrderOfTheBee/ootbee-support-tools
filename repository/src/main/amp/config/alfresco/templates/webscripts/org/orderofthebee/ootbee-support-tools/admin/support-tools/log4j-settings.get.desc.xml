@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings</shortname>
+    <description><![CDATA[View and Update Log4J Settings]]></description>
+    <url>/admin/log4j-settings</url>
+    <family>AdminConsole</family>
+    <format default="html">argument</format>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>
