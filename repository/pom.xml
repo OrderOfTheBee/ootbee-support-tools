@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.orderofthebee.addons</groupId>
+        <artifactId>ootbee-support-tools-parent</artifactId>
+        <version>0.0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ootbee-support-tools-repo</artifactId>
+
+    <name>Order of the Bee - Community Support Tools - Repository Module</name>
+    <packaging>amp</packaging>
+
+    <properties>
+        <alfresco.client.war>alfresco</alfresco.client.war>
+        <basePackage>org.orderofthebee.addons.support.tools.repo</basePackage>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-data-model</artifactId>
+            <exclusions>
+                <!-- No need for any CMIS -->
+                <exclusion>
+                    <groupId>org.apache.chemistry.opencmis</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <!-- Trim down unrequired, transitive dependencies -->
+                <exclusion>
+                    <groupId>org.apache.tika</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.jibx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-orm</artifactId>
+                </exclusion>
+
+                <!-- who'd still want log4j? -->
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+
+                <!-- There is so much more that we could exclude (especially most of the Commons stuff) -->
+                <!-- the exclusions above are convenient enough to handle -->
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-repository</artifactId>
+            <exclusions>
+                <!-- Why the heck is a different JSR-223 API included? -->
+                <exclusion>
+                    <groupId>org.livetribe</groupId>
+                    <artifactId>livetribe-jsr223</artifactId>
+                </exclusion>
+
+                <!-- Why the heck is MyFaces still a dependency? -->
+                <exclusion>
+                    <groupId>org.apache.myfaces.core</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <!-- Trim down unrequired, transitive dependencies -->
+                <exclusion>
+                    <groupId>org.alfresco</groupId>
+                    <artifactId>alfresco-legacy-lucene</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.alfresco</groupId>
+                    <artifactId>alfresco-jlan-embed</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.apache.solr</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.activiti</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.jbpm</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.springmodules</groupId>
+                    <artifactId>spring-modules-jbpm31</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.springframework.social</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+                <!-- No need for any CMIS -->
+                <exclusion>
+                    <groupId>org.apache.chemistry.opencmis</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.alfresco.cmis.client</groupId>
+                    <artifactId>alfresco-opencmis-extension</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.extensions.surf</groupId>
+                    <artifactId>spring-cmis-framework</artifactId>
+                </exclusion>
+
+                <!-- existence of ICU ticks me off -->
+                <exclusion>
+                    <groupId>com.ibm.icu</groupId>
+                    <artifactId>icu4j</artifactId>
+                </exclusion>
+
+                <!-- who'd still want log4j? -->
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+
+                <!-- There is so much more that we could exclude (especially most of the Commons stuff) -->
+                <!-- the exclusions above are convenient enough to handle -->
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+            <version>1.5</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <escapeString>\</escapeString>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <!-- TODO Handle "standard" JAR, sources + JavaDoc creation which SDK sucks at -->
+    </build>
+
+</project>

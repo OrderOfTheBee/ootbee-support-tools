@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.alfresco.maven</groupId>
+        <artifactId>alfresco-sdk-parent</artifactId>
+        <version>2.2.0</version>
+    </parent>
+
+    <groupId>org.orderofthebee.addons</groupId>
+    <artifactId>ootbee-support-tools-parent</artifactId>
+    <version>0.0.1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+    <name>Order of the Bee - Community Support Tools - Parent</name>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:Acosix/alfresco-maven.git</connection>
+        <developerConnection>scm:git:git@github.com:Acosix/alfresco-maven.git</developerConnection>
+        <url>git@github.com:Acosix/alfresco-maven.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>AFaust</id>
+            <name>Axel Faust</name>
+            <email>axel.faust@acosix.org</email>
+            <organization>Order of the Bee</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <properties>
+                <twitter>twitter.com/ReluctantBird83</twitter>
+            </properties>
+        </developer>
+        <developer>
+            <id>mrksjs</id>
+            <name>Markus Joos</name>
+            <email>TBD</email>
+            <organization>TBD</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <properties>
+        <alfresco.version>5.1.g</alfresco.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>alfresco-platform-distribution</artifactId>
+                <version>${alfresco.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>repository</module>
+    </modules>
+</project>
