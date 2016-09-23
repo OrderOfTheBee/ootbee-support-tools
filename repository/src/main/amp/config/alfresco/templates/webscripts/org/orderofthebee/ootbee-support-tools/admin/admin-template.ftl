@@ -56,14 +56,15 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
    <link rel="stylesheet" type="text/css" href="${url.context}/css/reset.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/css/alfresco.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/admin/css/admin.css" />
+   <link rel="stylesheet" type="text/css" href="${url.context}/ootbee-support-tools/css/admin.css" />
    <!--[if IE 8 ]><style type="text/css">.dialog{width:100%}</style><![endif]-->
-   <script type="text/javascript" src="${url.context}/ootbee-support-tools/js/admin.js" />
+   <script type="text/javascript" src="${url.context}/ootbee-support-tools/js/admin.js"></script>
    <script type="text/javascript">//<![CDATA[
    
    Admin.addMessages({
-        requestError: "${msg("admin-console.requesterror")}",
-        passwordHideEncoded : "${msg("admin-console.password.hide")?html}",
-        passwordShowEncoded : "${msg("admin-console.password.show")?html}"
+        requestError: "${msg("admin-console.requesterror")?js_string}",
+        passwordHide : "${msg("admin-console.password.hide")?js_string}",
+        passwordShow : "${msg("admin-console.password.show")?js_string}"
    });
    
    Admin.registerId("formId", "${FORM_ID}");
@@ -74,8 +75,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <link rel="stylesheet" type="text/css" href="${url.context}/${cssFile}" />
    </#list>
    <#list customJSFiles as jsFile>
-        <script type="text/javascript" src="${url.context}/${jsFile}" />
-        <link rel="stylesheet" type="text/css" href="${url.context}/${cssFile}" />
+        <script type="text/javascript" src="${url.context}/${jsFile}"></script>
    </#list>
    
 </head>
