@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos Copyright (C) 2016 Order of the
- * Bee
+ * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -22,8 +22,7 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 // The Admin root object has been extracted from the Alfresco admin-template.ftl
-// to
-// trim down page HTML sizes and promote clean separation of concerns
+// to trim down page HTML sizes and promote clean separation of concerns
 /* JavaScript global helper methods and event handlers */
 var el = function el(id)
 {
@@ -36,10 +35,10 @@ var Admin = Admin || {};
 {
 
     /* private scoped values */
-    _dialog = null;
-    _dialogScrollPosition = null;
-    _messages = {};
-    _ids = {};
+    var _dialog = null;
+    var _dialogScrollPosition = null;
+    var _messages = {};
+    var _ids = {};
 
     /* publicly accessable helper functions */
 

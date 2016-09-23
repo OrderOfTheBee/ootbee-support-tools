@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Active Sessions</shortname>
+    <description>View Active Sessions</description>
+    <url>/ootbee/admin/active-sessions</url>
+    <family>AdminConsole</family>
+    <format default="html">argument</format>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>

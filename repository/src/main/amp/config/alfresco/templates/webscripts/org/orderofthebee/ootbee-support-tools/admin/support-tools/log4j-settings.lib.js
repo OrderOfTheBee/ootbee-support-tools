@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos Copyright (C) 2016 Order of the
- * Bee
+ * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
