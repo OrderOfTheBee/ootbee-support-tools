@@ -48,7 +48,7 @@ function buildLoggerState(logger)
     return loggerState;
 }
 
-function buildLoggerStates()
+function buildLoggerStates(showUnconfiguredLoggers)
 {
     var loggerRepository, loggerStates, currentLoggers, logger;
 
@@ -61,7 +61,10 @@ function buildLoggerStates()
     {
         logger = currentLoggers.nextElement();
 
-        loggerStates.push(buildLoggerState(logger));
+        if (logger.level !== null || showUnconfiguredLoggers)
+        {
+            loggerStates.push(buildLoggerState(logger));
+        }
     }
 
     loggerStates.sort(function(a, b)
@@ -72,4 +75,32 @@ function buildLoggerStates()
     loggerStates.splice(0, 0, buildLoggerState(loggerRepository.rootLogger));
 
     model.loggerStates = loggerStates;
+}
+
+function changeLoggerState(loggerName, level)
+{
+    var logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+    logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
+}
+
+function processLoggerStateChangeFromFormData()
+{
+    var fields, field, i, loggerName, level, showUnconfiguredLoggers;
+    
+    fields = formdata.fields;
+    for (i = 0; i < fields.length; i++)
+    {
+        field = fields[i];
+        switch(String(field.name))
+        {
+            case 'logger': loggerName = String(field.value); break;
+            case 'level': level = String(field.value); break;
+            case 'showUnconfiguredLoggers': showUnconfiguredLoggers = String(field.value); break;
+            default: logger.debug('Unknown field: ' + field.name);
+        }
+    }
+    
+    changeLoggerState(loggerName, level);
+    
+    return showUnconfiguredLoggers;
 }

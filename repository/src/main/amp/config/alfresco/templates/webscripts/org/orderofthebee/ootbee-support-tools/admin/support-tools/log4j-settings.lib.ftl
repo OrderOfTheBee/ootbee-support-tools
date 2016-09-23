@@ -22,7 +22,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
-<@page title=msg("log-settings.title") readonly=true customCSSFiles=["ootbee-support-tools/css/log4j-settings.css"]>
+<@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customCSSFiles=["ootbee-support-tools/css/log4j-settings.css"]>
 <#-- close the dummy form -->
 </form>
 
@@ -35,8 +35,9 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <div class="column-full">
         <div>Add logger:
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                <input name="packagename" size="35" placeholder="package.name"></input>
-                <select name="priority">
+                <input name="logger" size="35" placeholder="logger-name"></input>
+                <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
+                <select name="level">
                     <option class="setting-OFF"   value="OFF">UNSET</option>
                     <option class="setting-TRACE" value="TRACE">TRACE</option>
                     <option class="setting-DEBUG" value="DEBUG">DEBUG</option>
@@ -46,8 +47,9 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <option class="setting-FATAL" value="FATAL">FATAL</option>
                 </select>
                 <input type="submit" value="Add" style="margin-right:1em;" />
-                <@button id="tailRepoLog" label="Tail Repository Log" onclick="Admin.showDialog('${url.serviceContext}/admin/log4j-tail');"/>
             </form>
+            <@button id="tailRepoLog" label="Tail Repository Log" onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
+            <@button id="toggleView" label=showUnconfiguredLoggers?string('Hide unconfigured Loggers', 'Show unconfigured Loggers') onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
         </#if>
@@ -62,7 +64,9 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <td>
                         <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                             <input type="hidden" name="logger" value="${loggerState.name?html}" />
+                            <input type="hidden" name="showUnconfiguredLoggers" value="${showUnconfiguredLoggers?string}" />
                             <select name="level" onchange="this.form.submit();">
+                                <#if loggerState.level?? == false><option value="" selected>N/A</option></#if>
                                 <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>UNSET</option>
                                 <option class="setting-TRACE" value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>TRACE</option>
                                 <option class="setting-DEBUG" value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>DEBUG</option>
