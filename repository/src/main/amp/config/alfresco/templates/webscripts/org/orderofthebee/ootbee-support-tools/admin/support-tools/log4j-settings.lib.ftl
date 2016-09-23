@@ -22,7 +22,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
-<@page title=msg("log-settings.title") readonly=true>
+<@page title=msg("log-settings.title") readonly=true customCSSFiles=["ootbee-support-tools/css/log4j-settings.css"]>
 <#-- close the dummy form -->
 </form>
 
@@ -37,13 +37,13 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                 <input name="packagename" size="35" placeholder="package.name"></input>
                 <select name="priority">
-                    <option style="background-color: Grey"        value="OFF">UNSET</option>
-                    <option style="background-color: lightGrey"   value="TRACE">TRACE</option>
-                    <option style="background-color: LightGreen"  value="DEBUG">DEBUG</option>
-                    <option                                       value="INFO">INFO</option>
-                    <option style="background-color: LightYellow" value="WARN">WARN</option>
-                    <option style="background-color: LightPink"   value="ERROR">ERROR</option>
-                    <option style="background-color: LightCoral"  value="FATAL">FATAL</option>
+                    <option class="setting-OFF"   value="OFF">UNSET</option>
+                    <option class="setting-TRACE" value="TRACE">TRACE</option>
+                    <option class="setting-DEBUG" value="DEBUG">DEBUG</option>
+                    <option                       value="INFO">INFO</option>
+                    <option class="setting-WARN"  value="WARN">WARN</option>
+                    <option class="setting-ERROR" value="ERROR">ERROR</option>
+                    <option class="setting-FATAL" value="FATAL">FATAL</option>
                 </select>
                 <input type="submit" value="Add" style="margin-right:1em;" />
                 <@button id="tailRepoLog" label="Tail Repository Log" onclick="Admin.showDialog('${url.serviceContext}/admin/log4j-tail');"/>
@@ -63,26 +63,17 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                             <input type="hidden" name="logger" value="${loggerState.name?html}" />
                             <select name="level" onchange="this.form.submit();">
-                                <option style="background-color: Grey"        value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>UNSET</option>
-                                <option style="background-color: lightGrey"   value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>TRACE</option>
-                                <option style="background-color: LightGreen"  value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>DEBUG</option>
-                                <option                                       value="INFO" <#if loggerState.level?? && loggerState.level == "INFO">selected</#if>>INFO</option>
-                                <option style="background-color: LightYellow" value="WARN" <#if loggerState.level?? && loggerState.level == "WARN">selected</#if>>WARN</option>
-                                <option style="background-color: LightPink"   value="ERROR" <#if loggerState.level?? && loggerState.level == "ERROR">selected</#if>>ERROR</option>
-                                <option style="background-color: LightCoral"  value="FATAL" <#if loggerState.level?? && loggerState.level == "FATAL">selected</#if>>FATAL</option>
+                                <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>UNSET</option>
+                                <option class="setting-TRACE" value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>TRACE</option>
+                                <option class="setting-DEBUG" value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>DEBUG</option>
+                                <option                       value="INFO" <#if loggerState.level?? && loggerState.level == "INFO">selected</#if>>INFO</option>
+                                <option class="setting-WARN"  value="WARN" <#if loggerState.level?? && loggerState.level == "WARN">selected</#if>>WARN</option>
+                                <option class="setting-ERROR" value="ERROR" <#if loggerState.level?? && loggerState.level == "ERROR">selected</#if>>ERROR</option>
+                                <option class="setting-FATAL" value="FATAL" <#if loggerState.level?? && loggerState.level == "FATAL">selected</#if>>FATAL</option>
                             </select>
                         </form>
                     </td>
-                    <td><#compress><span style="display:block;text-align:right;background-color:
-                        <#switch loggerState.effectiveLevel>
-                            <#case "FATAL">LightCoral<#break>
-                            <#case "ERROR">LightPink<#break>
-                            <#case "TRACE">lightGrey<#break>
-                            <#case "WARN">LightYellow<#break>
-                            <#case "DEBUG">LightGreen<#break>
-                            <#case "OFF">Grey<#break>
-                            <#default>inherit</#switch>
-                        </#compress>">${(loggerState.effectiveLevel)?html}</span></td>
+                    <td><span class="effectiveLevel setting-${loggerState.effectiveLevel}">${(loggerState.effectiveLevel)?html}</span></td>
                 </tr>
             </#list>
         </table>

@@ -1,0 +1,28 @@
+.setting-OFF {
+	background-color: Grey;
+}
+
+.setting-TRACE {
+    background-color: LightGrey;
+}
+
+.setting-DEBUG {
+    background-color: LightGreen;
+}
+
+.setting-WARN {
+    background-color: LightYellow;
+}
+
+.setting-ERROR {
+    background-color: LightPink;
+}
+
+.setting-FATAL {
+    background-color: LightCoral;
+}
+
+.effectiveLevel {
+	display: block;
+	text-align: right;
+}

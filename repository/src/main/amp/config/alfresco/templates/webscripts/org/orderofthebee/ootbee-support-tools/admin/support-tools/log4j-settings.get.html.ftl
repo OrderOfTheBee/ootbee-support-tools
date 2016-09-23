@@ -22,5 +22,5 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
-<#include "/org/alfresco/repository/admin/admin-template.ftl" />
+<#include "../admin-template.ftl" />
 <#include "log4j-settings.lib.ftl">
