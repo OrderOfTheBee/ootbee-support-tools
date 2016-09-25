@@ -24,20 +24,20 @@
 
 function buildTransformerNames()
 {
-    var ctxt, transformerDebug, transformerNames, transformers, idx, transformerName, ArrayList; 
+    var ctxt, transformerDebug, transformerNames, transformers, i, transformerName, ArrayList; 
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
     
     ArrayList = Packages.java.util.ArrayList;
     transformerNames = new ArrayList(transformerDebug.sortTransformersByName(null));
-    for (idx = 0; idx < transformerNames.length; idx++)
+    for (i = 0; i < transformerNames.length; i++)
     {
-        transformerName = String(transformerNames.get(idx));
+        transformerName = String(transformerNames.get(i));
         if (/^transformer\..+/.test(transformerName))
         {
             transformerName = transformerName.substring(12);
-            transformerNames.set(idx, transformerName);
+            transformerNames.set(i, transformerName);
         }
     }
     
@@ -46,16 +46,16 @@ function buildTransformerNames()
 
 function buildExtensionsAndMimetypes()
 {
-    var ctxt, mimetypeService, extensionsByMimetype, mimetypes, mimetype, idx;
+    var ctxt, mimetypeService, extensionsByMimetype, mimetypes, mimetype, i;
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     mimetypeService = ctxt.getBean('MimetypeService', Packages.org.alfresco.service.cmr.repository.MimetypeService);
     
     extensionsByMimetypes = {};
     mimetypes = mimetypeService.getMimetypes(null);
-    for (idx = 0; idx < mimetypes.size(); idx++)
+    for (i = 0; i < mimetypes.size(); i++)
     {
-        mimetype = mimetypes.get(idx);
+        mimetype = mimetypes.get(i);
         extensionsByMimetypes[mimetype] = mimetypeService.getExtension(mimetype);
     }
     
@@ -89,8 +89,15 @@ function setProperties()
         input = decodeURIComponent(input);
     }
     
-    model.message = transformerConfig.setProperties(input);
-    model.header = 'setProperties.heading';
+    try
+    {
+        model.message = transformerConfig.setProperties(input);
+    }
+    catch (e)
+    {
+        model.message = e.message;
+    }
+    model.headerKey = 'setProperties.heading';
 }
 
 function removeProperties()
@@ -104,30 +111,37 @@ function removeProperties()
     
     if (input !== null && String(input).length > 0)
     {
-        model.message = transformerConfig.removeProperties(input);
+        try
+        {
+            model.message = transformerConfig.removeProperties(input);
+        }
+        catch (e)
+        {
+            model.message = e.message;
+        }
     }
     else
     {
         model.messageKey = 'removeProperties.message';
     }
-    model.headerKey = 'removeProperties.heading';
+    model.header = msg.get('test-transform.details.removeProperties.heading', [input]);
 }
 
 function getLogEntries(logName)
 {
-    var ctxt, transformerDebugLog, logEntries, idx, log = '';
+    var ctxt, transformerDebugLog, logEntries, i, log = '';
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebugLog = ctxt.getBean('logName', Packages.org.alfresco.repo.content.transform.TransformerLogger);
     
     logEntries = transformerDebugLog.getEntries(100);
-    for (idx = 0; idx < logEntries.length; idx++)
+    for (i = 0; i < logEntries.length; i++)
     {
         if (log.length > 0)
         {
            log += '\n'; 
         }
-        log += logEntries[idx];
+        log += logEntries[i];
     }
     
     return log;
@@ -165,20 +179,249 @@ function getTransformationLog()
 
 function getTransformerNames()
 {
-    var idx, transformerNames;
+    var i, transformerNames;
     
     buildTransformerNames();
     
     transformerNames = '';
-    for (idx = 0; idx < model.transfomerNames.length; idx++)
+    for (i = 0; i < model.transfomerNames.length; i++)
     {
         if (transformerNames.length > 0)
         {
             transformerNames += '\n';
         }
-        transformerNames += model.transformerNames[idx];
+        transformerNames += model.transformerNames[i];
     }
     
     model.message = transformerNames;
     model.headerKey = 'getTransformerNames.heading';
+}
+
+function getEffectiveTransformerName(input, transformerRegistry)
+{
+    var transformerName = input;
+    if (transformerName !== null)
+    {
+        if (transformerName == '')
+        {
+            transformerName = null;
+        }
+        else if (!/^transformer\..+$/.test(transformerName))
+        {
+            transformerName = 'transformer.' + transformerName;
+        }
+    }
+    transformerRegistry.getTransformer(transformerName);
+    return transformerName;
+}
+
+function getEffectiveExtension(input)
+{
+    var extension = input;
+    if (extension !== null)
+    {
+        if (extension == '')
+        {
+            extension = null;
+        }
+        else
+        {
+            extension = extension.toLowerCase();
+        }
+    }
+    
+    return extension;
+}
+
+//we can't access TransformerConfigMBeanImpl here since that isn't exposed from the subsystem (and may in the future be Enterprise only)
+// getTransformationStatistics functions effectively duplicate the code
+
+function getTransformationStatisticsLowLevel(sb, transformer, sourceMimetype, targetMimetype, counter, includeSystemWideSummary,
+        transformerConfig)
+{
+    var statistics, count;
+
+    statistics = transformerConfig.getStatistics(transformer, sourceMimetype, targetMimetype, false);
+    if (statistics !== null)
+    {
+        count = statistics.count;
+        if (count > 0)
+        {
+            if (sb.length() > 0)
+            {
+                sb.append('\n');
+            }
+
+            if (counter.incrementAndGet() == 1 && includeSystemWideSummary)
+            {
+                sb.append('\n');
+            }
+
+            sb.append(statistics.getTransformerName());
+            sb.append(' ');
+            sb.append(statistics.getSourceExt());
+            sb.append(' ');
+            sb.append(statistics.getTargetExt());
+            sb.append(" count=");
+            sb.append(count);
+            sb.append(" errors=");
+            sb.append(statistics.getErrorCount());
+            sb.append(" averageTime=");
+            sb.append(statistics.getAverageTime());
+            sb.append(" ms");
+        }
+    }
+}
+
+function getTransformationStatisticsHighLevel(sourceExtension, targetExtension, sb, transformer, sourceMimetypes, targetMimetypes,
+        includeSystemWideSummary, transformerConfig)
+{
+    var AtomicInteger, StringBuilder, counter, lengthAtStart, sb2, i, j, sourceMimetype, targetMimetype;
+
+    AtomicInteger = Packages.java.util.concurrent.atomic.AtomicInteger;
+    StringBuilder = Packages.java.lang.StringBuilder;
+    counter = new AtomicInteger(0);
+    lengthAtStart = sb.length();
+
+    for (i = 0; i < sourceMimetypes.length; i++)
+    {
+        sourceMimetype = sourceMimetypes[i];
+        for (j = 0; j < targetMimetypes.length; j++)
+        {
+            targetMimetype = targetMimetypes[j];
+
+            getTransformationStatisticsLowLevel(sb, transformer, sourceMimetype, targetMimetype, counter, includeSystemWideSummary,
+                    transformerConfig)
+        }
+    }
+
+    if (sourceExtension == null && targetExtension == null && counter.get() > 1)
+    {
+        sb2 = new StringBuilder();
+        getTransformationStatisticsLowLevel(sb2, transformer, null, null, counter, includeSystemWideSummary, transformerConfig)
+        sb2.append('\n');
+        sb.insert(lengthAtStart == 0 ? 0 : lengthAtStart + 2, sb2);
+    }
+}
+
+function getTransformationStatistics()
+{
+    var ctxt, transformerDebug, transformerConfig, transformerRegistry, ArrayList, StringBuilder, transformerName, sourceExtension, targetExtension, transformers, sourceMimetypes, targetMimetypes, includeSystemWideSummary, sb, i;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
+    transformerConfig = ctxt.getBean('transformerConfig', Packages.org.alfresco.repo.content.transform.TransformerConfig);
+    transformerRegistry = ctxt.getBean('contentTransformerRegistry', Packages.org.alfresco.repo.content.transform.ContentTransformerRegistry);
+    ArrayList = Packages.java.util.ArrayList;
+    StringBuilder = Packages.java.lang.StringBuilder;
+
+    transformerName = getEffectiveTransformerName(args.arg0, transformerRegistry);
+    sourceExtension = getEffectiveExtension(args.arg1);
+    targetExtension = getEffectiveExtension(args.arg2);
+
+    try
+    {
+        transformers = new ArrayList(transformerDebug.sortTransformersByName(transformerName));
+        sourceMimetypes = new ArrayList(transformerDebug.getSourceMimetypes(sourceExtension));
+        targetMimetypes = new ArrayList(transformerDebug.getTargetMimetypes(sourceExtension, targetExtension, sourceMimetypes));
+    
+        sb = new StringBuilder();
+        includeSystemWideSummary = transformerName === null;
+        if (includeSystemWideSummary)
+        {
+            getTransformationStatisticsHighLevel(sourceExtension, targetExtension, sb, null, sourceMimetypes, targetMimetypes, false,
+                    transformerConfig);
+        }
+    
+        for (i = 0; i < transformers.length; i++)
+        {
+            getTransformationStatisticsHighLevel(sourceExtension, targetExtension, sb, transformers[i], sourceMimetypes, targetMimetypes,
+                    includeSystemWideSummary, transformerConfig);
+        }
+    
+        if (sb.length() === 0)
+        {
+            model.messageKey = 'getTransformationStatistics.noEntries';
+        }
+        else
+        {
+            model.message = sb.toString();
+        }
+    }
+    catch (e)
+    {
+        model.message = e.message;
+    }
+    model.header = msg.get('test-transform.detail.getTransformationStatistics.heading', [transformerName, sourceExtension, targetExtension]);
+}
+
+function testTransform()
+{
+    var ctxt, transformerDebug, transformerRegistry, transformerName, sourceExtension, targetExtension, use;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
+    transformerRegistry = ctxt.getBean('contentTransformerRegistry',
+            Packages.org.alfresco.repo.content.transform.ContentTransformerRegistry);
+
+    try
+    {
+        transformerName = getEffectiveTransformerName(args.arg0, transformerRegistry);
+        sourceExtension = getEffectiveExtension(args.arg1);
+        targetExtension = getEffectiveExtension(args.arg2);
+        use = args.arg3 == '' ? null : args.arg3;
+
+        model.message = transformerName === null ? transformerDebug.testTransform(sourceExtension, targetExtension, use) : transformerDebug
+                .testTransform(transformerName, sourceExtension, targetExtension, use);
+    }
+    catch (e)
+    {
+        model.message = e.message;
+    }
+    model.header = msg.get('test-transform.detail.testTransform.heading', [ args.arg0, args.arg1, args.arg2, args.arg3 ]);
+}
+
+function getTransformationsByExtension()
+{
+    var ctxt, transformerDebug, sourceExtension, targetExtension, use;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
+
+    sourceExtension = getEffectiveExtension(args.arg0);
+    targetExtension = getEffectiveExtension(args.arg1);
+    use = args.arg2 == '' ? null : args.arg2;
+
+    try
+    {
+        model.message = transformerDebug.transformationsByExtension(sourceExtension, targetExtension, true, true, false, use);
+    }
+    catch (e)
+    {
+        model.message = e.message;
+    }
+    model.header = msg.get('test-transform.detail.getTransformationsByExtension.heading', [ sourceExtension, targetExtension, use ]);
+}
+
+function getTransformationsByTransformer()
+{
+    var ctxt, transformerDebug, transformerName, use;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
+    transformerRegistry = ctxt.getBean('contentTransformerRegistry',
+            Packages.org.alfresco.repo.content.transform.ContentTransformerRegistry);
+
+    use = args.arg1 == '' ? null : args.arg1;
+
+    try
+    {
+        transformerName = getEffectiveTransformerName(args.arg0, transformerRegistry);
+        model.message = transformerDebug.transformationsByTransformer(transformerName, true, true, use);
+    }
+    catch (e)
+    {
+        model.message = e.message;
+    }
+    model.header = msg.get('test-transform.detail.getTransformationsByTransformer.heading', [ args.arg0, use ]);
 }

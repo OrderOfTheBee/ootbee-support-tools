@@ -11,9 +11,9 @@
         <div style="border: 1px solid #ccc; padding:0.5em; margin-top:1em;">
             <pre style="white-space: pre-wrap;">
                 <#if messageKey??>
-                    ${msg("test-transform.details." + messageKey)?html}
+${msg("test-transform.details." + messageKey)?html}
                 <#else>
-                    ${message?html}
+${message?html}
                 </#if>
             </pre>
         </div>
