@@ -1,6 +1,3 @@
-<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/threads-common.lib.js">
-
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
  * Copyright (C) 2016 Order of the Bee
@@ -53,14 +50,15 @@ function buildHotthreadInformation()
 		info = threadBean.getThreadInfo(ti);
         threadInfo[ti] = new MyThreadInfo(cpu, info);
     }
-
-	sleep(999);
-
+   
+	var threadPackage = Packages.java.lang.Thread;
+	threadPackage.sleep(999);
+    
+	
     for each (var ti in threadBean.allThreadIds) 
 	{
 		cpu = threadBean.getThreadCpuTime(ti);
 		info = threadBean.getThreadInfo(ti);
-        threadInfo[ti] = new MyThreadInfo(cpu, info);
         threadInfo[ti].deltaDone=true;
 		threadInfo[ti].cpuTime=cpu-threadInfo[ti].cpuTime;
     }
@@ -81,15 +79,13 @@ function buildHotthreadInformation()
 	threads=threads.sort(compareCpuTime);
 
     // Show the 5 hottest threads
-    for (var n = 0 ; n <= 5 ; n++) 
+    for (var n = 0 ; n < 5 ; n++) 
     {				
         var thread = threads[n].info;
         var keys = threads[n].info.dataKeys;
         var thisCpuTime = threads[n].cpuTime / 10000000;
 
-        // TODO: change to logger.info?
 		logger.warn("+++Hotthreads "+thread.threadName+" tid=" + thread.threadId +" CPU TIME=" + thisCpuTime +"% ("+threads[n].cpuTime+")");
-
 
 		hotThreads[n] = {};
 		hotThreads[n].cpuTime = thisCpuTime;
@@ -152,4 +148,38 @@ function sleep(delay)
     var start = new Date().getTime();
     while (new Date().getTime() < start + delay);
 }
+/*
+function stackTrace(stacks, lockedMonitors, thisThread) {
+    var stackTrace = "";
 
+    for (var n = 0; n < stacks.length; n++) {
+        stack = stacks[n];
+
+        if (stack.nativeMethod == true) {
+            stackTrace = "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
+
+            if (thisThread.lockInfo) {
+                var lockInfo = thisThread.lockInfo;
+                stackTrace += "\t- parking to wait for <" + toHex(lockInfo.identityHashCode, 16) + "> (a " + lockInfo.className + ")\n";
+            }
+        } else {
+            stackTrace += "\tat " + stack.className + "." + stack.methodName + "(" + stack.fileName + ":" + stack.lineNumber + ")\n";
+        }
+
+        if (lockedMonitors) {
+            for (var j = 0; j < lockedMonitors.length; j++) {
+                if (lockedMonitors[j].lockedStackDepth == n) {
+                    stackTrace += "\t- locked <" + toHex(lockedMonitors[j].identityHashCode, 16) + "> (a " + lockedMonitors[j].className + ")\n";
+                }
+            }
+        }
+    }
+
+    return stackTrace;
+}
+
+function toHex(thisNumber, chars) {
+    var hexNum = "0x" + ("0000000000000000000" + thisNumber.toString(16)).substr(-1 * chars);
+    return hexNum;
+}
+*/
