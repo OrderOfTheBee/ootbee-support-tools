@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+   <shortname>Thread Dump - GetOne</shortname>
+   <description><![CDATA[Generate Thread Dump.]]></description>
+   <url>/ootbee/admin/threaddump-getone</url>
+   <authentication>admin</authentication>
+   <lifecycle>internal</lifecycle>
+   <transaction allow="readwrite">required</transaction>
+</webscript>
