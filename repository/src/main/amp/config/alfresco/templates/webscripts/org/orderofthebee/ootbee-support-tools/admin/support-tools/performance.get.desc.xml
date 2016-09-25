@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>System Performance</shortname>
-    <description>Admin Console WebScript that displays the Support Tools page.</description>
+    <description>View General System Performance Metrics</description>
     <url>/ootbee/admin/admin-performance</url>
     <family>AdminConsole</family>
     <format default="html">argument</format>
