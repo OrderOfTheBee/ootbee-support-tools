@@ -30,37 +30,38 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <p class="intro">${msg("appliedPatches.intro")?html}</p>      
   
         <div class="control">
-	       <table class="data patchesapplied" width=80%>
+            <table class="data patchesapplied" width=80%>
                 <thead>
-   		           <tr>
-   		              <th>${msg("appliedPatches.id")?html}</th>
-   			          <th>${msg("appliedPatches.description")?html}</th>
-   			          <th>${msg("appliedPatches.appliedOnDate")?html}</th>
-   			          <th>${msg("appliedPatches.appliedToSchema")?html}</th>
-   			          <th>${msg("appliedPatches.appliedToServer")?html}</th>
-   			          <th>${msg("appliedPatches.fixesFromSchema")?html}</th>
-   			          <th>${msg("appliedPatches.fixesToSchema")?html}</th>
-   			          <th>${msg("appliedPatches.wasExecuted")?html}</th>
-   			          <th>${msg("appliedPatches.succeeded")?html}</th>
-   			          <th>${msg("appliedPatches.report")?html}</th>
-   		           </tr>
-		      </thead>
-		      <tbody>
-                <#list appliedPatches as appliedPatch>
-   		           <tr>
-                      <td>${appliedPatch.id}</td>
-   			          <td>${appliedPatch.description!""}</td>
-                      <td>${xmldate(appliedPatch.appliedOnDate)}</td>
-                      <td>${appliedPatch.appliedToSchema?c}</td>
-   			          <td>${appliedPatch.appliedToServer!""}</td>
-			          <td>${appliedPatch.fixesFromSchema?c}</td>
-			          <td>${appliedPatch.fixesToSchema?c}</td>
-   			          <td>${msg(appliedPatch.wasExecuted?string("boolean.yes", "boolean.no"))}</td>
-   			          <td>${msg(appliedPatch.succeeded?string("boolean.yes", "boolean.no"))}</td>
-			          <td>${appliedPatch.report!""}</td>
-   		           </tr>
-                </#list>
-            </tbody>
-	   </table>
+                    <tr>
+                        <th>${msg("appliedPatches.id")?html}</th>
+                        <th>${msg("appliedPatches.description")?html}</th>
+                        <th>${msg("appliedPatches.appliedOnDate")?html}</th>
+                        <th>${msg("appliedPatches.appliedToSchema")?html}</th>
+                        <th>${msg("appliedPatches.appliedToServer")?html}</th>
+                        <th>${msg("appliedPatches.fixesFromSchema")?html}</th>
+                        <th>${msg("appliedPatches.fixesToSchema")?html}</th>
+                        <th>${msg("appliedPatches.wasExecuted")?html}</th>
+                        <th>${msg("appliedPatches.succeeded")?html}</th>
+                        <th>${msg("appliedPatches.report")?html}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list appliedPatches as appliedPatch>
+                        <tr>
+                            <td>${appliedPatch.id}</td>
+                            <td>${appliedPatch.description!""}</td>
+                            <td>${xmldate(appliedPatch.appliedOnDate)}</td>
+                            <td>${appliedPatch.appliedToSchema?c}</td>
+                            <td>${appliedPatch.appliedToServer!""}</td>
+                            <td>${appliedPatch.fixesFromSchema?c}</td>
+                            <td>${appliedPatch.fixesToSchema?c}</td>
+                            <td>${msg(appliedPatch.wasExecuted?string("boolean.yes", "boolean.no"))}</td>
+                            <td>${msg(appliedPatch.succeeded?string("boolean.yes", "boolean.no"))}</td>
+                            <td>${appliedPatch.report!""}</td>
+                        </tr>
+                    </#list>
+                </tbody>
+            </table>
+        </div>
     </div>
 </@page>
