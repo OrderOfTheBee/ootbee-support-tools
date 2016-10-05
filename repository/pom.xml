@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.orderofthebee.addons</groupId>
@@ -162,6 +163,49 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
                     <escapeString>\</escapeString>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.cj.jshintmojo</groupId>
+                <artifactId>jshint-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>LintJS</id>
+                        <goals>
+                            <goal>lint</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configFile>jshint.config.js</configFile>
+                    <!-- just introduced - of course there'll be lint errors we have to clean up, but don't fail the entire build -->
+                    <failOnError>false</failOnError>
+                    <directories>
+                        <directory>src/main/amp/config/alfresco/templates/webscripts</directory>
+                        <directory>src/main/amp/web</directory>
+                    </directories>
+                    <excludes>
+                        <!-- need to list full paths here - jshint-maven-plugin currently can't handle wildcards -->
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions-update-users.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions-update-users.post.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/applied-patches.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/hotthreads-getone.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/hotthreads.gett.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/log4j-settings.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/log4j-settings.post.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/performance.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/scheduled-jobs-execute.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/scheduled-jobs.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/test-transform-details.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/test-transform.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/threaddump-getone.get.js</exclude>
+                        <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/threaddump.get.js</exclude>
+                    </excludes>
+                    <reporter>jslint</reporter>
+                    <reportFile>target/jshint.xml</reportFile>
                 </configuration>
             </plugin>
         </plugins>
