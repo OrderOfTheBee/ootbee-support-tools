@@ -86,6 +86,7 @@ function buildCPUMetrics()
     model.cpuMetrics = cpuMetrics;
 }
 
+/* exported buildMetrics */
 function buildMetrics()
 {
     buildMemoryMetrics();
