@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
-   <shortname>Hot Threads</shortname>
-   <description><![CDATA[Generate Hot Threads.]]></description>
-   <url>/ootbee/admin/hotthreads-getone</url>
-   <authentication>admin</authentication>
-   <lifecycle>internal</lifecycle>
-   <transaction allow="readwrite">required</transaction>
+    <shortname>Hot Threads - GetOne</shortname>
+    <description>Generate a single hot threads dump</description>
+    <url>/ootbee/admin/hotthreads-getone</url>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readwrite">required</transaction>
 </webscript>

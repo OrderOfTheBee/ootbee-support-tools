@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>Active Sessions</shortname>
-    <description>View Active Sessions</description>
+    <description>Overview and monitoring of active sessions</description>
     <url>/ootbee/admin/active-sessions</url>
     <family>AdminConsole</family>
     <format default="html">argument</format>

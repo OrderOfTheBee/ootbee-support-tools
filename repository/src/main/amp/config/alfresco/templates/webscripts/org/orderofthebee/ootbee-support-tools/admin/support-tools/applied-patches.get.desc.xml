@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>Applied Patches</shortname>
-    <description>View the Applied Patches</description>
+    <description>Overview of applied patches</description>
     <url>/ootbee/admin/applied-patches</url>
     <family>AdminConsole</family>
     <format default="html">argument</format>

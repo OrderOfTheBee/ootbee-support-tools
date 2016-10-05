@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
-    <shortname>Log4J Settings</shortname>
-    <description>Update Log4J settings</description>
-    <url>/ootbee/admin/log4j-settings</url>
+    <shortname>Scheduled Jobs</shortname>
+    <description>Display scheduled jobs overview</description>
+    <url>/ootbee/admin/scheduled-jobs</url>
+    <family>AdminConsole</family>
     <format default="html">argument</format>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <!-- though we do make changes they are not persisted on DB -->
     <transaction allow="readonly">required</transaction>
 </webscript>

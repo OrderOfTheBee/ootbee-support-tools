@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Scheduled Jobs Execution</shortname>
+    <description>Execute scheduled jobs</description>
+    <url>/ootbee/admin/scheduled-jobs-execute</url>
+    <format default="html" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>
