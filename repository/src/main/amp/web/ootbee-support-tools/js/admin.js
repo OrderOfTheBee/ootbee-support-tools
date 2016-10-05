@@ -21,13 +21,16 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
+
+/* globals document,window,top,alert,XMLHttpRequest */
+
 // The Admin root object has been extracted from the Alfresco admin-template.ftl
 // to trim down page HTML sizes and promote clean separation of concerns
 /* JavaScript global helper methods and event handlers */
 var el = function el(id)
 {
     return document.getElementById(id);
-}
+};
 
 /* Admin namespace helper methods */
 var Admin = Admin || {};
@@ -62,7 +65,7 @@ var Admin = Admin || {};
     Admin.registerId = function registerId(key, id)
     {
         _ids[key] = id;
-    }
+    };
 
     /**
      * String trim helper
@@ -75,7 +78,7 @@ var Admin = Admin || {};
     Admin.trim = function trim(s)
     {
         return s ? s.replace(/^\s+|\s+$/g, "") : "";
-    }
+    };
 
     /**
      * String HTML encoding helper
@@ -93,7 +96,7 @@ var Admin = Admin || {};
         }
         s = "" + s;
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-    }
+    };
 
     /**
      * Helper to add a named DOM event listener function to an object
@@ -115,7 +118,7 @@ var Admin = Admin || {};
         {
             obj.attachEvent("on" + event, fn);
         }
-    }
+    };
 
     /**
      * DIV Section toggle event handler
@@ -137,7 +140,7 @@ var Admin = Admin || {};
             // will now be closed
             a.innerHTML = "\u25BA";
         }
-    }
+    };
 
     /**
      * Toggle the "hidden" class for a given DOM element
@@ -151,7 +154,8 @@ var Admin = Admin || {};
         for (var i = 0; i < clazzes.length; i++)
         {
             // found the toggle el - switch display class
-            if (foundHidden = (clazzes[i] === "hidden"))
+            foundHidden = clazzes[i] === "hidden";
+            if (foundHidden)
             {
                 clazzes.splice(i, 1);
                 break;
@@ -166,20 +170,24 @@ var Admin = Admin || {};
         el.className = clazzes.join(" ");
 
         return foundHidden;
-    }
+    };
 
     Admin.addClass = function addClass(el, c)
     {
         var clazzes = el.className.split(" "), found = false;
         for (var i = 0; i < clazzes.length; i++)
         {
-            if (found = (clazzes[i] === c)) break;
+            found = clazzes[i] === c;
+            if (found)
+            {
+                break;
+            }
         }
         if (!found)
         {
             el.className += " " + c;
         }
-    }
+    };
 
     Admin.removeClass = function removeClass(el, c)
     {
@@ -193,7 +201,7 @@ var Admin = Admin || {};
             }
         }
         el.className = clazzes.join(" ");
-    }
+    };
 
     /**
      * Add a row to an existing table
@@ -213,7 +221,7 @@ var Admin = Admin || {};
             td = tr.insertCell(-1);
             td.innerHTML = row[i];
         }
-    }
+    };
 
     /**
      * Show the contents of a URL in a dialog styled IFrame
@@ -247,7 +255,7 @@ var Admin = Admin || {};
             _dialogScrollPosition = window.pageYOffset;
             window.scrollTo(0, 0);
         }
-    }
+    };
 
     /**
      * Remove any existing dialog frame and restore background elements
@@ -279,15 +287,17 @@ var Admin = Admin || {};
                 }
             }
         }
-    }
+    };
 
     /**
      * Default onDialogFinished event handler with empty impl. Dialog templates
      * can override this to add additional processing.
      */
+    /* jshint unused: false */
     Admin.onDialogFinished = function onDialogFinished(args)
     {
-    }
+    };
+    /* jshint unused: true */
 
     /**
      * Ajax request helper
@@ -303,8 +313,10 @@ var Admin = Admin || {};
     {
         var req = new XMLHttpRequest();
         var data = config.data || {};
-        if (req.overrideMimeType) req.overrideMimeType((config.responseContentType ? config.responseContentType : "application/json")
-                + "; charset=utf-8");
+        if (req.overrideMimeType)
+        {
+            req.overrideMimeType((config.responseContentType ? config.responseContentType : "application/json") + "; charset=utf-8");
+        }
         req.open(config.method ? config.method : "GET", config.url);
         req.setRequestHeader("Accept", config.requestContentType ? config.requestContentType : "application/json");
         req.onreadystatechange = function()
@@ -362,7 +374,7 @@ var Admin = Admin || {};
         {
             req.send(null);
         }
-    }
+    };
 
     /**
      * Perform binary file upload to a given service URL. Uses hidden iframe
@@ -393,7 +405,9 @@ var Admin = Admin || {};
 
         Admin.addEventListener(iframe, 'load', function()
         {
-            var frame = document.getElementById(iframe.name);
+            var frame, content, json;
+            
+            frame = document.getElementById(iframe.name);
             if (frame.contentDocument)
             {
                 content = frame.contentDocument.body.textContent;
@@ -406,7 +420,7 @@ var Admin = Admin || {};
             {
                 if (successHandler)
                 {
-                    var json = JSON.parse(content);
+                    json = JSON.parse(content);
                     successHandler.call(this, json);
                 }
             }
@@ -429,7 +443,7 @@ var Admin = Admin || {};
         form.action = url;
         form.appendChild(file);
         form.submit();
-    }
+    };
 
     /**
      * Switch an input field between test and password to show and hide the
@@ -454,7 +468,7 @@ var Admin = Admin || {};
             button.value = Admin.html(_messages.passwordShow);
             field.type = "password";
         }
-    }
+    };
 
     /* Page load handler */
     Admin.addEventListener(window, 'load', function()
@@ -467,7 +481,14 @@ var Admin = Admin || {};
         {
             if (e.keyCode === 13)
             {
-                e.preventDefault ? e.preventDefault() : event.returnValue = false;
+                if(e.preventDefault)
+                {
+                    e.preventDefault();
+                }
+                else
+                {
+                    e.returnValue = false;
+                }
             }
             return true;
         });

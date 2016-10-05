@@ -21,20 +21,24 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
+
+/* globals document,window,Admin,el,TimeSeries,setInterval,setTimeout,SmoothieChart */
+
 // The AdminAS root object has been extracted from the Alfresco Support Tools
 // admin-activesessions.get.html.ftl trim down page HTML sizes and promote clean
 // separation of concerns
-/* Page load handler */
-Admin.addEventListener(window, 'load', function()
-{
-    AdminAS.createCharts();
-    setInterval("AdminAS.updateUsers();", 60000);
-});
 
 /**
  * Active Sessions Component
  */
 var AdminAS = AdminAS || {};
+
+/* Page load handler */
+Admin.addEventListener(window, 'load', function()
+{
+    AdminAS.createCharts();
+    setInterval(AdminAS.updateUsers, 60000);
+});
 
 (function()
 {
@@ -154,7 +158,7 @@ var AdminAS = AdminAS || {};
             lineWidth : 2
         });
         userGraph.streamTo(document.getElementById("users"), 2000);
-    }
+    };
 
     AdminAS.updateUsers = function updateUsers(userName)
     {
@@ -187,20 +191,20 @@ var AdminAS = AdminAS || {};
                     {
                         for (var i = 0; i < users.length; i++)
                         {
-                            var row = new Array();
-                            row[0] = "<a href=\"" + serviceContext + "/api/people/" + encodeURIComponent(users[i].username) + "\">" + Admin.html(users[i].username)
-                                    + "</a>";
-                            row[1] = Admin.html(users[i].firstName);
-                            row[2] = Admin.html(users[i].lastName);
-                            row[3] = "<a href=\"mailto:" + encodeURIComponent(users[i].email) + "\">" + Admin.html(users[i].email) + "</a>";
-                            row[4] = "<a href=\"#\" onclick=\"AdminAS.updateUsers('" + users[i].username + "');\">"
-                                    + Admin.html(_messages.logoff) + "</a>";
-                            Admin.addTableRow(table, row);
+                            var rows = [];
+                            rows.push("<a href=\"" + serviceContext + "/api/people/" + encodeURIComponent(users[i].username) + "\">" + Admin.html(users[i].username)
+                                    + "</a>");
+                            rows.push(Admin.html(users[i].firstName));
+                            rows.push(Admin.html(users[i].lastName));
+                            rows.push("<a href=\"mailto:" + encodeURIComponent(users[i].email) + "\">" + Admin.html(users[i].email) + "</a>");
+                            rows.push("<a href=\"#\" onclick=\"AdminAS.updateUsers('" + users[i].username + "');\">"
+                                    + Admin.html(_messages.logoff) + "</a>");
+                            Admin.addTableRow(table, rows);
                         }
                     }
                 }
             }
         });
-    }
+    };
 
 })();

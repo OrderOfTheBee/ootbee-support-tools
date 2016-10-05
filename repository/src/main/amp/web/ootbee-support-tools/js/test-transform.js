@@ -21,24 +21,31 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
+
+/* globals document,window,Admin */
+
 // The AdminTT root object has been extracted from the Alfresco Support Tools
 // admin-testtransform.get.html.ftl trim down page HTML sizes and promote clean
 // separation of concerns
 /* Page load handler */
 Admin.addEventListener(window, 'load', function()
 {
-    var textareas = document.getElementsByTagName('textarea');
-    for (var i = 0; i < textareas.length; i++)
+    var textareas, listenerFn, i, ta;
+    
+    listenerFn = function(e)
     {
-        var ta = textareas[i];
-        Admin.addEventListener(ta, 'keypress', function(e)
+        if (e.keyCode === 13)
         {
-            if (e.keyCode === 13)
-            {
-                this.value = this.value + "\r\n";
-            }
-            return true;
-        });
+            this.value = this.value + "\r\n";
+        }
+        return true;
+    };
+    
+    textareas = document.getElementsByTagName('textarea');
+    for (i = 0; i < textareas.length; i++)
+    {
+        ta = textareas[i];
+        Admin.addEventListener(ta, 'keypress', listenerFn);
     }
 });
 
@@ -66,6 +73,6 @@ var AdminTT = AdminTT || {};
         }
 
         Admin.showDialog(url);
-    }
+    };
 
 })();
