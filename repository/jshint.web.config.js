@@ -1,0 +1,19 @@
+{
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "freeze": true,
+    "latedef": true,
+    "undef": true,
+    "noarg": true,
+    "nonew": true,
+    "strict" : false,
+    "unused" : true,
+    "laxbreak" : true,
+    "esversion" : 5,
+    "browser" : true,
+    "predef": [],
+    "globals" : {
+    }
+}
