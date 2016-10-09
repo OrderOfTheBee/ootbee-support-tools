@@ -21,27 +21,6 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
-// The AdminSP root object has been extracted from the Alfresco Support Tools
-// admin-performance.get.html.ftl trim down page HTML sizes and promote clean
-// separation of concerns
-/* Page load handler */
-Admin.addEventListener(window, 'load', function()
-{
-    AdminSP.createCharts();
-
-    Admin.addEventListener(el("memTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("memory"), memGraph);
-    });
-    Admin.addEventListener(el("cpuTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("CPU"), cpuGraph);
-    });
-    Admin.addEventListener(el("threadsTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("Threads"), threadGraph);
-    });
-});
 
 /**
  * System Performance Component
@@ -119,7 +98,7 @@ var AdminSP = AdminSP || {};
             });
         }, 2000);
 
-        memGraph = new SmoothieChart({
+        var memGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -149,7 +128,7 @@ var AdminSP = AdminSP || {};
         });
         memGraph.streamTo(document.getElementById("memory"), 1000);
 
-        cpuGraph = new SmoothieChart({
+        var cpuGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -179,7 +158,7 @@ var AdminSP = AdminSP || {};
         });
         cpuGraph.streamTo(document.getElementById("CPU"), 1000);
 
-        threadGraph = new SmoothieChart({
+        var threadGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -203,7 +182,7 @@ var AdminSP = AdminSP || {};
             lineWidth : 2
         });
         threadGraph.streamTo(document.getElementById("Threads"), 1000);
-    }
+    };
 
     AdminSP.changeChartTimescale = function changeChartTimescale(element, canvas, chart)
     {
@@ -233,6 +212,28 @@ var AdminSP = AdminSP || {};
         {
             chart.options.timestampFormatter = SmoothieChart.secondsFormatter;
         }
-    }
+    };
 
 })();
+
+// The AdminSP root object has been extracted from the Alfresco Support Tools
+// admin-performance.get.html.ftl trim down page HTML sizes and promote clean
+// separation of concerns
+/* Page load handler */
+Admin.addEventListener(window, 'load', function()
+{
+    AdminSP.createCharts();
+
+    Admin.addEventListener(el("memTimescale"), "change", function()
+    {
+        AdminSP.changeChartTimescale(this, el("memory"), memGraph);
+    });
+    Admin.addEventListener(el("cpuTimescale"), "change", function()
+    {
+        AdminSP.changeChartTimescale(this, el("CPU"), cpuGraph);
+    });
+    Admin.addEventListener(el("threadsTimescale"), "change", function()
+    {
+        AdminSP.changeChartTimescale(this, el("Threads"), threadGraph);
+    });
+});

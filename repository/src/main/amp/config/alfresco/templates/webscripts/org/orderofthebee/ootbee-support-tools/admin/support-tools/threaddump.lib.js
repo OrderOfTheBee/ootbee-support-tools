@@ -28,7 +28,7 @@ function buildThreaddumpInformation()
    
 	function format(thisvalue)
 	{
-		thisvalue="00" + thisvalue;
+		thisvalue = "00" + thisvalue;
 		return thisvalue.substr(-2);
 	}
 
@@ -48,7 +48,6 @@ function buildThreaddumpInformation()
    	for (var n = threads.length -1; n >= 0; n--)
    	{
     	var thread = threads[n];
-      	var keys = threads[n].dataKeys;
 
       	modelThreads[n] = {};
       	modelThreads[n].threadName = thread.threadName;

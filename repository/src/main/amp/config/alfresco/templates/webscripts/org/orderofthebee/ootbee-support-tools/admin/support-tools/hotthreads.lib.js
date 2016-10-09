@@ -21,6 +21,18 @@
  * Linked to Alfresco
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
+ 
+function MyThreadInfo(cpuTime, info) 
+{
+    this.deltaDone = false;
+    this.info = info;
+    this.cpuTime = cpuTime;
+}
+    
+function compareCpuTime(o1, o2) 
+{
+	return (o2.cpuTime - o1.cpuTime);
+}
 
 function buildHotthreadInformation() 
 {
@@ -44,23 +56,24 @@ function buildHotthreadInformation()
 	var threadInfo = {};
 	var threadBean = Packages.java.lang.management.ManagementFactory.getThreadMXBean();
 	
-    for each (var ti in threadBean.allThreadIds) 
+	var info, cpu;
+	
+    for each (var tix in threadBean.allThreadIds) 
 	{
-        cpu = threadBean.getThreadCpuTime(ti);
-		info = threadBean.getThreadInfo(ti);
-        threadInfo[ti] = new MyThreadInfo(cpu, info);
+        cpu = threadBean.getThreadCpuTime(tix);
+		info = threadBean.getThreadInfo(tix);
+        threadInfo[tix] = new MyThreadInfo(cpu, info);
     }
    
 	var threadPackage = Packages.java.lang.Thread;
 	threadPackage.sleep(999);
     
-	
-    for each (var ti in threadBean.allThreadIds) 
+    for each (var tiy in threadBean.allThreadIds) 
 	{
-		cpu = threadBean.getThreadCpuTime(ti);
-		info = threadBean.getThreadInfo(ti);
-        threadInfo[ti].deltaDone=true;
-		threadInfo[ti].cpuTime=cpu-threadInfo[ti].cpuTime;
+		cpu = threadBean.getThreadCpuTime(tiy);
+		info = threadBean.getThreadInfo(tiy);
+        threadInfo[tiy].deltaDone=true;
+		threadInfo[tiy].cpuTime=cpu-threadInfo[tiy].cpuTime;
     }
     
 	var threadDump = threadBean.dumpAllThreads(true, true);
@@ -76,44 +89,45 @@ function buildHotthreadInformation()
         }
     }
     
-	threads=threads.sort(compareCpuTime);
+	threads = threads.sort(compareCpuTime);
 
     // Show the 5 hottest threads
-    for (var n = 0 ; n < 5 ; n++) 
+    for (var ht = 0 ; ht < 5 ; ht++) 
     {				
-        var thread = threads[n].info;
-        var keys = threads[n].info.dataKeys;
-        var thisCpuTime = threads[n].cpuTime / 10000000;
+        var thread = threads[ht].info;
+        var thisCpuTime = threads[ht].cpuTime / 10000000;
 
-		logger.warn("+++Hotthreads "+thread.threadName+" tid=" + thread.threadId +" CPU TIME=" + thisCpuTime +"% ("+threads[n].cpuTime+")");
+		logger.warn("+++Hotthreads "+thread.threadName+" tid=" + thread.threadId +" CPU TIME=" + thisCpuTime +"% ("+threads[ht].cpuTime+")");
 
-		hotThreads[n] = {};
-		hotThreads[n].cpuTime = thisCpuTime;
+		hotThreads[ht] = {};
+		hotThreads[ht].cpuTime = thisCpuTime;
         
-        hotThreads[n].threadName = thread.threadName;
-        hotThreads[n].threadId = thread.threadId;
-        hotThreads[n].blockedCount = thread.blockedCount;
-        hotThreads[n].waitedCount = thread.waitedCount;
-        hotThreads[n].waitedTime = thread.waitedTime;
-        hotThreads[n].threadState = thread.threadState;
+        hotThreads[ht].threadName = thread.threadName;
+        hotThreads[ht].threadId = thread.threadId;
+        hotThreads[ht].blockedCount = thread.blockedCount;
+        hotThreads[ht].waitedCount = thread.waitedCount;
+        hotThreads[ht].waitedTime = thread.waitedTime;
+        hotThreads[ht].threadState = thread.threadState;
 
-        thisStackTrace=stackTrace(thread.stackTrace, thread.lockedMonitors, thread);
+        thisStackTrace = stackTrace(thread.stackTrace, thread.lockedMonitors, thread);
         
+		//if (thisStackTrace.indexOf("hotthreads-getone.get.js") < 1)
 		if (!(thisStackTrace.indexOf("hotthreads-getone.get.js") > 1))
+		
 		{
-			hotThreads[n].stackTrace = thisStackTrace;
+			hotThreads[ht].stackTrace = thisStackTrace;
 		}
 		
         var lockedSynchronizers = thread.lockedSynchronizers;
         if (lockedSynchronizers && lockedSynchronizers.length > 0) 
 		{
-    		hotThreads[n].lockedSynchronizers = [];
+    		hotThreads[ht].lockedSynchronizers = [];
     		
             for (var i = 0; i < lockedSynchronizers.length; i++) 
 			{
-            	hotThreads[n].lockedSynchronizers[i] = {};
-            	hotThreads[n].lockedSynchronizers[i].identityHashCode = toHex(lockedSynchronizers[i].identityHashCode, 16);
-            	hotThreads[n].lockedSynchronizers[i].className = lockedSynchronizers[i].className;
+            	hotThreads[ht].lockedSynchronizers[i] = {};
+            	hotThreads[ht].lockedSynchronizers[i].identityHashCode = toHex(lockedSynchronizers[i].identityHashCode, 16);
+            	hotThreads[ht].lockedSynchronizers[i].className = lockedSynchronizers[i].className;
             }
         } 
     }
@@ -130,56 +144,3 @@ function buildHotthreadInformation()
     model.hotThreads = hotThreads;
 
 }
-
-function MyThreadInfo(cpuTime, info) 
-{
-    this.deltaDone = false;
-    this.info = info;
-    this.cpuTime = cpuTime;
-}
-    
-function compareCpuTime(o1, o2) 
-{
-	return (o2.cpuTime - o1.cpuTime);
-}
-
-function sleep(delay) 
-{
-    var start = new Date().getTime();
-    while (new Date().getTime() < start + delay);
-}
-/*
-function stackTrace(stacks, lockedMonitors, thisThread) {
-    var stackTrace = "";
-
-    for (var n = 0; n < stacks.length; n++) {
-        stack = stacks[n];
-
-        if (stack.nativeMethod == true) {
-            stackTrace = "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
-
-            if (thisThread.lockInfo) {
-                var lockInfo = thisThread.lockInfo;
-                stackTrace += "\t- parking to wait for <" + toHex(lockInfo.identityHashCode, 16) + "> (a " + lockInfo.className + ")\n";
-            }
-        } else {
-            stackTrace += "\tat " + stack.className + "." + stack.methodName + "(" + stack.fileName + ":" + stack.lineNumber + ")\n";
-        }
-
-        if (lockedMonitors) {
-            for (var j = 0; j < lockedMonitors.length; j++) {
-                if (lockedMonitors[j].lockedStackDepth == n) {
-                    stackTrace += "\t- locked <" + toHex(lockedMonitors[j].identityHashCode, 16) + "> (a " + lockedMonitors[j].className + ")\n";
-                }
-            }
-        }
-    }
-
-    return stackTrace;
-}
-
-function toHex(thisNumber, chars) {
-    var hexNum = "0x" + ("0000000000000000000" + thisNumber.toString(16)).substr(-1 * chars);
-    return hexNum;
-}
-*/

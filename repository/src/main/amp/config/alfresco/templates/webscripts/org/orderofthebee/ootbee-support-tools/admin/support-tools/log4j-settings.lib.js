@@ -28,7 +28,7 @@ function buildLoggerState(logger)
 
     loggerState = {
         name : logger.name,
-        parent : logger.parent != null ? logger.parent.name : null,
+        parent : logger.parent !== null ? logger.parent.name : null,
         level : logger.level !== null ? String(logger.level) : null,
         effectiveLevel : String(logger.effectiveLevel),
         additivity : logger.additivity,

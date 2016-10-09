@@ -24,5 +24,5 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-model.tools=Admin.getConsoleTools("hotthreads"); 
+model.tools = Admin.getConsoleTools("hotthreads"); 
 model.metadata = Admin.getServerMetaData(); 

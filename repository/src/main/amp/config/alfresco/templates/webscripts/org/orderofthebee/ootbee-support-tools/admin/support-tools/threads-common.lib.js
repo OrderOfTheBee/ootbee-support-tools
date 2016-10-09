@@ -22,13 +22,18 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+function toHex(thisNumber, chars) {
+    var hexNum = "0x" + ("0000000000000000000" + thisNumber.toString(16)).substr(-1 * chars);
+    return hexNum;
+}
+
 function stackTrace(stacks, lockedMonitors, thisThread) {
     var stackTrace = "";
 
     for (var n = 0; n < stacks.length; n++) {
-        stack = stacks[n];
+        var stack = stacks[n];
 
-        if (stack.nativeMethod == true) {
+        if (stack.nativeMethod === true) {
             stackTrace = "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
 
             if (thisThread.lockInfo) {
@@ -41,7 +46,7 @@ function stackTrace(stacks, lockedMonitors, thisThread) {
 
         if (lockedMonitors) {
             for (var j = 0; j < lockedMonitors.length; j++) {
-                if (lockedMonitors[j].lockedStackDepth == n) {
+                if (lockedMonitors[j].lockedStackDepth === n) {
                     stackTrace += "\t- locked <" + toHex(lockedMonitors[j].identityHashCode, 16) + "> (a " + lockedMonitors[j].className + ")\n";
                 }
             }
@@ -50,9 +55,3 @@ function stackTrace(stacks, lockedMonitors, thisThread) {
 
     return stackTrace;
 }
-
-function toHex(thisNumber, chars) {
-    var hexNum = "0x" + ("0000000000000000000" + thisNumber.toString(16)).substr(-1 * chars);
-    return hexNum;
-}
-

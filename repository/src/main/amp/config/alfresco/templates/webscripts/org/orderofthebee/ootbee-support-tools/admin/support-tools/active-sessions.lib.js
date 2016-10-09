@@ -81,7 +81,7 @@ function buildUserSessionsData()
 function buildActiveSessionsData()
 {
     buildConnectionPoolData();
-    buildUserSessionsData()
+    buildUserSessionsData();
 }
 
 function logoutUser(userName)

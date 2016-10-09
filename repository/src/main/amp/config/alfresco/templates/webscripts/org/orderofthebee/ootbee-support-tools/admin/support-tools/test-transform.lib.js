@@ -24,7 +24,7 @@
 
 function buildTransformerNames()
 {
-    var ctxt, transformerDebug, transformerNames, transformers, i, transformerName, ArrayList; 
+    var ctxt, transformerDebug, transformerNames, i, transformerName, ArrayList; 
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
@@ -51,7 +51,7 @@ function buildExtensionsAndMimetypes()
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     mimetypeService = ctxt.getBean('MimetypeService', Packages.org.alfresco.service.cmr.repository.MimetypeService);
     
-    extensionsByMimetypes = {};
+    var extensionsByMimetypes = {};
     mimetypes = mimetypeService.getMimetypes(null);
     for (i = 0; i < mimetypes.size(); i++)
     {
@@ -69,7 +69,7 @@ function getProperties()
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerConfig = ctxt.getBean('transformerConfig', Packages.org.alfresco.repo.content.transform.TransformerConfig);
     
-    changesOnly = args.arg0 == 'true';
+    changesOnly = args.arg0 === 'true';
     
     model.message = transformerConfig.getProperties(changesOnly);
     model.header = msg.get('test-transform.details.getProperties.heading', [msg.get(changesOnly ? 'boolean.yes' : 'boolean.no')]);
@@ -202,7 +202,7 @@ function getEffectiveTransformerName(input, transformerRegistry)
     var transformerName = input;
     if (transformerName !== null)
     {
-        if (transformerName == '')
+        if (transformerName === '')
         {
             transformerName = null;
         }
@@ -220,7 +220,7 @@ function getEffectiveExtension(input)
     var extension = input;
     if (extension !== null)
     {
-        if (extension == '')
+        if (extension === '')
         {
             extension = null;
         }
@@ -252,7 +252,7 @@ function getTransformationStatisticsLowLevel(sb, transformer, sourceMimetype, ta
                 sb.append('\n');
             }
 
-            if (counter.incrementAndGet() == 1 && includeSystemWideSummary)
+            if (counter.incrementAndGet() === 1 && includeSystemWideSummary)
             {
                 sb.append('\n');
             }
@@ -291,16 +291,16 @@ function getTransformationStatisticsHighLevel(sourceExtension, targetExtension, 
             targetMimetype = targetMimetypes[j];
 
             getTransformationStatisticsLowLevel(sb, transformer, sourceMimetype, targetMimetype, counter, includeSystemWideSummary,
-                    transformerConfig)
+                    transformerConfig);
         }
     }
 
-    if (sourceExtension == null && targetExtension == null && counter.get() > 1)
+    if (sourceExtension === null && targetExtension === null && counter.get() > 1)
     {
         sb2 = new StringBuilder();
-        getTransformationStatisticsLowLevel(sb2, transformer, null, null, counter, includeSystemWideSummary, transformerConfig)
+        getTransformationStatisticsLowLevel(sb2, transformer, null, null, counter, includeSystemWideSummary, transformerConfig);
         sb2.append('\n');
-        sb.insert(lengthAtStart == 0 ? 0 : lengthAtStart + 2, sb2);
+        sb.insert(lengthAtStart === 0 ? 0 : lengthAtStart + 2, sb2);
     }
 }
 
@@ -369,7 +369,7 @@ function testTransform()
         transformerName = getEffectiveTransformerName(args.arg0, transformerRegistry);
         sourceExtension = getEffectiveExtension(args.arg1);
         targetExtension = getEffectiveExtension(args.arg2);
-        use = args.arg3 == '' ? null : args.arg3;
+        use = args.arg3 === '' ? null : args.arg3;
 
         model.message = transformerName === null ? transformerDebug.testTransform(sourceExtension, targetExtension, use) : transformerDebug
                 .testTransform(transformerName, sourceExtension, targetExtension, use);
@@ -390,7 +390,7 @@ function getTransformationsByExtension()
 
     sourceExtension = getEffectiveExtension(args.arg0);
     targetExtension = getEffectiveExtension(args.arg1);
-    use = args.arg2 == '' ? null : args.arg2;
+    use = args.arg2 === '' ? null : args.arg2;
 
     try
     {
@@ -405,14 +405,14 @@ function getTransformationsByExtension()
 
 function getTransformationsByTransformer()
 {
-    var ctxt, transformerDebug, transformerName, use;
+    var ctxt, transformerDebug, transformerName, use, transformerRegistry;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
     transformerRegistry = ctxt.getBean('contentTransformerRegistry',
             Packages.org.alfresco.repo.content.transform.ContentTransformerRegistry);
 
-    use = args.arg1 == '' ? null : args.arg1;
+    use = args.arg1 === '' ? null : args.arg1;
 
     try
     {
