@@ -171,9 +171,6 @@
                 <artifactId>jshint-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <configuration>
-                    <!-- just introduced - of course there'll be lint errors we have to clean up, but don't fail the entire build -->
-                    <failOnError>false</failOnError>
-
                     <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
                     <includes>
                         <include>amp/**/*.js</include>
