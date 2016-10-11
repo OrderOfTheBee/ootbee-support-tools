@@ -22,6 +22,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+/* exported buildAppliedPatches */
 function buildAppliedPatches()
 {
     var ctxt, patchService;

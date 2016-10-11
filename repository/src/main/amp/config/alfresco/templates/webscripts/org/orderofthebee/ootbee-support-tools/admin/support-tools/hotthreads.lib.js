@@ -21,7 +21,9 @@
  * Linked to Alfresco
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
- 
+
+/* global toHex: false, stackTrace: false */
+
 function MyThreadInfo(cpuTime, info) 
 {
     this.deltaDone = false;
@@ -34,9 +36,12 @@ function compareCpuTime(o1, o2)
 	return (o2.cpuTime - o1.cpuTime);
 }
 
-function buildHotthreadInformation() 
+/* exported buildHotThreadInformation */
+function buildHotThreadInformation() 
 {
-	var hotThreads = [];
+    var hotThreads, runtimeBean, now, myDate, threadInfo, threadBean, info, cpu, tix, threadPackage, tiy, threadDump, threads, n, threadId, ht, thread, thisCpuTime, thisStackTrace, lockedSynchronizers, i, deadLockedThreads;
+    
+	hotThreads = [];
 
     function format(thisValue) 
     {
@@ -44,44 +49,44 @@ function buildHotthreadInformation()
         return thisValue.substr(-2);
     }
 
-	var runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
+	runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
     
-    var now = new Date();
-    var myDate = now.getFullYear() + "-" + format(now.getMonth() + 1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":" + format(now.getMinutes()) + ":" + format(now.getSeconds());
+    now = new Date();
+    myDate = now.getFullYear() + "-" + format(now.getMonth() + 1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":" + format(now.getMinutes()) + ":" + format(now.getSeconds());
 
     model.myDate = myDate;    
     model.vmName = runtimeBean.vmName;
 	model.vmVersion = runtimeBean.vmVersion;
 
-	var threadInfo = {};
-	var threadBean = Packages.java.lang.management.ManagementFactory.getThreadMXBean();
+	threadInfo = {};
+	threadBean = Packages.java.lang.management.ManagementFactory.getThreadMXBean();
 	
-	var info, cpu;
-	
-    for each (var tix in threadBean.allThreadIds) 
+	/* jshint forin: false */
+    for each (tix in threadBean.allThreadIds) 
 	{
         cpu = threadBean.getThreadCpuTime(tix);
 		info = threadBean.getThreadInfo(tix);
         threadInfo[tix] = new MyThreadInfo(cpu, info);
     }
    
-	var threadPackage = Packages.java.lang.Thread;
+	threadPackage = Packages.java.lang.Thread;
 	threadPackage.sleep(999);
     
-    for each (var tiy in threadBean.allThreadIds) 
+    for each (tiy in threadBean.allThreadIds) 
 	{
 		cpu = threadBean.getThreadCpuTime(tiy);
 		info = threadBean.getThreadInfo(tiy);
         threadInfo[tiy].deltaDone=true;
 		threadInfo[tiy].cpuTime=cpu-threadInfo[tiy].cpuTime;
     }
+    /* jshint forin: true */
     
-	var threadDump = threadBean.dumpAllThreads(true, true);
-    var threads = new Array(); // new sortable array to store all values
+	threadDump = threadBean.dumpAllThreads(true, true);
+    threads = []; // new sortable array to store all values
 
-    for (var n = threadDump.length -1; n >= 0; n--)
+    for (n = threadDump.length -1; n >= 0; n--)
     {
-        var threadId = threadDump[n].threadId;
+        threadId = threadDump[n].threadId;
         if (threadInfo[threadId] !== undefined && threadInfo[threadId] !== null)
         {
             threadInfo[threadId].info=threadDump[n];
@@ -92,10 +97,10 @@ function buildHotthreadInformation()
 	threads = threads.sort(compareCpuTime);
 
     // Show the 5 hottest threads
-    for (var ht = 0 ; ht < 5 ; ht++) 
+    for (ht = 0 ; ht < 5 ; ht++) 
     {				
-        var thread = threads[ht].info;
-        var thisCpuTime = threads[ht].cpuTime / 10000000;
+        thread = threads[ht].info;
+        thisCpuTime = threads[ht].cpuTime / 10000000;
 
 		logger.warn("+++Hotthreads "+thread.threadName+" tid=" + thread.threadId +" CPU TIME=" + thisCpuTime +"% ("+threads[ht].cpuTime+")");
 
@@ -111,19 +116,18 @@ function buildHotthreadInformation()
 
         thisStackTrace = stackTrace(thread.stackTrace, thread.lockedMonitors, thread);
         
-		//if (thisStackTrace.indexOf("hotthreads-getone.get.js") < 1)
-		if (!(thisStackTrace.indexOf("hotthreads-getone.get.js") > 1))
+		if (thisStackTrace.indexOf("hotthreads-getone.get.js") <= 1)
 		
 		{
 			hotThreads[ht].stackTrace = thisStackTrace;
 		}
 		
-        var lockedSynchronizers = thread.lockedSynchronizers;
+        lockedSynchronizers = thread.lockedSynchronizers;
         if (lockedSynchronizers && lockedSynchronizers.length > 0) 
 		{
     		hotThreads[ht].lockedSynchronizers = [];
     		
-            for (var i = 0; i < lockedSynchronizers.length; i++) 
+            for (i = 0; i < lockedSynchronizers.length; i++) 
 			{
             	hotThreads[ht].lockedSynchronizers[i] = {};
             	hotThreads[ht].lockedSynchronizers[i].identityHashCode = toHex(lockedSynchronizers[i].identityHashCode, 16);
@@ -132,7 +136,7 @@ function buildHotthreadInformation()
         } 
     }
 
-    var deadLockedThreads = 0;
+    deadLockedThreads = 0;
     
     if (threadBean.findDeadlockedThreads()) 
 	{

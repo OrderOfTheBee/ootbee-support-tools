@@ -22,64 +22,69 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-function buildThreaddumpInformation()
+/* global toHex: false, stackTrace: false */
+/* exported buildThreadDumpInformation */
+function buildThreadDumpInformation()
 {
-	var modelThreads = [];
-   
-	function format(thisvalue)
-	{
-		thisvalue = "00" + thisvalue;
-		return thisvalue.substr(-2);
-	}
+    var modelThreads, runtimeBean, now, myDate, threadBean, threads, n, thread, lockedSynchronizers, i, deadLockedThreads;
 
-	var runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
-  
-	var now = new Date();
-	var myDate = now.getFullYear() + "-" + format(now.getMonth()+1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":" + format(now.getMinutes()) + ":" +format(now.getSeconds());
+    modelThreads = [];
 
-    model.myDate = myDate;    
+    function format(thisvalue)
+    {
+        thisvalue = "00" + thisvalue;
+        return thisvalue.substr(-2);
+    }
+
+    runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
+
+    now = new Date();
+    myDate = now.getFullYear() + "-" + format(now.getMonth() + 1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":"
+            + format(now.getMinutes()) + ":" + format(now.getSeconds());
+
+    model.myDate = myDate;
     model.vmName = runtimeBean.vmName;
-	model.vmVersion = runtimeBean.vmVersion;
+    model.vmVersion = runtimeBean.vmVersion;
 
-   	var threadBean = Packages.java.lang.management.ManagementFactory.getThreadMXBean();
-   
-   	var threads = threadBean.dumpAllThreads(true, true);
-  
-   	for (var n = threads.length -1; n >= 0; n--)
-   	{
-    	var thread = threads[n];
+    threadBean = Packages.java.lang.management.ManagementFactory.getThreadMXBean();
 
-      	modelThreads[n] = {};
-      	modelThreads[n].threadName = thread.threadName;
-      	modelThreads[n].threadId = thread.threadId;
-      	modelThreads[n].blockedCount = thread.blockedCount;
-      	modelThreads[n].waitedCount = thread.waitedCount;
-      	modelThreads[n].waitedTime = thread.waitedTime;
-      	modelThreads[n].threadState = thread.threadState;
-      	modelThreads[n].stackTrace = stackTrace(thread.stackTrace, thread.lockedMonitors, thread);
-      
-      var lockedSynchronizers=thread.lockedSynchronizers;
-      if (lockedSynchronizers && lockedSynchronizers.length>0)	
-      {
-         modelThreads[n].lockedSynchronizers = [];
-         
-         for (var i = 0; i < lockedSynchronizers.length; i++)
-         {
-            modelThreads[n].lockedSynchronizers[i] = {};
-            modelThreads[n].lockedSynchronizers[i].identityHashCode = toHex(lockedSynchronizers[i].identityHashCode, 16);
-            modelThreads[n].lockedSynchronizers[i].className = lockedSynchronizers[i].className;
-         }
-      }
-   }
-   
-   var deadLockedThreads = 0;
-   
-   if (threadBean.findDeadlockedThreads()) 
-   {
-      deadLockedThreads = threadBean.findDeadlockedThreads;
-   }
+    threads = threadBean.dumpAllThreads(true, true);
 
-   model.numberOfThreads = threads.length;
-   model.deadlockedThreads = deadLockedThreads;
-   model.modelThreads = modelThreads;
+    for (n = threads.length - 1; n >= 0; n--)
+    {
+        thread = threads[n];
+
+        modelThreads[n] = {};
+        modelThreads[n].threadName = thread.threadName;
+        modelThreads[n].threadId = thread.threadId;
+        modelThreads[n].blockedCount = thread.blockedCount;
+        modelThreads[n].waitedCount = thread.waitedCount;
+        modelThreads[n].waitedTime = thread.waitedTime;
+        modelThreads[n].threadState = thread.threadState;
+        modelThreads[n].stackTrace = stackTrace(thread.stackTrace, thread.lockedMonitors, thread);
+
+        lockedSynchronizers = thread.lockedSynchronizers;
+        if (lockedSynchronizers && lockedSynchronizers.length > 0)
+        {
+            modelThreads[n].lockedSynchronizers = [];
+
+            for (i = 0; i < lockedSynchronizers.length; i++)
+            {
+                modelThreads[n].lockedSynchronizers[i] = {};
+                modelThreads[n].lockedSynchronizers[i].identityHashCode = toHex(lockedSynchronizers[i].identityHashCode, 16);
+                modelThreads[n].lockedSynchronizers[i].className = lockedSynchronizers[i].className;
+            }
+        }
+    }
+
+    deadLockedThreads = 0;
+
+    if (threadBean.findDeadlockedThreads())
+    {
+        deadLockedThreads = threadBean.findDeadlockedThreads;
+    }
+
+    model.numberOfThreads = threads.length;
+    model.deadlockedThreads = deadLockedThreads;
+    model.modelThreads = modelThreads;
 }

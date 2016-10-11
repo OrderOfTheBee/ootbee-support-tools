@@ -21,7 +21,7 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
-
+/* global el: false, Admin: false, TimeSeries: false, SmoothieChart: false */
 /**
  * System Performance Component
  */
@@ -29,7 +29,29 @@ var AdminSP = AdminSP || {};
 
 (function()
 {
-    var serviceUrl, initialMemoryMetrics, initialThreadMetrics;
+    var serviceUrl, initialMemoryMetrics, initialThreadMetrics, memGraph, cpuGraph, threadGraph;
+    
+    // The AdminSP root object has been extracted from the Alfresco Support Tools
+    // admin-performance.get.html.ftl trim down page HTML sizes and promote clean
+    // separation of concerns
+    /* Page load handler */
+    Admin.addEventListener(window, 'load', function()
+    {
+        AdminSP.createCharts();
+
+        Admin.addEventListener(el("memTimescale"), "change", function()
+        {
+            AdminSP.changeChartTimescale(this, el("memory"), memGraph);
+        });
+        Admin.addEventListener(el("cpuTimescale"), "change", function()
+        {
+            AdminSP.changeChartTimescale(this, el("CPU"), cpuGraph);
+        });
+        Admin.addEventListener(el("threadsTimescale"), "change", function()
+        {
+            AdminSP.changeChartTimescale(this, el("Threads"), threadGraph);
+        });
+    });
 
     AdminSP.setServiceUrl = function setServiceURL(url)
     {
@@ -48,13 +70,16 @@ var AdminSP = AdminSP || {};
 
     AdminSP.createCharts = function createCharts()
     {
-        var memChartLineComtd = new TimeSeries();
-        var memChartLineUsed = new TimeSeries();
-        var processLoadChartLinePcent = new TimeSeries();
-        var systemLoadChartLinePcent = new TimeSeries();
-        var threadChartLine = new TimeSeries();
+        var memChartLineComtd, memChartLineUsed, processLoadChartLinePcent, systemLoadChartLinePcent, threadChartLine,
+        chartResizer;
+        
+        memChartLineComtd = new TimeSeries();
+        memChartLineUsed = new TimeSeries();
+        processLoadChartLinePcent = new TimeSeries();
+        systemLoadChartLinePcent = new TimeSeries();
+        threadChartLine = new TimeSeries();
 
-        var chartResizer = function()
+        chartResizer = function()
         {
             var memoryCanvas, cpuCanvas, threadCanvas;
 
@@ -74,9 +99,12 @@ var AdminSP = AdminSP || {};
                 url : serviceUrl + "?format=json",
                 fnSuccess : function(res)
                 {
+                    var json, now;
+                    
                     if (res.responseJSON)
                     {
-                        var json = res.responseJSON, now = new Date().getTime();
+                        json = res.responseJSON;
+                        now = new Date().getTime();
 
                         el("MaxMemory").innerHTML = json.MaxMemory;
                         el("TotalMemory").innerHTML = json.TotalMemory;
@@ -98,7 +126,7 @@ var AdminSP = AdminSP || {};
             });
         }, 2000);
 
-        var memGraph = new SmoothieChart({
+        memGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -128,7 +156,7 @@ var AdminSP = AdminSP || {};
         });
         memGraph.streamTo(document.getElementById("memory"), 1000);
 
-        var cpuGraph = new SmoothieChart({
+        cpuGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -158,7 +186,7 @@ var AdminSP = AdminSP || {};
         });
         cpuGraph.streamTo(document.getElementById("CPU"), 1000);
 
-        var threadGraph = new SmoothieChart({
+        threadGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -186,18 +214,20 @@ var AdminSP = AdminSP || {};
 
     AdminSP.changeChartTimescale = function changeChartTimescale(element, canvas, chart)
     {
+        var value, intVal, width, height, mspl, mspp, lpc, x;
+        
         // get width of current canvas
-        var value = element.options[element.selectedIndex].value;
-        var intVal = parseInt(value);
-        var width = canvas.width;
-        var height = canvas.height;
+        value = element.options[element.selectedIndex].value;
+        intVal = parseInt(value);
+        width = canvas.width;
+        height = canvas.height;
         // get how many divisions there are
-        var mspl = chart.options.grid.millisPerLine;
-        var mspp = chart.options.millisPerPixel;
-        var lpc = (width * mspp) / mspl;
+        mspl = chart.options.grid.millisPerLine;
+        mspp = chart.options.millisPerPixel;
+        lpc = (width * mspp) / mspl;
 
         // figure out time scale
-        var x = Math.ceil(intVal * 60);
+        x = Math.ceil(intVal * 60);
         chart.options.millisPerPixel = (x / width) * 1000;
         chart.options.grid.millisPerLine = (width * chart.options.millisPerPixel) / lpc;
         if (value > 2900)
@@ -215,25 +245,3 @@ var AdminSP = AdminSP || {};
     };
 
 })();
-
-// The AdminSP root object has been extracted from the Alfresco Support Tools
-// admin-performance.get.html.ftl trim down page HTML sizes and promote clean
-// separation of concerns
-/* Page load handler */
-Admin.addEventListener(window, 'load', function()
-{
-    AdminSP.createCharts();
-
-    Admin.addEventListener(el("memTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("memory"), memGraph);
-    });
-    Admin.addEventListener(el("cpuTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("CPU"), cpuGraph);
-    });
-    Admin.addEventListener(el("threadsTimescale"), "change", function()
-    {
-        AdminSP.changeChartTimescale(this, el("Threads"), threadGraph);
-    });
-});

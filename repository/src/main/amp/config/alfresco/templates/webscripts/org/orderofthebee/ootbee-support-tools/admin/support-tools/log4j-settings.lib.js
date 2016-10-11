@@ -22,6 +22,8 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+/* global formdata: false */
+
 function buildLoggerState(logger)
 {
     var loggerState, allAppenders, appender;
@@ -48,6 +50,7 @@ function buildLoggerState(logger)
     return loggerState;
 }
 
+/* exported buildLoggerStates */
 function buildLoggerStates(showUnconfiguredLoggers)
 {
     var loggerRepository, loggerStates, currentLoggers, logger;
@@ -83,6 +86,7 @@ function changeLoggerState(loggerName, level)
     logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
 }
 
+/* exported processLoggerStateChangeFromFormData */
 function processLoggerStateChangeFromFormData()
 {
     var fields, field, i, loggerName, level, showUnconfiguredLoggers;

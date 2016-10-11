@@ -44,14 +44,15 @@ function buildTransformerNames()
     model.transformerNames = transformerNames;
 }
 
+/* exported buildExtensionsAndMimetypes */
 function buildExtensionsAndMimetypes()
 {
-    var ctxt, mimetypeService, extensionsByMimetype, mimetypes, mimetype, i;
+    var ctxt, mimetypeService, extensionsByMimetypes, mimetypes, mimetype, i;
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     mimetypeService = ctxt.getBean('MimetypeService', Packages.org.alfresco.service.cmr.repository.MimetypeService);
     
-    var extensionsByMimetypes = {};
+    extensionsByMimetypes = {};
     mimetypes = mimetypeService.getMimetypes(null);
     for (i = 0; i < mimetypes.size(); i++)
     {
@@ -62,6 +63,7 @@ function buildExtensionsAndMimetypes()
     model.extensionsByMimetype = extensionsByMimetypes;
 }
 
+/* exported getProperties */
 function getProperties()
 {
     var ctxt, transformerConfig, changesOnly;
@@ -75,6 +77,7 @@ function getProperties()
     model.header = msg.get('test-transform.details.getProperties.heading', [msg.get(changesOnly ? 'boolean.yes' : 'boolean.no')]);
 }
 
+/* exported setProperties */
 function setProperties()
 {
     var ctxt, transformerConfig, input;
@@ -100,6 +103,7 @@ function setProperties()
     model.headerKey = 'setProperties.heading';
 }
 
+/* exported removeProperties */
 function removeProperties()
 {
     var ctxt, transformerConfig, input;
@@ -127,12 +131,13 @@ function removeProperties()
     model.header = msg.get('test-transform.details.removeProperties.heading', [input]);
 }
 
+/* exported getLogEntries */
 function getLogEntries(logName)
 {
     var ctxt, transformerDebugLog, logEntries, i, log = '';
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
-    transformerDebugLog = ctxt.getBean('logName', Packages.org.alfresco.repo.content.transform.TransformerLogger);
+    transformerDebugLog = ctxt.getBean(logName, Packages.org.alfresco.repo.content.transform.TransformerLogger);
     
     logEntries = transformerDebugLog.getEntries(100);
     for (i = 0; i < logEntries.length; i++)
@@ -147,6 +152,7 @@ function getLogEntries(logName)
     return log;
 }
 
+/* exported getTransformationDebugLog */
 function getTransformationDebugLog()
 {
     var log = getLogEntries('transformerDebugLog');
@@ -162,6 +168,7 @@ function getTransformationDebugLog()
     model.headerKey = 'getTransformationDebugLog.heading';
 }
 
+/* exported getTransformationLog */
 function getTransformationLog()
 {
     var log = getLogEntries('transformerLog');
@@ -177,6 +184,7 @@ function getTransformationLog()
     model.headerKey = 'getTransformationLog.heading';
 }
 
+/* exported getTransformerNames */
 function getTransformerNames()
 {
     var i, transformerNames;
@@ -233,7 +241,7 @@ function getEffectiveExtension(input)
     return extension;
 }
 
-//we can't access TransformerConfigMBeanImpl here since that isn't exposed from the subsystem (and may in the future be Enterprise only)
+// we can't access TransformerConfigMBeanImpl here since that isn't exposed from the subsystem (and may in the future be Enterprise only)
 // getTransformationStatistics functions effectively duplicate the code
 
 function getTransformationStatisticsLowLevel(sb, transformer, sourceMimetype, targetMimetype, counter, includeSystemWideSummary,
@@ -304,6 +312,7 @@ function getTransformationStatisticsHighLevel(sourceExtension, targetExtension, 
     }
 }
 
+/* exported getTransformationStatistics */
 function getTransformationStatistics()
 {
     var ctxt, transformerDebug, transformerConfig, transformerRegistry, ArrayList, StringBuilder, transformerName, sourceExtension, targetExtension, transformers, sourceMimetypes, targetMimetypes, includeSystemWideSummary, sb, i;
@@ -355,6 +364,7 @@ function getTransformationStatistics()
     model.header = msg.get('test-transform.detail.getTransformationStatistics.heading', [transformerName, sourceExtension, targetExtension]);
 }
 
+/* exported testTransform */
 function testTransform()
 {
     var ctxt, transformerDebug, transformerRegistry, transformerName, sourceExtension, targetExtension, use;
@@ -381,6 +391,7 @@ function testTransform()
     model.header = msg.get('test-transform.detail.testTransform.heading', [ args.arg0, args.arg1, args.arg2, args.arg3 ]);
 }
 
+/* exported getTransformationsByExtension */
 function getTransformationsByExtension()
 {
     var ctxt, transformerDebug, sourceExtension, targetExtension, use;
@@ -403,6 +414,7 @@ function getTransformationsByExtension()
     model.header = msg.get('test-transform.detail.getTransformationsByExtension.heading', [ sourceExtension, targetExtension, use ]);
 }
 
+/* exported getTransformationsByTransformer */
 function getTransformationsByTransformer()
 {
     var ctxt, transformerDebug, transformerName, use, transformerRegistry;

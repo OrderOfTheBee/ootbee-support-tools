@@ -22,32 +22,45 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-function toHex(thisNumber, chars) {
+function toHex(thisNumber, chars)
+{
     var hexNum = "0x" + ("0000000000000000000" + thisNumber.toString(16)).substr(-1 * chars);
     return hexNum;
 }
 
-function stackTrace(stacks, lockedMonitors, thisThread) {
-    var stackTrace = "";
+/* exported stackTrace */
+function stackTrace(stacks, lockedMonitors, thisThread)
+{
+    var stackTrace, n, stack, lockInfo, j;
 
-    for (var n = 0; n < stacks.length; n++) {
-        var stack = stacks[n];
+    stackTrace = "";
+    for (n = 0; n < stacks.length; n++)
+    {
+        stack = stacks[n];
 
-        if (stack.nativeMethod === true) {
+        if (stack.nativeMethod === true)
+        {
             stackTrace = "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
 
-            if (thisThread.lockInfo) {
-                var lockInfo = thisThread.lockInfo;
+            if (thisThread.lockInfo)
+            {
+                lockInfo = thisThread.lockInfo;
                 stackTrace += "\t- parking to wait for <" + toHex(lockInfo.identityHashCode, 16) + "> (a " + lockInfo.className + ")\n";
             }
-        } else {
+        }
+        else
+        {
             stackTrace += "\tat " + stack.className + "." + stack.methodName + "(" + stack.fileName + ":" + stack.lineNumber + ")\n";
         }
 
-        if (lockedMonitors) {
-            for (var j = 0; j < lockedMonitors.length; j++) {
-                if (lockedMonitors[j].lockedStackDepth === n) {
-                    stackTrace += "\t- locked <" + toHex(lockedMonitors[j].identityHashCode, 16) + "> (a " + lockedMonitors[j].className + ")\n";
+        if (lockedMonitors)
+        {
+            for (j = 0; j < lockedMonitors.length; j++)
+            {
+                if (lockedMonitors[j].lockedStackDepth === n)
+                {
+                    stackTrace += "\t- locked <" + toHex(lockedMonitors[j].identityHashCode, 16) + "> (a " + lockedMonitors[j].className
+                            + ")\n";
                 }
             }
         }

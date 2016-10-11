@@ -26,4 +26,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
  
-buildThreaddumpInformation();
+buildThreadDumpInformation();

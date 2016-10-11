@@ -78,12 +78,14 @@ function buildUserSessionsData()
     model.userSessionData = userSessionData;
 }
 
+/* exported buildActiveSessionsData */
 function buildActiveSessionsData()
 {
     buildConnectionPoolData();
     buildUserSessionsData();
 }
 
+/* exported logoutUser */
 function logoutUser(userName)
 {
     var ctxt, authenticationService;
