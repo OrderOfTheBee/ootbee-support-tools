@@ -12,10 +12,10 @@
     "unused" : true,
     "laxbreak" : true,
     "moz" : true,
-    "predef": ["model", "Packages", "people", "msg", "args", "logger"],
+    "rhino" : true,
+    "predef": ["model", "people", "msg", "args", "logger"],
     "globals" : {
         "model" : true,
-        "Packages" : true,
         "people" : true,
         "msg" : true,
         "args" : true,
