@@ -22,7 +22,7 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* globals document,window,Admin,el,TimeSeries,setInterval,setTimeout,SmoothieChart */
+/* global Admin: false, el: false, TimeSeries: false, SmoothieChart: false */
 
 // The AdminAS root object has been extracted from the Alfresco Support Tools
 // admin-activesessions.get.html.ftl trim down page HTML sizes and promote clean

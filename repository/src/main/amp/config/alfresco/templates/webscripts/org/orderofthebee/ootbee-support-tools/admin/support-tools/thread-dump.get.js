@@ -24,5 +24,5 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-model.tools=Admin.getConsoleTools("threaddump"); 
+model.tools=Admin.getConsoleTools("thread-dump"); 
 model.metadata = Admin.getServerMetaData(); 

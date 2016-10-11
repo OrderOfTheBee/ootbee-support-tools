@@ -24,47 +24,23 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
   
 <#include "../admin-template.ftl" />
 
-<#assign pageName>hotthreads</#assign>
-<#include "threads-common.inc.ftl">
+<@page title=msg("hotthreads.title") readonly=true customCSSFiles=["ootbee-support-tools/css/threads.css"] customJSFiles=["ootbee-support-tools/js/threads.js"]>
 
-<@page title=msg("hotthreads.title") readonly=true>
+    <script type="text/javascript">//<![CDATA[
+        AdminTD.setServiceContext('${url.serviceContext}');
+        AdminTD.setToolName('hot-threads');
+    //]]></script>
 
-${htmlStyle}
-   
-${htmlPortion}
+    <div class="column-full">
+        <p class="intro">${msg("hotthreads.intro-text")?html}</p>
 
-   <script type="text/javascript">//<![CDATA[
-      
-/**
- * Admin Support Tools Component
- */
-Admin.addEventListener(window, 'load', function() {
-   AdminTD.getDump();
-});
+        <@button label=msg("hotthreads.get-another") onclick="AdminTD.getDump();"/>
+        <@button id="savecurrent" class="save" label=msg("hotthreads.savecurrent") onclick="AdminTD.saveTextAsFile('current');"/>
+        <@button class="save" label=msg("hotthreads.saveall") onclick="AdminTD.saveTextAsFile('all');"/>
 
-/**
- * Hot ThreadsComponent
- */
-var AdminTD = AdminTD || {};
-
-(function() {
-
-${AdminTD_saveTextAsFile}
-
-${AdminTD_showTab}
-	
-${AdminTD_getDump}
-	
-${AdminTD_hasClass}
-
-${AdminTD_addClass}
-
-${AdminTD_removeClass}
-
-${AdminTD_replaceAll}
-	
-})();
-
-//]]></script>
+        <@section label="" />
+        <div id="control" class="buttons"></div>
+        <div id="viewer"></div>
+    </div>
 
 </@page>

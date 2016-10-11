@@ -22,7 +22,7 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* globals document,window,Admin */
+/* global Admin: false */
 
 // The AdminTT root object has been extracted from the Alfresco Support Tools
 // admin-testtransform.get.html.ftl trim down page HTML sizes and promote clean

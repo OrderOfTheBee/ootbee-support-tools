@@ -24,47 +24,23 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<#assign pageName>threaddump</#assign>
-<#include "threads-common.inc.ftl">
+<@page title=msg("threaddump.title") readonly=true customCSSFiles=["ootbee-support-tools/css/threads.css"] customJSFiles=["ootbee-support-tools/js/threads.js"]>
 
-<@page title=msg("threaddump.title") readonly=true>
+    <script type="text/javascript">//<![CDATA[
+        AdminTD.setServiceContext('${url.serviceContext}');
+        AdminTD.setToolName('thread-dump');
+    //]]></script>
 
-${htmlStyle}
-   
-${htmlPortion}
+    <div class="column-full">
+        <p class="intro">${msg("threaddump.intro-text")?html}</p>
 
-   <script type="text/javascript">//<![CDATA[
-      
-/**
- * Admin Support Tools Component
- */
-Admin.addEventListener(window, 'load', function() {
-   AdminTD.getDump();
-});
+        <@button label=msg("threaddump.get-another") onclick="AdminTD.getDump();"/>
+        <@button id="savecurrent" class="save" label=msg("threaddump.savecurrent") onclick="AdminTD.saveTextAsFile('current');"/>
+        <@button class="save" label=msg("threaddump.saveall") onclick="AdminTD.saveTextAsFile('all');"/>
 
-/**
- * Thread Dump Component
- */
-var AdminTD = AdminTD || {};
-
-(function() {
-   
-${AdminTD_saveTextAsFile}
-
-${AdminTD_showTab}
-	
-${AdminTD_getDump}
-	
-${AdminTD_hasClass}
-
-${AdminTD_addClass}
-
-${AdminTD_removeClass}
-
-${AdminTD_replaceAll}
-	
-})();
-
-//]]></script>
+        <@section label="" />
+        <div id="control" class="buttons"></div>
+        <div id="viewer"></div>
+    </div>
 
 </@page>

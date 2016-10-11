@@ -22,7 +22,7 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* globals document,window,top,alert,XMLHttpRequest */
+/* global alert: false */
 
 // The Admin root object has been extracted from the Alfresco admin-template.ftl
 // to trim down page HTML sizes and promote clean separation of concerns

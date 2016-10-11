@@ -2,10 +2,10 @@
 <webscript>
     <shortname>Hot Threads</shortname>
     <description>Generate hot threads dumps</description>
-    <url>/ootbee/admin/hotthreads</url>
+    <url>/ootbee/admin/hot-threads</url>
     <family>AdminConsole</family>
     <format default="html">argument</format>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <transaction allow="readwrite">required</transaction>
+    <transaction allow="readonly">required</transaction>
 </webscript>

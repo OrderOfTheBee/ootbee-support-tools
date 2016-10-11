@@ -2,8 +2,8 @@
 <webscript>
     <shortname>Hot Threads - GetOne</shortname>
     <description>Generate a single hot threads dump</description>
-    <url>/ootbee/admin/hotthreads-getone</url>
+    <url>/ootbee/admin/hot-threads-getone</url>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <transaction allow="readwrite">required</transaction>
+    <transaction allow="readonly">required</transaction>
 </webscript>
