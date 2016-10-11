@@ -165,112 +165,36 @@
                     <escapeString>\</escapeString>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>de.acosix.maven</groupId>
+                <artifactId>jshint-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <!-- just introduced - of course there'll be lint errors we have to clean up, but don't fail the entire build -->
+                    <failOnError>false</failOnError>
+
+                    <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
+                    <includes>
+                        <include>amp/**/*.js</include>
+                    </includes>
+                    <excludes>
+                        <exclude>amp/config/alfresco/templates/webscripts/**/*.get.js</exclude>
+                        <exclude>amp/config/alfresco/templates/webscripts/**/*.post.js</exclude>
+                    </excludes>
+                    <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jshint</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <!-- TODO Handle "standard" JAR, sources + JavaDoc creation which SDK sucks at -->
     </build>
-
-    <profiles>
-        <profile>
-            <id>LegacyJSHint</id>
-            <activation>
-                <property>
-                    <name>!AcosixJSHint</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.cj.jshintmojo</groupId>
-                        <artifactId>jshint-maven-plugin</artifactId>
-                        <version>1.6.0</version>
-                        <configuration>
-                            <configFile>jshint.config.js</configFile>
-                            <!-- just introduced - of course there'll be lint errors we have to clean up, but don't fail the entire build -->
-                            <failOnError>false</failOnError>
-                            <directories>
-                                <directory>src/main/amp/config/alfresco/templates/webscripts</directory>
-                                <directory>src/main/amp/web</directory>
-                            </directories>
-                            <excludes>
-                                <!-- need to list full paths here - jshint-maven-plugin currently can't handle wildcards -->
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions-update-users.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions-update-users.post.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/applied-patches.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/hotthreads-getone.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/hotthreads.gett.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/log4j-settings.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/log4j-settings.post.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/performance.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/scheduled-jobs-execute.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/scheduled-jobs.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/test-transform-details.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/test-transform.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/threaddump-getone.get.js</exclude>
-                                <exclude>src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/threaddump.get.js</exclude>
-                            </excludes>
-                            <reporter>jslint</reporter>
-                            <reportFile>target/jshint.xml</reportFile>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>Legacy - JSHint the JS files</id>
-                                <goals>
-                                    <goal>lint</goal>
-                                </goals>
-                                <phase>process-resources</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- The following is experimental - the plugin is currently not available via Maven Central or any other repository but can be built 
-            from https://github.com/Acosix/jshint-maven-plugin -->
-        <!-- Main benefits of this new plugin (the plugin used above has not seen an update in over a year) is use of newer JSHint version and 
-            better configurability (support of .jshintrc and .jshintignore) -->
-        <profile>
-            <id>AcosixJSHint</id>
-            <activation>
-                <property>
-                    <name>AcosixJSHint</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>de.acosix.maven</groupId>
-                        <artifactId>jshint-maven-plugin</artifactId>
-                        <version>0.0.1-SNAPSHOT</version>
-                        <configuration>
-                            <!-- just introduced - of course there'll be lint errors we have to clean up, but don't fail the entire build -->
-                            <failOnError>false</failOnError>
-
-                            <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
-                            <includes>
-                                <include>amp/**/*.js</include>
-                            </includes>
-                            <excludes>
-                                <exclude>amp/config/alfresco/templates/webscripts/**/*.get.js</exclude>
-                                <exclude>amp/config/alfresco/templates/webscripts/**/*.post.js</exclude>
-                            </excludes>
-                            <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
-                            <jshintVersion>2.9.3</jshintVersion>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jshint</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

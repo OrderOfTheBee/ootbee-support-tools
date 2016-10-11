@@ -13,7 +13,6 @@
     "laxbreak" : true,
     "esversion" : 5,
     "browser" : true,
-    "predef": [],
     "globals" : {
     }
 }
