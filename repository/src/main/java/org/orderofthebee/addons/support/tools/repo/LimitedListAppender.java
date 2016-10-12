@@ -105,26 +105,29 @@ public class LimitedListAppender extends AppenderSkeleton
     @Override
     protected void append(final LoggingEvent event)
     {
-        boolean deregister;
 
-        synchronized (this.storedEvents)
+        final boolean active = System.currentTimeMillis() - this.lastRetrievalTimestamp > AUTO_DEREGISTRATION_TIMEOUT;
+        if (active)
         {
-            this.storedEvents.add(event);
-
-            while (this.storedEvents.size() > this.eventCountLimit)
+            synchronized (this.storedEvents)
             {
-                this.storedEvents.remove(0);
-            }
+                this.storedEvents.add(event);
 
-            deregister = System.currentTimeMillis() - this.lastRetrievalTimestamp > AUTO_DEREGISTRATION_TIMEOUT;
-        }
-
-        if (deregister)
-        {
-            for (final Logger logger : this.appendedToLoggers)
-            {
-                logger.removeAppender(this);
+                while (this.storedEvents.size() > this.eventCountLimit)
+                {
+                    this.storedEvents.remove(0);
+                }
             }
         }
+        // make sure we clear the data to avoid retaining memory
+        else if (!this.storedEvents.isEmpty())
+        {
+            synchronized (this.storedEvents)
+            {
+                this.storedEvents.clear();
+            }
+        }
+
+        // TODO Need a asynchronous removal (Log4J implementation can't handle concurrent remove)
     }
 }
