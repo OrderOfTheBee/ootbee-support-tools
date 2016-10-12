@@ -30,7 +30,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <p class="intro">${msg("scheduled-jobs.intro-text")?html}</p>      
   
         <div class="control">
-            <table class="data scheduledjobs" width="100%">
+            <table class="data results scheduledjobs" width="100%">
                 <thead>
                     <tr>
                         <th>${msg("scheduled-jobs.table-header.job-name")?html}</th>

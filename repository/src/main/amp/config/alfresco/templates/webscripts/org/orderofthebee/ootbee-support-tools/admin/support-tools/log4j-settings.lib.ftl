@@ -55,7 +55,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         </#if>
         </div>
       
-        <table>
+        <table class="results log4jsettings">
             <tr><th><b>Logger Name</b></th><th><b>Parent Logger Name</b></th><th><b>Setting</b></th><th><b>Effective Value</b></th></tr>
             <#list loggerStates as loggerState>
                 <tr>
