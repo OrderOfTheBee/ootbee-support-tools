@@ -215,11 +215,11 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
         <@options id="getTransformationsByTransformer-context" name="getTransformationsByTransformer-context" label=msg("test-transform.select.context") description=msg("test-transform.select.context.description") value="">
             <@option label=msg("test-transform.select.context.option") value="" />
+            <@option label="asyncRule" value="asyncRule" />
             <@option label="doclib" value="doclib" />
             <@option label="index" value="index" />
-            <@option label="webpreview" value="webpreview" />
             <@option label="syncRule" value="syncRule" />
-            <@option label="asyncRule" value="asyncRule" />
+            <@option label="webpreview" value="webpreview" />
         </@options>
     </div>
     <div class="column-right">
