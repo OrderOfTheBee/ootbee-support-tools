@@ -1,5 +1,13 @@
-div.main-wrapper > div.main {
+div.main-wrapper > div.main
+{
 	width: 100%;
+}
+
+/* for whatever reason default admin.css does not include left / right padding */
+table.results td
+{
+	padding-left: 4px;
+    padding-right: 4px;
 }
 
 table.patchesapplied tr:nth-child(even),
