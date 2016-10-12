@@ -1,0 +1,74 @@
+.dialog-body .main {
+	float : none;
+}
+
+table {
+	border-collapse: collapse;
+	text-align: left;
+	width: 100%;
+}
+
+.datagrid {
+	margin-top: 2ex;
+	font: normal 12px/150% Arial, Helvetica, sans-serif;
+	background: #fff;
+	overflow: hidden;
+	border: 1px solid #006699;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.datagrid table td, .datagrid table th {
+	padding: 1px 10px;
+}
+
+.datagrid table tbody td {
+	color: #00496B;
+	border-left: 1px solid #E1EEF4;
+	font-size: 10px;
+	border-bottom: 1px solid #E1EEF4;
+	font-weight: normal;
+}
+
+.datagrid table tbody .alt td {
+	background: #E1EEF4;
+	color: #00496B;
+}
+
+.datagrid table tbody td:first-child {
+	border-left: none;
+}
+
+.datagrid table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.textonlybox > .log {
+    font-family: Lucida Console;
+    font-size: 9px;
+}
+
+.logMessage-OFF {
+    background-color: Grey;
+}
+
+.logMessage-TRACE {
+    background-color: LightGrey;
+}
+
+.logMessage-DEBUG {
+    background-color: LightGreen;
+}
+
+.logMessage-WARN {
+    background-color: LightYellow;
+}
+
+.logMessage-ERROR {
+    background-color: LightPink;
+}
+
+.logMessage-FATAL {
+    background-color: LightCoral;
+}

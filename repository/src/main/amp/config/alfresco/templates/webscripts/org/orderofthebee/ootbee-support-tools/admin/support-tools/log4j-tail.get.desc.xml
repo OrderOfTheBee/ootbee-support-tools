@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings - Tail</shortname>
+    <description>Display Log4J tail view</description>
+    <url>/ootbee/admin/log4j-tail</url>
+    <format default="html" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>

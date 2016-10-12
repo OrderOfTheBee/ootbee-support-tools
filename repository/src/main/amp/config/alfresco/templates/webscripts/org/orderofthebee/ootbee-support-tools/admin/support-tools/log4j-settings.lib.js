@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016 Axel Faust / Markus Joos Copyright (C) 2016 Order of the
+ * Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -90,21 +90,60 @@ function changeLoggerState(loggerName, level)
 function processLoggerStateChangeFromFormData()
 {
     var fields, field, i, loggerName, level, showUnconfiguredLoggers;
-    
+
     fields = formdata.fields;
     for (i = 0; i < fields.length; i++)
     {
         field = fields[i];
-        switch(String(field.name))
+        switch (String(field.name))
         {
-            case 'logger': loggerName = String(field.value); break;
-            case 'level': level = String(field.value); break;
-            case 'showUnconfiguredLoggers': showUnconfiguredLoggers = String(field.value); break;
-            default: logger.debug('Unknown field: ' + field.name);
+            case 'logger':
+                loggerName = String(field.value);
+                break;
+            case 'level':
+                level = String(field.value);
+                break;
+            case 'showUnconfiguredLoggers':
+                showUnconfiguredLoggers = String(field.value);
+                break;
+            default:
+                logger.debug('Unknown field: ' + field.name);
         }
     }
-    
+
     changeLoggerState(loggerName, level);
-    
+
     return showUnconfiguredLoggers;
+}
+
+/* exported registerTailingAppender */
+function registerTailingAppender()
+{
+    var uuid, appender, rootLogger;
+
+    uuid = String(Packages.java.util.UUID.randomUUID());
+    appender = new Packages.org.orderofthebee.addons.support.tools.repo.LimitedListAppender(uuid, 10000);
+    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
+    appender.registerAsAppender(rootLogger);
+
+    model.uuid = uuid;
+}
+
+/* exported retrieveTailingEvents */
+function retrieveTailingEvents()
+{
+    var uuid, rootLogger, appender;
+
+    uuid = String(args.uuid || '');
+
+    if (uuid !== '')
+    {
+        rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
+        appender = rootLogger.getAppender(uuid);
+
+        if (appender !== null)
+        {
+            model.events = appender.retrieveLogEvents();
+        }
+    }
 }

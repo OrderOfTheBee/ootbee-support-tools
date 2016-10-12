@@ -51,12 +51,6 @@
                     <artifactId>spring-orm</artifactId>
                 </exclusion>
 
-                <!-- who'd still want log4j? -->
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-
                 <!-- There is so much more that we could exclude (especially most of the Commons stuff) -->
                 <!-- the exclusions above are convenient enough to handle -->
             </exclusions>
@@ -139,12 +133,6 @@
                     <artifactId>icu4j</artifactId>
                 </exclusion>
 
-                <!-- who'd still want log4j? -->
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -154,7 +142,6 @@
                 <!-- the exclusions above are convenient enough to handle -->
             </exclusions>
         </dependency>
-
     </dependencies>
 
     <build>
