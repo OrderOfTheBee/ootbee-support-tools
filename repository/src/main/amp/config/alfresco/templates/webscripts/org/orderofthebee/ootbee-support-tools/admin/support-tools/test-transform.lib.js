@@ -24,21 +24,23 @@
 
 function buildTransformerNames()
 {
-    var ctxt, transformerDebug, transformerNames, i, transformerName, ArrayList; 
+    var ctxt, transformerDebug, transformers, transformerNames, i, transformerName, ArrayList; 
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
     
     ArrayList = Packages.java.util.ArrayList;
-    transformerNames = new ArrayList(transformerDebug.sortTransformersByName(null));
-    for (i = 0; i < transformerNames.length; i++)
+    transformers = new ArrayList(transformerDebug.sortTransformersByName(null));
+    transformerNames = [];
+    
+    for (i = 0; i < transformers.size(); i++)
     {
-        transformerName = String(transformerNames.get(i));
+        transformerName = String(transformers.get(i).name);
         if (/^transformer\..+/.test(transformerName))
         {
             transformerName = transformerName.substring(12);
-            transformerNames.set(i, transformerName);
         }
+        transformerNames.push(transformerName);
     }
     
     model.transformerNames = transformerNames;
