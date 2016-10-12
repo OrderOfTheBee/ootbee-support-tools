@@ -131,13 +131,16 @@ function removeProperties()
     model.header = msg.get('test-transform.details.removeProperties.heading', [input]);
 }
 
-/* exported getLogEntries */
 function getLogEntries(logName)
 {
-    var ctxt, transformerDebugLog, logEntries, i, log = '';
+    var ctxt, TransformersSubsystemContextFactory, transformerDebugLog, logEntries, i, log = '';
     
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
-    transformerDebugLog = ctxt.getBean(logName, Packages.org.alfresco.repo.content.transform.TransformerLogger);
+    
+    // unfortunately the regular subsystem proxy is exposed with a too narrow interface
+    // need to lookup the actual bean directly
+    TransformersSubsystemContextFactory = ctxt.getBean('Transformers', Packages.org.alfresco.repo.management.subsystems.ApplicationContextFactory);
+    transformerDebugLog = TransformersSubsystemContextFactory.applicationContext.getBean(logName, Packages.org.alfresco.repo.content.transform.LogEntries);
     
     logEntries = transformerDebugLog.getEntries(100);
     for (i = 0; i < logEntries.length; i++)
