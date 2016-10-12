@@ -30,7 +30,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <p class="intro">${msg("appliedPatches.intro")?html}</p>      
   
         <div class="control">
-            <table class="data patchesapplied" width="100%">
+            <table class="data results patchesapplied" width="100%">
                 <thead>
                     <tr>
                         <th>${msg("appliedPatches.id")?html}</th>

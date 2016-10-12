@@ -1,3 +1,10 @@
 div.main-wrapper > div.main {
 	width: 100%;
 }
+
+table.patchesapplied tr:nth-child(even),
+table.scheduledjobs tr:nth-child(even),
+table.log4jsettings tr:nth-child(even)
+{
+   background-color: #f8f8f8;
+}
