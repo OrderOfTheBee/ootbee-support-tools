@@ -112,15 +112,15 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
       <@options id="getTransformationStatistics-from" name="getTransformationStatistics-from" label=msg("test-transform.select.from") description=msg("test-transform.select.from.description") value="">
          <@option label=msg("test-transform.select.from.option") value="" />
-         <#list extensionsByMimetype?values as extension>
-            <@option label="${extension?html}" value="${extension?html}" />
+         <#list extensionsAndMimetypes as extensionAndMimetype>
+            <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
          </#list>
       </@options>
 
       <@options id="getTransformationStatistics-to" name="getTransformationStatistics-to" label=msg("test-transform.select.to") description=msg("test-transform.select.to.description") value="">
          <@option label=msg("test-transform.select.to.option") value="" />
-         <#list extensionsByMimetype?values as extension>
-            <@option label="${extension?html}" value="${extension?html}" />
+         <#list extensionsAndMimetypes as extensionAndMimetype>
+            <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
          </#list>
       </@options>
     </div>
@@ -142,15 +142,15 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
         <@options id="testTransform-from" name="testTransform-from" label=msg("test-transform.select.from") description=msg("test-transform.select.from.description") value="">
             <@option label=msg("test-transform.select.from.option") value="" />
-            <#list extensionsByMimetype?values as extension>
-                <@option label="${extension?html}" value="${extension?html}" />
+            <#list extensionsAndMimetypes as extensionAndMimetype>
+                <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
             </#list>
         </@options>
 
         <@options id="testTransform-to" name="testTransform-to" label=msg("test-transform.select.to") description=msg("test-transform.select.to.description") value="">
             <@option label=msg("test-transform.select.to.option") value="" />
-            <#list extensionsByMimetype?values as extension>
-                <@option label="${extension?html}" value="${extension?html}" />
+            <#list extensionsAndMimetypes as extensionAndMimetype>
+                <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
             </#list>
         </@options>
 
@@ -174,17 +174,17 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <div class="column-left">
         <@options id="getTransformationsByExtension-from" name="getTransformationsByExtension-from" label=msg("test-transform.select.from") description=msg("test-transform.select.from.description") value="">
             <@option label=msg("test-transform.select.from.option") value="" />
-            <#list extensionsByMimetype?values as extension>
+            <#list extensionsAndMimetypes as extensionAndMimetype>
                 <#-- TODO Use proper display labels for extensions -->
-                <@option label="${extension?html}" value="${extension?html}" />
+                <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
             </#list>
         </@options>
 
         <@options id="getTransformationsByExtension-to" name="getTransformationsByExtension-to" label=msg("test-transform.select.to") description=msg("test-transform.select.to.description") value="">
             <@option label=msg("test-transform.select.to.option") value="" />
-            <#list extensionsByMimetype?values as extension>
+            <#list extensionsAndMimetypes as extensionAndMimetype>
                 <#-- TODO Use proper display labels for extensions -->
-                <@option label="${extension?html}" value="${extension?html}" />
+                <@option label="${extensionAndMimetype.extension?html}" value="${extensionAndMimetype.extension?html}" />
             </#list>
         </@options>
 

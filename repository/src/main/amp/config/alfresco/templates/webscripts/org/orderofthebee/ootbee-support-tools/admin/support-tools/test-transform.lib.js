@@ -50,19 +50,27 @@ function buildTransformerNames()
 function buildExtensionsAndMimetypes()
 {
     var ctxt, mimetypeService, extensionsByMimetypes, mimetypes, mimetype, i;
-    
+
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     mimetypeService = ctxt.getBean('MimetypeService', Packages.org.alfresco.service.cmr.repository.MimetypeService);
-    
-    extensionsByMimetypes = {};
+
+    extensionsAndMimetypes = [];
     mimetypes = mimetypeService.getMimetypes(null);
     for (i = 0; i < mimetypes.size(); i++)
     {
         mimetype = mimetypes.get(i);
-        extensionsByMimetypes[mimetype] = mimetypeService.getExtension(mimetype);
+        extensionsAndMimetypes.push({
+            mimetype : String(mimetype),
+            extension : String(mimetypeService.getExtension(mimetype))
+        });
     }
-    
-    model.extensionsByMimetype = extensionsByMimetypes;
+    extensionsAndMimetypes.sort(function(a, b)
+    {
+        var result = a.extension.localeCompare(b.extension);
+        return result;
+    });
+
+    model.extensionsAndMimetypes = extensionsAndMimetypes;
 }
 
 /* exported getProperties */
