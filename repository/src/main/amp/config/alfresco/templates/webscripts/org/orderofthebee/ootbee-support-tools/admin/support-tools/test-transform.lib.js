@@ -74,7 +74,7 @@ function getProperties()
     changesOnly = args.arg0 === 'true';
     
     model.message = transformerConfig.getProperties(changesOnly);
-    model.header = msg.get('test-transform.details.getProperties.heading', [msg.get(changesOnly ? 'boolean.yes' : 'boolean.no')]);
+    model.header = msg.get('test-transform.detail.getProperties.heading', [msg.get(changesOnly ? 'boolean.yes' : 'boolean.no')]);
 }
 
 /* exported setProperties */
@@ -128,7 +128,7 @@ function removeProperties()
     {
         model.messageKey = 'removeProperties.message';
     }
-    model.header = msg.get('test-transform.details.removeProperties.heading', [input]);
+    model.header = msg.get('test-transform.detail.removeProperties.heading', [input]);
 }
 
 function getLogEntries(logName)
