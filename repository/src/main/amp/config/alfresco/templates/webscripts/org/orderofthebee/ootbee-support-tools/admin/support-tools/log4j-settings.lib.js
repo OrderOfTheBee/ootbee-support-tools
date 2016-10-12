@@ -83,7 +83,15 @@ function buildLoggerStates(showUnconfiguredLoggers)
 function changeLoggerState(loggerName, level)
 {
     var logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
-    logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
+    
+    if (String(level) === 'UNSET')
+    {
+        logger.setLevel(null);
+    }
+    else
+    {
+        logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
+    }
 }
 
 /* exported processLoggerStateChangeFromFormData */

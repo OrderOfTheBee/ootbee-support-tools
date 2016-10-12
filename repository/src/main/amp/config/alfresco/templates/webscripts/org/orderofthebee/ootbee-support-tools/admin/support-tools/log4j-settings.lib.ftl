@@ -38,7 +38,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <input name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
                 <select name="level">
-                    <option class="setting-OFF"   value="OFF">UNSET</option>
+                    <option                       value="UNSET">UNSET</option>
+                    <option class="setting-OFF"   value="OFF">OFF</option>
                     <option class="setting-TRACE" value="TRACE">TRACE</option>
                     <option class="setting-DEBUG" value="DEBUG">DEBUG</option>
                     <option                       value="INFO">INFO</option>
