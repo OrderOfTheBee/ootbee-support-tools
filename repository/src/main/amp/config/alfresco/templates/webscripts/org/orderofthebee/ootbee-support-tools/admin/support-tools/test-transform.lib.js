@@ -49,7 +49,7 @@ function buildTransformerNames()
 /* exported buildExtensionsAndMimetypes */
 function buildExtensionsAndMimetypes()
 {
-    var ctxt, mimetypeService, extensionsByMimetypes, mimetypes, mimetype, i;
+    var ctxt, mimetypeService, extensionsAndMimetypes, mimetypes, mimetype, i;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     mimetypeService = ctxt.getBean('MimetypeService', Packages.org.alfresco.service.cmr.repository.MimetypeService);
