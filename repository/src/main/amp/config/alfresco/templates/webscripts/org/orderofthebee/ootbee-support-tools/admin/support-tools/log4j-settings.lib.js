@@ -82,7 +82,16 @@ function buildLoggerStates(showUnconfiguredLoggers)
 
 function changeLoggerState(loggerName, level)
 {
-    var logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+    var logger;
+    
+    if (loggerName === 'root')
+    {
+        logger = Packages.org.apache.log4j.Logger.getRootLogger();
+    }
+    else
+    {
+        logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+    }
     
     if (String(level) === 'UNSET')
     {
