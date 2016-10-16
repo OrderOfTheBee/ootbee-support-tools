@@ -205,7 +205,8 @@ function getTransformerNames()
     buildTransformerNames();
     
     transformerNames = '';
-    for (i = 0; i < model.transfomerNames.length; i++)
+    
+    for (i = 0; i < model.transformerNames.length; i++)
     {
         if (transformerNames.length > 0)
         {
@@ -354,13 +355,14 @@ function getTransformationStatistics()
             getTransformationStatisticsHighLevel(sourceExtension, targetExtension, sb, null, sourceMimetypes, targetMimetypes, false,
                     transformerConfig);
         }
-    
+    		
+    		
         for (i = 0; i < transformers.length; i++)
         {
             getTransformationStatisticsHighLevel(sourceExtension, targetExtension, sb, transformers[i], sourceMimetypes, targetMimetypes,
                     includeSystemWideSummary, transformerConfig);
         }
-    
+
         if (sb.length() === 0)
         {
             model.messageKey = 'getTransformationStatistics.noEntries';
