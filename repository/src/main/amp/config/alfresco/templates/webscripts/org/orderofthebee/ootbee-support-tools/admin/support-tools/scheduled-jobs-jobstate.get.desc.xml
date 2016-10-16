@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Job state</shortname>
+    <description>delivers the current state of all jobs in alfresco repository</description>
+    <url>/ootbee/admin/scheduled-jobs-states</url>
+    <format default="json">argument</format>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>
