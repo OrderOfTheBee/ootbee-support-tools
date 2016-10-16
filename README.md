@@ -39,6 +39,19 @@ In an all-in-one project you also need to add the AMP as an <overlay> to the mav
 </plugin>
 ``` 
 
+For Alfresco SDK 3 beta users:
+
+```xml
+<platformModules>
+    <moduleDependency>
+        <groupId>org.orderofthebee.addons</groupId>
+        <artifactId>ootbee-support-tools-repo</artifactId>
+        <version>0.0.1.0-SNAPSHOT</version>
+        <type>amp</type>
+    </moduleDependency>
+</platformModules>
+```
+
 Currently this addon is not yet published to an artifact repository, so before you can use it you need to clone and build it locally using:
 
 ```
