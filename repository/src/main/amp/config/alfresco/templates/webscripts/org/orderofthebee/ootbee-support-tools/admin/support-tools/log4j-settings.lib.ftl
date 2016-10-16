@@ -60,15 +60,15 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             <tr><th><b>Logger Name</b></th><th><b>Parent Logger Name</b></th><th><b>Setting</b></th><th><b>Effective Value</b></th></tr>
             <#list loggerStates as loggerState>
                 <tr>
-                    <td>${loggerState.name?html}</td>
-                    <td>${(loggerState.parent!"")?html}</td>
+                    <td><#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if></td>
+                    <td><#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${(loggerState.parent!"")?html}</#if></td>
                     <td>
                         <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                            <input type="hidden" name="logger" value="${loggerState.name?html}" />
+                            <input type="hidden" name="logger" value="<#if loggerState.isRoot>-root-<#else>${loggerState.name?html}</#if>" />
                             <input type="hidden" name="showUnconfiguredLoggers" value="${showUnconfiguredLoggers?string}" />
                             <select name="level" onchange="this.form.submit();">
-                                <#if loggerState.level?? == false><option value="" selected>N/A</option></#if>
-                                <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>UNSET</option>
+                                <option value="" <#if loggerState.level?? == false>selected</#if>>UNSET</option>
+                                <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>OFF</option>
                                 <option class="setting-TRACE" value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>TRACE</option>
                                 <option class="setting-DEBUG" value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>DEBUG</option>
                                 <option                       value="INFO" <#if loggerState.level?? && loggerState.level == "INFO">selected</#if>>INFO</option>

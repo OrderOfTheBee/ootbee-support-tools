@@ -26,11 +26,15 @@
 
 function buildLoggerState(logger)
 {
-    var loggerState, allAppenders, appender;
+    var RootLogger, loggerState, allAppenders, appender;
 
+    RootLogger = Packages.org.apache.log4j.spi.RootLogger;
+    
     loggerState = {
         name : logger.name,
+        isRoot : logger instanceof RootLogger,
         parent : logger.parent !== null ? logger.parent.name : null,
+        parentIsRoot : logger.parent instanceof RootLogger,
         level : logger.level !== null ? String(logger.level) : null,
         effectiveLevel : String(logger.effectiveLevel),
         additivity : logger.additivity,
@@ -53,7 +57,7 @@ function buildLoggerState(logger)
 /* exported buildLoggerStates */
 function buildLoggerStates(showUnconfiguredLoggers)
 {
-    var loggerRepository, loggerStates, currentLoggers, logger;
+    var loggerRepository, loggerStates, loggerState, currentLoggers, logger;
 
     loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
 
@@ -66,7 +70,8 @@ function buildLoggerStates(showUnconfiguredLoggers)
 
         if (logger.level !== null || showUnconfiguredLoggers)
         {
-            loggerStates.push(buildLoggerState(logger));
+            loggerState = buildLoggerState(logger);
+            loggerStates.push(loggerState);
         }
     }
 
@@ -75,7 +80,8 @@ function buildLoggerStates(showUnconfiguredLoggers)
         return a.name.localeCompare(b.name);
     });
 
-    loggerStates.splice(0, 0, buildLoggerState(loggerRepository.rootLogger));
+    loggerState = buildLoggerState(loggerRepository.rootLogger);
+    loggerStates.splice(0, 0, loggerState);
 
     model.loggerStates = loggerStates;
 }
@@ -84,7 +90,7 @@ function changeLoggerState(loggerName, level)
 {
     var logger;
     
-    if (loggerName === 'root')
+    if (loggerName === '-root-')
     {
         logger = Packages.org.apache.log4j.Logger.getRootLogger();
     }
@@ -93,7 +99,7 @@ function changeLoggerState(loggerName, level)
         logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
     }
     
-    if (String(level) === 'UNSET')
+    if (String(level) === '')
     {
         logger.setLevel(null);
     }
