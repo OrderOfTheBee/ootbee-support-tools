@@ -2,4 +2,20 @@
 .project
 .classpath
 target/
+<<<<<<< HEAD
 bin/
+=======
+bin/.idea/checkstyle-idea.xml
+.idea/compiler.xml
+.idea/copyright
+.idea/encodings.xml
+.idea/libraries
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+ootbee-support-tools-parent.iml
+repository/ootbee-support-tools-repo.iml
+.idea/
+alf_data_dev
+>>>>>>> c7ccef6... feat(jobs): display running state of scheduled job

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
  * Copyright (C) 2016 Order of the Bee
  *
  * This file is part of Community Support Tools
@@ -25,7 +25,7 @@
 /* exported buildScheduledJobsData */
 function buildScheduledJobsData()
 {
-    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail;
+    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
@@ -33,6 +33,14 @@ function buildScheduledJobsData()
     jobsList = scheduler.jobGroupNames;
     scheduledJobsData = [];
     scheduledJobsName = [];
+    runningJobs = [];
+
+    var executingJobs = scheduler.getCurrentlyExecutingJobs();
+    for(count=0;count<executingJobs.size();count++){
+        var execContext = executingJobs.get(count);
+        runningJobs.push(execContext.getJobDetail().getName()+"-"+execContext.getJobDetail().getGroup());
+    }
+
 
     for (i = 0; i < jobsList.length; i++)
     {
@@ -50,12 +58,40 @@ function buildScheduledJobsData()
                 previousFireTime : jobTriggerDetail[0].previousFireTime,
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
                 timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
-                jobGroup : jobsList[i]
+                jobGroup : jobsList[i],
+                running: (runningJobs.indexOf(jobName[j]+"-"+jobsList[i]) !== -1)
             });
         }
     }
 
     model.scheduledjobs = scheduledJobsData;
+}
+
+/**
+* uses the quartz scheduler to determine the current running jobs which are made available in the model via runningJobs
+*
+**/
+
+/* exported buildRunningJobsData*/
+function buildRunningJobsData(){
+
+    var ctxt, scheduler, runningJobsData, count;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
+    runningJobsData =[];
+
+    var executingJobs = scheduler.getCurrentlyExecutingJobs();
+    for(count=0;count<executingJobs.size();count++){
+        var execContext = executingJobs.get(count);
+        runningJobsData.push({
+            jobName: execContext.getJobDetail().getName(),
+            groupName: execContext.getJobDetail().getGroup()
+        });
+    }
+
+    model.runningJobs = runningJobsData;
+
 }
 
 /* exported executeJobNow */
