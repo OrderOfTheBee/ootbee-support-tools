@@ -26,8 +26,6 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 <#-- close the dummy form -->
 </form>
 
-<#-- TODO Full I18N -->
-<#-- TODO Need to offload CSS inline styles into proper classes for layout performance (admin-template.ftl does not provide access to <head>) -->
 <div class="column-full">
     <p class="intro">${msg("log-settings.intro-text")?html}</p>
     <@section label=msg("log-settings.logging") />
@@ -38,14 +36,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <input name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
                 <select name="level">
-                    <option                       value="UNSET">UNSET</option>
-                    <option class="setting-OFF"   value="OFF">OFF</option>
-                    <option class="setting-TRACE" value="TRACE">TRACE</option>
-                    <option class="setting-DEBUG" value="DEBUG">DEBUG</option>
-                    <option                       value="INFO">INFO</option>
-                    <option class="setting-WARN"  value="WARN">WARN</option>
-                    <option class="setting-ERROR" value="ERROR">ERROR</option>
-                    <option class="setting-FATAL" value="FATAL">FATAL</option>
+                    <option                       value="UNSET">${msg("log-settings.level.UNSET")?html}</option>
+                    <option class="setting-OFF"   value="OFF">${msg("log-settings.level.OFF")?html}</option>
+                    <option class="setting-TRACE" value="TRACE">${msg("log-settings.level.TRACE")?html}</option>
+                    <option class="setting-DEBUG" value="DEBUG">${msg("log-settings.level.DEBUG")?html}</option>
+                    <option                       value="INFO">${msg("log-settings.level.INFO")?html}</option>
+                    <option class="setting-WARN"  value="WARN">${msg("log-settings.level.WARN")?html}</option>
+                    <option class="setting-ERROR" value="ERROR">${msg("log-settings.level.ERROR")?html}</option>
+                    <option class="setting-FATAL" value="FATAL">${msg("log-settings.level.FATAL")?html}</option>
                 </select>
                 <input type="submit" value="Add" style="margin-right:1em;" />
             </form>
@@ -57,28 +55,35 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         </div>
       
         <table class="results log4jsettings">
-            <tr><th><b>Logger Name</b></th><th><b>Parent Logger Name</b></th><th><b>Setting</b></th><th><b>Effective Value</b></th></tr>
+            <tr>
+                <th><b>${msg("log-settings.column.loggerName")}</b></th>
+                <th><b>${msg("log-settings.column.parentLoggerName")}</b></th>
+                <th><b>${msg("log-settings.column.additivity")}</b></th>
+                <th><b>${msg("log-settings.column.setting")}</b></th>
+                <th><b>${msg("log-settings.column.effectiveValue")}</b></th>
+            </tr>
             <#list loggerStates as loggerState>
                 <tr>
                     <td><#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if></td>
                     <td><#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${(loggerState.parent!"")?html}</#if></td>
+                    <td>${loggerState.additivity?string(msg("log-settings.column.additivity.true"), msg("log-settings.column.additivity.false"))?html}</td>
                     <td>
                         <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                             <input type="hidden" name="logger" value="<#if loggerState.isRoot>-root-<#else>${loggerState.name?html}</#if>" />
                             <input type="hidden" name="showUnconfiguredLoggers" value="${showUnconfiguredLoggers?string}" />
                             <select name="level" onchange="this.form.submit();">
-                                <option value="" <#if loggerState.level?? == false>selected</#if>>UNSET</option>
-                                <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>OFF</option>
-                                <option class="setting-TRACE" value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>TRACE</option>
-                                <option class="setting-DEBUG" value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>DEBUG</option>
-                                <option                       value="INFO" <#if loggerState.level?? && loggerState.level == "INFO">selected</#if>>INFO</option>
-                                <option class="setting-WARN"  value="WARN" <#if loggerState.level?? && loggerState.level == "WARN">selected</#if>>WARN</option>
-                                <option class="setting-ERROR" value="ERROR" <#if loggerState.level?? && loggerState.level == "ERROR">selected</#if>>ERROR</option>
-                                <option class="setting-FATAL" value="FATAL" <#if loggerState.level?? && loggerState.level == "FATAL">selected</#if>>FATAL</option>
+                                <option value="" <#if loggerState.level?? == false>selected</#if>>${msg("log-settings.level.UNSET")?html}</option>
+                                <option class="setting-OFF"   value="OFF" <#if loggerState.level?? && loggerState.level == "OFF">selected</#if>>${msg("log-settings.level.OFF")?html}</option>
+                                <option class="setting-TRACE" value="TRACE" <#if loggerState.level?? && loggerState.level == "TRACE">selected</#if>>${msg("log-settings.level.TRACE")?html}</option>
+                                <option class="setting-DEBUG" value="DEBUG" <#if loggerState.level?? && loggerState.level == "DEBUG">selected</#if>>${msg("log-settings.level.DEBUG")?html}</option>
+                                <option                       value="INFO" <#if loggerState.level?? && loggerState.level == "INFO">selected</#if>>${msg("log-settings.level.INFO")?html}</option>
+                                <option class="setting-WARN"  value="WARN" <#if loggerState.level?? && loggerState.level == "WARN">selected</#if>>${msg("log-settings.level.WARN")?html}</option>
+                                <option class="setting-ERROR" value="ERROR" <#if loggerState.level?? && loggerState.level == "ERROR">selected</#if>>${msg("log-settings.level.ERROR")?html}</option>
+                                <option class="setting-FATAL" value="FATAL" <#if loggerState.level?? && loggerState.level == "FATAL">selected</#if>>${msg("log-settings.level.FATAL")?html}</option>
                             </select>
                         </form>
                     </td>
-                    <td><span class="effectiveLevel setting-${loggerState.effectiveLevel}">${(loggerState.effectiveLevel)?html}</span></td>
+                    <td class="effectiveLevel setting-${loggerState.effectiveLevel}">${msg("log-settings.level." + loggerState.effectiveLevel)?html}</td>
                 </tr>
             </#list>
         </table>

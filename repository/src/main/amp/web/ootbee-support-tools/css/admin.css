@@ -4,15 +4,14 @@ div.main-wrapper > div.main
 }
 
 /* for whatever reason default admin.css does not include left / right padding */
-table.results td
+table.results td,
+table.results th
 {
 	padding-left: 4px;
     padding-right: 4px;
 }
 
-table.patchesapplied tr:nth-child(even),
-table.scheduledjobs tr:nth-child(even),
-table.log4jsettings tr:nth-child(even)
+table.results tr:nth-child(even)
 {
    background-color: #f8f8f8;
 }

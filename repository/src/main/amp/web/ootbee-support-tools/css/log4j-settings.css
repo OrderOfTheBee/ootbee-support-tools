@@ -22,7 +22,12 @@
     background-color: LightCoral;
 }
 
-.effectiveLevel {
-	display: block;
+.effectiveLevel
+{
 	text-align: right;
+}
+
+table.log4jsettings
+{
+    margin-top: 2ex;
 }
