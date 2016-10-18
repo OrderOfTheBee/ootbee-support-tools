@@ -51,7 +51,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
                             <td><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
                             <td>${(jobs.timeZone!"")?html}</td>
-                            <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobsName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a>
+                            <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobsName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></td>
                         </tr>
                     </#list>
                 </tbody>
