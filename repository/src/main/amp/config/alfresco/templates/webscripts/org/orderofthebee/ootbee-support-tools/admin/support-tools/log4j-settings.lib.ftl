@@ -61,6 +61,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <th><b>${msg("log-settings.column.additivity")}</b></th>
                 <th><b>${msg("log-settings.column.setting")}</b></th>
                 <th><b>${msg("log-settings.column.effectiveValue")}</b></th>
+                <th></th>
             </tr>
             <#list loggerStates as loggerState>
                 <tr>
@@ -84,6 +85,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         </form>
                     </td>
                     <td class="effectiveLevel setting-${loggerState.effectiveLevel}">${msg("log-settings.level." + loggerState.effectiveLevel)?html}</td>
+                    <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/log4j-appenders?logger=<#if loggerState.isRoot>-root-<#else>${loggerState.name?url('UTF-8')}</#if>');">${msg("log-settings.appenderDetails")?html}</a></td>
                 </tr>
             </#list>
         </table>

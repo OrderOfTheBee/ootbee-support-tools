@@ -170,3 +170,86 @@ function retrieveTailingEvents()
         }
     }
 }
+
+/**
+ * Builds a generic script model from a logger-/appender-related Java object.
+ * 
+ * @param javaObject the javaObject to transform into a script model
+ * @returns the script model for the javaObject
+ */
+function buildGenericJavaObjectModel(javaObject)
+{
+    var key, value, model;
+    
+    model = {};
+    
+    if (javaObject.name !== undefined)
+    {
+        model.name = javaObject.name;
+    }
+    
+    if (javaObject.class !== undefined)
+    {
+        model.class = javaObject.class.name;
+    }
+    
+    for (key in javaObject)
+    {
+        if (javaObject[key] !== undefined && javaObject[key] !== null && typeof javaObject[key] !== 'function')
+        {
+            key = String(key);
+            if (key !== 'name' && key !== 'class')
+            {
+                value = javaObject[key];
+                // TODO Add cases for other "expected" complex Java types for recursion
+                if (value instanceof Packages.org.apache.log4j.Layout)
+                {
+                    model[key] = buildGenericJavaObjectModel(value);
+                }
+                else
+                {
+                    model[key] = value;
+                }
+            }
+        }
+    }
+    
+    return model;
+}
+
+function buidAppenderModelsForLogger(logger, appenders)
+{
+    var allAppenders;
+    
+    if (logger.additivity && logger.parent !== null)
+    {
+        buidAppenderModelsForLogger(logger.parent, appenders);
+    }
+    
+    allAppenders = logger.allAppenders;
+    while (allAppenders.hasMoreElements())
+    {
+        appenders.push(buildGenericJavaObjectModel(allAppenders.nextElement()));
+    }
+}
+
+/* exported buildAppenderModel */
+function buildAppenderModel(loggerName)
+{
+    var logger, appenders;
+    
+    if (loggerName === '-root-')
+    {
+        logger = Packages.org.apache.log4j.Logger.getRootLogger();
+    }
+    else
+    {
+        logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+    }
+    
+    appenders = [];
+    buidAppenderModelsForLogger(logger, appenders);
+    
+    model.logger = loggerName;
+    model.appenders = appenders;
+}
