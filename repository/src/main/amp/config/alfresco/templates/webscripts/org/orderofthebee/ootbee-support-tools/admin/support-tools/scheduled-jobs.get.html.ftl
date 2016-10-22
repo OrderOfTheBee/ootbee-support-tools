@@ -1,5 +1,5 @@
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos
+Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
 Copyright (C) 2016 Order of the Bee
 
 This file is part of Community Support Tools
@@ -29,7 +29,6 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
     <script type="text/javascript">//<![CDATA[
         AdminSJ.setServiceUrl('${url.service}');
-        AdminSJ.setServiceContext('${url.serviceContext}');
 
         AdminSJ.addMessage('running', '${msg("scheduled-jobs.state.running")?js_string}');
         AdminSJ.addMessage('notRunning', '${msg("scheduled-jobs.state.notRunning")?js_string}');
@@ -61,14 +60,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
                             <td><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
                             <td>${(jobs.timeZone!"")?html}</td>
-                            <#if jobs.running==true>
                             <td id="jobState">
-                                 ${msg("scheduled-jobs.state.running")?html}
-                            </td>
-                            <#else>
-                            <td id="jobState">
-                                 ${msg("scheduled-jobs.state.notRunning")?html}
-                            </#if>
+                                 ${msg(jobs.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}
                             </td>
                             <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobsName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></td>
                         </tr>

@@ -24,12 +24,8 @@
 
 /* global Admin: false, el: false*/
 
-// The AdminAS root object has been extracted from the Alfresco Support Tools
-// admin-activesessions.get.html.ftl trim down page HTML sizes and promote clean
-// separation of concerns
-
 /**
- * Active Sessions Component
+ * Scheduled Jobs Component
  */
 var AdminSJ = AdminSJ || {};
 
@@ -41,16 +37,11 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    var serviceUrl, serviceContext, messages = {};
+    var serviceUrl, messages = {};
 
     AdminSJ.setServiceUrl = function setServiceURL(url)
     {
         serviceUrl = url;
-    };
-    
-    AdminSJ.setServiceContext = function setServiceContext(context)
-    {
-        serviceContext = context;
     };
 
     AdminSJ.addMessage = function addMessage(key, message)
@@ -60,29 +51,33 @@ Admin.addEventListener(window, 'load', function()
 
     AdminSJ.updateStates = function updateStates()
     {
-
         Admin.request({
             method : "GET",
             url : serviceUrl + "-states",
             fnSuccess : function(res)
             {
+                var json, table, runningJobs, jobRows, i, jobRow, stateCell, isRunning;
                 if (res.responseJSON)
                 {
-                    var json = res.responseJSON;
-                    var table = el("jobs-table");
-                    var runningJobs = json.runningJobs;
+                    json = res.responseJSON;
+                    table = el("jobs-table");
+                    runningJobs = json.runningJobs;
 
-                    var jobRows = table.rows;
+                    jobRows = table.rows;
 
                     // i starting at 1 to jump over the table header!
-                    for(var i=1;i<jobRows.length;i++){
-                        var jobRow = jobRows[i];
-                        var stateCell = jobRow.cells.namedItem("jobState");
-                        var isRunning = runningJobs[jobRow.id];
-                        if( isRunning){
-                            stateCell.innerHTML=Admin.html(messages.running);
-                        }else{
-                            stateCell.innerHTML=Admin.html(messages.notRunning);
+                    for (i = 1; i < jobRows.length; i++)
+                    {
+                        jobRow = jobRows[i];
+                        stateCell = jobRow.cells.namedItem("jobState");
+                        isRunning = runningJobs[jobRow.id];
+                        if (isRunning)
+                        {
+                            stateCell.innerHTML = Admin.html(messages.running);
+                        }
+                        else
+                        {
+                            stateCell.innerHTML = Admin.html(messages.notRunning);
                         }
                     }
 
