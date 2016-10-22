@@ -4,6 +4,8 @@
     <description>View general system performance metrics</description>
     <url>/ootbee/admin/admin-performance</url>
     <family>AdminConsole</family>
+    <!-- Enterprise console does not handle tool URL + grouping properly - so restrict to Community only -->
+    <family>AdminConsole:Edition:Community</family>
     <format default="html">argument</format>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
