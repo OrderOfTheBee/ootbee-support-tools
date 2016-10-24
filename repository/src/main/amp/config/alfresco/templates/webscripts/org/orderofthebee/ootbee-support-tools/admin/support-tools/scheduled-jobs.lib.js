@@ -41,19 +41,33 @@ function buildScheduledJobsData()
         runningJobs.push(execContext.getJobDetail().getName()+"-"+execContext.getJobDetail().getGroup());
     }
 
+    var quartz = Packages.com.cronutils.model.CronType.QUARTZ;
+    var cronDefinition = Packages.com.cronutils.model.definition.CronDefinitionBuilder.instanceDefinitionFor(quartz);
+    var parser = new Packages.com.cronutils.parser.CronParser(cronDefinition);
+    var descriptor = Packages.com.cronutils.descriptor.CronDescriptor.instance(java.util.Locale.UK);
+
+    var cronExpressionDescription;
+    var cronExpression;
 
     for (i = 0; i < jobsList.length; i++)
     {
         var jobName = scheduler.getJobNames(jobsList[i]);
+        java.util.Arrays.sort(jobName);
 
         for (j = 0; j < jobName.length; j++)
         {
             jobTriggerDetail = scheduler.getTriggersOfJob(jobName[j], jobsList[i]);
 
+            cronExpression = jobTriggerDetail[0].cronExpression;
+            if (cronExpression) {
+                cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
+            }
+
             scheduledJobsData.push({
                 jobsName : jobName[j],
                 // trigger may not be cron-based
                 cronExpression : jobTriggerDetail[0].cronExpression || null,
+                cronExpressionDescription : cronExpressionDescription || null,
                 startTime : jobTriggerDetail[0].startTime,
                 previousFireTime : jobTriggerDetail[0].previousFireTime,
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
@@ -66,6 +80,7 @@ function buildScheduledJobsData()
 
     model.scheduledjobs = scheduledJobsData;
 }
+
 
 /**
 * uses the quartz scheduler to determine the current running jobs which are made available in the model via runningJobs
@@ -101,6 +116,5 @@ function executeJobNow(jobName, groupName)
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-
     scheduler.triggerJob(jobName, groupName);
 }
