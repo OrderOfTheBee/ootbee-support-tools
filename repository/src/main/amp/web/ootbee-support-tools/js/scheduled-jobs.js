@@ -63,17 +63,14 @@ Admin.addEventListener(window, 'load', function()
             var previousFireCell = jobRow.cells.namedItem("jobPreviousFire");
             var nextFireCell = jobRow.cells.namedItem("jobNextFire");
 
-            startTimeCell.title = startTimeCell.innerHTML;
-            startTimeCell.innerHTML = moment().to(startTimeCell.innerHTML);
+            startTimeCell.title = moment().to(startTimeCell.innerHTML);
 
             if (previousFireCell.innerHTML){
-                previousFireCell.title=previousFireCell.innerHTML;
-                previousFireCell.innerHTML = moment().to(previousFireCell.innerHTML);
+                previousFireCell.title = moment().to(previousFireCell.innerHTML);
             }
 
             if (nextFireCell.innerHTML){
-                nextFireCell.title=nextFireCell.innerHTML;
-                nextFireCell.innerHTML = moment().to(nextFireCell.innerHTML);
+                nextFireCell.title = moment().to(nextFireCell.innerHTML);
             }
 
         }

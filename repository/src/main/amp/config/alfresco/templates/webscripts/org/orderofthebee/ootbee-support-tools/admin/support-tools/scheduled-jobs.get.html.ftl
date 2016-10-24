@@ -43,7 +43,6 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <tr>
                         <th>${msg("scheduled-jobs.table-header.job-name")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.cron-expression")?html}</th>				
-                        <th>${msg("scheduled-jobs.table-header.cron-expression-description")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.start-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.previous-fire-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.next-fire-time")?html}</th>
@@ -56,8 +55,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <#list scheduledjobs as jobs>
                         <tr id="${jobs.jobsName}">
                             <td>${jobs.jobsName}</td>
-                            <td>${jobs.cronExpression!""}</td>
-                            <td>${jobs.cronExpressionDescription!""}</td>
+                            <td title="${jobs.cronExpressionDescription!""}">${jobs.cronExpression!""}</td>
                             <td id="jobStartTime"><#if jobs.startTime??>${xmldate(jobs.startTime)?js_string}</#if></td>
                             <td id="jobPreviousFire"><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
                             <td id="jobNextFire"><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>

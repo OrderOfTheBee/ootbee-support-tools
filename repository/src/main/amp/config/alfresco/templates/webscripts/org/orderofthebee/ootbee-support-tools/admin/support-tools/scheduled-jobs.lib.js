@@ -44,7 +44,7 @@ function buildScheduledJobsData()
     var quartz = Packages.com.cronutils.model.CronType.QUARTZ;
     var cronDefinition = Packages.com.cronutils.model.definition.CronDefinitionBuilder.instanceDefinitionFor(quartz);
     var parser = new Packages.com.cronutils.parser.CronParser(cronDefinition);
-    var descriptor = Packages.com.cronutils.descriptor.CronDescriptor.instance(java.util.Locale.UK);
+    var descriptor = Packages.com.cronutils.descriptor.CronDescriptor.instance(Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale());
 
     var cronExpressionDescription;
     var cronExpression;
