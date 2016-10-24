@@ -1,4 +1,5 @@
-<#escape x as jsonUtils.encodeJSONString(x)><#compress>{
+<#compress>
+<#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
 Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
 Copyright (C) 2016 Order of the Bee
@@ -23,10 +24,13 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
+{
     "runningJobs" : {
         <#if runningJobs??><#list runningJobs as runningJob>
             "${runningJob.jobName?string}" : "${runningJob.groupName?string}"
         <#if runningJob_has_next>,</#if>
         </#list></#if>
     }
-}</#compress></#escape>
+}
+</#escape>
+</#compress>

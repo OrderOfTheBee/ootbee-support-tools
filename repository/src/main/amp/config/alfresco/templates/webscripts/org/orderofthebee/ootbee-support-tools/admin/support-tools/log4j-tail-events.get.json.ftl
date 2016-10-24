@@ -1,4 +1,5 @@
-<#escape x as jsonUtils.encodeJSONString(x)><#compress>{
+<#compress>
+<#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
 Copyright (C) 2016 Axel Faust / Markus Joos
 Copyright (C) 2016 Order of the Bee
@@ -23,6 +24,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
+{
     "events" : [
         <#if events??><#list events as event>{
             "level" : "${event.level?string}",
@@ -35,4 +37,6 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         }<#if event_has_next>,</#if>
         </#list></#if>
     ]
-}</#compress></#escape>
+}
+</#escape>
+</#compress>
