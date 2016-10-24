@@ -51,17 +51,17 @@ Admin.addEventListener(window, 'load', function()
     };
 
     AdminSJ.adaptTimes = function (){
-        var table, jobRows, i;
+        var table, jobRows, i, jobRow, startTimeCell, previousFireCell, nextFireCell;
         
         table = el("jobs-table");
         jobRows = table.rows;
 
         // i starting at 1 to jump over the table header!
         for (i = 1; i < jobRows.length; i++){
-            var jobRow = jobRows[i];
-            var startTimeCell = jobRow.cells.namedItem("jobStartTime");
-            var previousFireCell = jobRow.cells.namedItem("jobPreviousFire");
-            var nextFireCell = jobRow.cells.namedItem("jobNextFire");
+            jobRow = jobRows[i];
+            startTimeCell = jobRow.cells.namedItem("jobStartTime");
+            previousFireCell = jobRow.cells.namedItem("jobPreviousFire");
+            nextFireCell = jobRow.cells.namedItem("jobNextFire");
 
             startTimeCell.title = moment().to(startTimeCell.innerHTML);
 
