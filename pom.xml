@@ -70,5 +70,6 @@
 
     <modules>
         <module>repository</module>
+        <module>share</module>
     </modules>
 </project>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension>
+    <modules>
+        <module>
+            <id>${artifactId}</id>
+            <description>${project.name}</description>
+            <version>${noSnapshotVersion}</version>
+            <auto-deploy>true</auto-deploy>
+            
+            <!-- nothing here yet -->
+        </module>
+    </modules>
+</extension>

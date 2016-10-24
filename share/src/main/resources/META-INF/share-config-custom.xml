@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<alfresco-config>
+    <config evaluator="string-compare" condition="WebFramework">
+        <web-framework>
+            <dojo-pages>
+                <packages>
+                    <package name="ootbee-support-tools" location="ootbee-support-tools" />
+                </packages>
+            </dojo-pages>
+        </web-framework>
+    </config>
+</alfresco-config>

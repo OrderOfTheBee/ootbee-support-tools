@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Log4J Settings</shortname>
+    <url>/components/console/ootbee-support-tools/log4j-settings</url>
+    <family>admin-console</family>
+</webscript>

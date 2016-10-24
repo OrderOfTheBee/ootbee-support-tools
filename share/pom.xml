@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.orderofthebee.addons</groupId>
+        <artifactId>ootbee-support-tools-parent</artifactId>
+        <version>0.0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ootbee-support-tools-share</artifactId>
+
+    <name>Order of the Bee - Community Support Tools - Share Module</name>
+    <packaging>amp</packaging>
+
+    <properties>
+        <basePackage>org.orderofthebee.addons.support.tools.share</basePackage>
+
+        <app.amp.client.war.artifactId>${alfresco.share.artifactId}</app.amp.client.war.artifactId>
+        <maven.tomcat.port>8081</maven.tomcat.port>
+        <alfresco.repo.url>http://localhost:8080/alfresco</alfresco.repo.url>
+        <dependency.surf.version>6.2</dependency.surf.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>aikau</artifactId>
+            <version>1.0.92</version>
+            <!-- we require user to pick the Aikau version they want to use - we just state we build and test against this version -->
+            <scope>provided</scope>
+            <exclusions>
+                <!-- Alfresco is incapable of properly including transitive dependency versions -->
+                <exclusion>
+                    <groupId>org.alfresco.surf</groupId>
+                    <artifactId>spring-surf-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <escapeString>\</escapeString>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>de.acosix.maven</groupId>
+                <artifactId>jshint-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
+                    <includes>
+                        <include>amp/**/*.js</include>
+                    </includes>
+                    <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jshint</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+        <!-- TODO Handle "standard" JAR, sources + JavaDoc creation which SDK sucks at -->
+    </build>
+
+</project>
