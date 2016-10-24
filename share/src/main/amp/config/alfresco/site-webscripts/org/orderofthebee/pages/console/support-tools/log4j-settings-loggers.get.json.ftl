@@ -1,3 +1,4 @@
+<#compress>
 <#-- 
 Copyright (C) 2016 Axel Faust
 Copyright (C) 2016 Order of the Bee
@@ -21,12 +22,24 @@ Linked to Alfresco
 Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
-  
-<@markup id="widgets">
-    <@processJsonModel group="share"/>
-</@>
 
-<@markup id="html">
-    <#-- looks like an undocumented feature that Page picks up a div with id 'content' -->
-    <div data-dojo-attach-point="containerNode" id="content"></div>
-</@>
+<#escape x as jsonUtils.encodeJSONString(x)>
+{
+    "loggers": [
+    <#list loggerStates as loggerState>
+        {
+            "name" : "<#if loggerState.isRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.name}</#if>",
+            <#if loggerState.parentIsRoot || loggerState.parent??>
+            "parent" : {
+                "name" : "<#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.parent}</#if>"
+            },
+            </#if>
+            "additivity" : "${loggerState.additivity?string}",
+            "level" : "${loggerState.level}",
+            "effectiveLevel" : "${loggerState.effectiveLevel}"
+        }<#if loggerState_has_next>,</#if>
+    </#list>
+    ]
+}
+</#escape>
+</#compress>
