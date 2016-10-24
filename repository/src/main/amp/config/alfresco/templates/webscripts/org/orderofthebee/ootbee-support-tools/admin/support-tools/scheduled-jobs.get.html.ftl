@@ -24,7 +24,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
   
 <#include "../admin-template.ftl" />
 
-<@page title=msg("scheduled-jobs.title") readonly=true customJSFiles=["ootbee-support-tools/js/scheduled-jobs.js"]>
+<@page title=msg("scheduled-jobs.title") readonly=true customJSFiles=["ootbee-support-tools/js/scheduled-jobs.js","ootbee-support-tools/js/moment-with-locales.min.js"]>
 
 
     <script type="text/javascript">//<![CDATA[
@@ -55,10 +55,10 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <#list scheduledjobs as jobs>
                         <tr id="${jobs.jobsName}">
                             <td>${jobs.jobsName}</td>
-                            <td>${jobs.cronExpression!""}</td>
-                            <td><#if jobs.startTime??>${xmldate(jobs.startTime)?html}</#if></td>
-                            <td><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
-                            <td><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
+                            <td title="${jobs.cronExpressionDescription!""}">${jobs.cronExpression!""}</td>
+                            <td id="jobStartTime"><#if jobs.startTime??>${xmldate(jobs.startTime)?js_string}</#if></td>
+                            <td id="jobPreviousFire"><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
+                            <td id="jobNextFire"><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
                             <td>${(jobs.timeZone!"")?html}</td>
                             <td id="jobState">
                                  ${msg(jobs.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}

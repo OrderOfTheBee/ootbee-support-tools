@@ -22,7 +22,7 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* global Admin: false, el: false*/
+/* global Admin: false, el: false, moment:false*/
 
 /**
  * Scheduled Jobs Component
@@ -32,6 +32,7 @@ var AdminSJ = AdminSJ || {};
 /* Page load handler */
 Admin.addEventListener(window, 'load', function()
 {
+    AdminSJ.adaptTimes();
     setInterval(AdminSJ.updateStates, 2000);
 });
 
@@ -47,6 +48,33 @@ Admin.addEventListener(window, 'load', function()
     AdminSJ.addMessage = function addMessage(key, message)
     {
         messages[key] = message;
+    };
+
+    AdminSJ.adaptTimes = function (){
+        var table, jobRows, i;
+        
+        table = el("jobs-table");
+        jobRows = table.rows;
+
+        // i starting at 1 to jump over the table header!
+        for (i = 1; i < jobRows.length; i++){
+            var jobRow = jobRows[i];
+            var startTimeCell = jobRow.cells.namedItem("jobStartTime");
+            var previousFireCell = jobRow.cells.namedItem("jobPreviousFire");
+            var nextFireCell = jobRow.cells.namedItem("jobNextFire");
+
+            startTimeCell.title = moment().to(startTimeCell.innerHTML);
+
+            if (previousFireCell.innerHTML){
+                previousFireCell.title = moment().to(previousFireCell.innerHTML);
+            }
+
+            if (nextFireCell.innerHTML){
+                nextFireCell.title = moment().to(nextFireCell.innerHTML);
+            }
+
+        }
+
     };
 
     AdminSJ.updateStates = function updateStates()
