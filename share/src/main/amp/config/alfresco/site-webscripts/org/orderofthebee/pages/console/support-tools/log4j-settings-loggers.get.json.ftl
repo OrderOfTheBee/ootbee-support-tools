@@ -28,15 +28,17 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     "loggers": [
     <#list loggerStates as loggerState>
         {
-            "name" : "<#if loggerState.isRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.name}</#if>",
+            "name" : "<#if loggerState.isRoot>-root-<#else>${loggerState.name}</#if>",
+            "displayName" : "<#if loggerState.isRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.name}</#if>",
             <#if loggerState.parentIsRoot || loggerState.parent??>
             "parent" : {
-                "name" : "<#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.parent}</#if>"
+                "name" : "<#if loggerState.parentIsRoot>-root-<#else>${loggerState.parent}</#if>",
+                "displayName" : "<#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.parent}</#if>"
             },
             </#if>
             "additivity" : "${loggerState.additivity?string}",
-            "level" : "${loggerState.level}",
-            "effectiveLevel" : "${loggerState.effectiveLevel}"
+            "level" : "${loggerState.level!'OFF'}",
+            "effectiveLevel" : "${loggerState.effectiveLevel!'OFF'}"
         }<#if loggerState_has_next>,</#if>
     </#list>
     ]

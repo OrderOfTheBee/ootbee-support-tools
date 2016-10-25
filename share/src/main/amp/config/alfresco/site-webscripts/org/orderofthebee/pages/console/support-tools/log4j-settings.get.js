@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016 Axel Faust
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -30,13 +31,38 @@ model.jsonModel = {
             title : 'tool.log4j-settings.label'
         }
     }, {
-        name : 'alfresco/lists/AlfList',
+        name : 'alfresco/lists/AlfFilteredList',
         config : {
+            pubSubScope : 'LOGGER_LIST/',
+            // TODO Report bug - CrudService should not hard-code topic
+            reloadDataTopic : 'ALF_DOCLIST_RELOAD_DATA',
             loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
             loadDataPublishPayload : {
                 url : 'data/console/ootbee-support-tools/log4j-settings-loggers',
                 urlType : 'SHARE'
             },
+            // TODO Report enhancement - filtering should not require these form topic cludges
+            filteringTopics : [ '_valueChangeOf_LOGGER_NAME', '_valueChangeOf_UNCONFIGURED_LOGGERS' ],
+            widgetsForFilters : [ {
+                name : 'alfresco/forms/controls/TextBox',
+                config : {
+                    fieldId : 'LOGGER_NAME',
+                    name : 'loggerName',
+                    label : 'log-settings.LoggerName',
+                    placeHolder : 'log-settings.loggerName.filterPlaceHolder'
+                }
+            }, {
+                name : 'alfresco/forms/controls/CheckBox',
+                config : {
+                    fieldId : 'UNCONFIGURED_LOGGERS',
+                    name : 'showUnconfiguredLoggers',
+                    offValue : false,
+                    onValue : true,
+                    label : 'log-settings.showUnconfiguredLoggers'
+                }
+            } ],
+            // TODO Support pagination and sorting
+            usePagination : false,
             itemsProperty : 'loggers',
             widgets : [ {
                 name : 'alfresco/lists/views/AlfListView',
@@ -46,27 +72,32 @@ model.jsonModel = {
                         name : 'alfresco/lists/views/layouts/HeaderCell',
                         config : {
                             // TODO Report bug - missing padding style options
-                            label : 'log-settings.column.loggerName'
+                            label : 'log-settings.loggerName'
                         }
                     }, {
                         name : 'alfresco/lists/views/layouts/HeaderCell',
                         config : {
-                            label : 'log-settings.column.parentLoggerName'
+                            label : 'log-settings.parentLoggerName'
                         }
                     }, {
                         name : 'alfresco/lists/views/layouts/HeaderCell',
                         config : {
-                            label : 'log-settings.column.additivity'
+                            label : 'log-settings.additivity'
                         }
                     }, {
                         name : 'alfresco/lists/views/layouts/HeaderCell',
                         config : {
-                            label : 'log-settings.column.setting'
+                            label : 'log-settings.setting'
                         }
                     }, {
                         name : 'alfresco/lists/views/layouts/HeaderCell',
                         config : {
-                            label : 'log-settings.column.effectiveValue'
+                            label : 'log-settings.effectiveValue'
+                        }
+                    }, {
+                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                        config : {
+                            label : ''
                         }
                     } ],
                     widgets : [ {
@@ -84,7 +115,7 @@ model.jsonModel = {
                                     widgets : [ {
                                         name : 'alfresco/renderers/Property',
                                         config : {
-                                            propertyToRender : 'name'
+                                            propertyToRender : 'displayName'
                                         }
                                     } ]
                                 }
@@ -95,7 +126,7 @@ model.jsonModel = {
                                     widgets : [ {
                                         name : 'alfresco/renderers/Property',
                                         config : {
-                                            propertyToRender : 'parent.name'
+                                            propertyToRender : 'parent.displayName'
                                         }
                                     } ]
                                 }
@@ -108,16 +139,15 @@ model.jsonModel = {
                                         config : {
                                             propertyToRender : 'additivity',
                                             // TODO Report enhancement -
-                                            // valueDisplayMap
-                                            // should inherently I18n the label
-                                            // (like
-                                            // label in HeaderCell)
+                                            // valueDisplayMap should inherently
+                                            // I18n the label (like label in
+                                            // HeaderCell)
                                             valueDisplayMap : [ {
                                                 value : 'true',
-                                                label : msg.get('log-settings.column.additivity.true')
+                                                label : msg.get('log-settings.additivity.true')
                                             }, {
                                                 value : 'false',
-                                                label : msg.get('log-settings.column.additivity.false')
+                                                label : msg.get('log-settings.additivity.false')
                                             } ]
                                         }
                                     } ]
@@ -127,6 +157,8 @@ model.jsonModel = {
                                 config : {
                                     additionalCssClasses : 'smallpad',
                                     widgets : [ {
+                                        // TODO Report enhancement - make InlineEditProperty usable
+                                        // (e.g. support all types of input elements with simple+smart config)
                                         name : 'alfresco/renderers/Property',
                                         config : {
                                             propertyToRender : 'level',
@@ -190,6 +222,83 @@ model.jsonModel = {
                                             }, {
                                                 value : 'FATAL',
                                                 label : msg.get('log-settings.level.FATAL')
+                                            } ]
+                                        }
+                                    } ]
+                                }
+                            }, {
+                                name : 'alfresco/lists/views/layouts/Cell',
+                                config : {
+                                    // TODO Report enhancement - there should be a nopad option
+                                    additionalCssClasses : 'nopad',
+                                    style : 'padding: 0;',
+                                    widgets : [ {
+                                        name : 'alfresco/renderers/Actions',
+                                        config : {
+                                            // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
+                                            customActions : [ {
+                                                id : 'EDIT_SETTING',
+                                                label : 'log-settings.action.editLoggerSetting',
+                                                publishTopic : 'ALF_CREATE_FORM_DIALOG_REQUEST',
+                                                publishPayloadType : 'PROCESS',
+                                                publishPayloadModifiers : [ 'processCurrentItemTokens' ],
+                                                publishPayload : {
+                                                    dialogId : 'EDIT_LOGGER_SETTING',
+                                                    dialogTitle : 'log-settings.action.editLoggerSetting',
+                                                    formSubmissionTopic : 'ALF_CRUD_UPDATE',
+                                                    formSubmissionPayloadMixin : {
+                                                        // TODO Report enhancement - ALF_CRUD_UPDATE should differentiate request config
+                                                        // from request data instead of submitting EVERYTHING
+                                                        url : 'data/console/ootbee-support-tools/log4j-settings-loggers',
+                                                        urlType : 'SHARE',
+                                                        alfResponseTopic : 'LOGGER_LIST/'
+                                                    // TODO Report enhancement - any pubSub should support response topic without forcing
+                                                    // _SUCCESS suffix
+                                                    },
+                                                    formValue : {
+                                                        logger : '{name}',
+                                                        level : '{level}'
+                                                    },
+                                                    widgets : [ {
+                                                        name : 'alfresco/forms/controls/HiddenValue',
+                                                        config : {
+                                                            name : 'logger'
+                                                        }
+                                                    }, {
+                                                        name : 'alfresco/forms/controls/Select',
+                                                        config : {
+                                                            name : 'level',
+                                                            label : 'log-settings.setting',
+                                                            optionsConfig : {
+                                                                fixed : [ {
+                                                                    value : 'UNSET',
+                                                                    label : msg.get('log-settings.level.UNSET')
+                                                                }, {
+                                                                    value : 'OFF',
+                                                                    label : msg.get('log-settings.level.OFF')
+                                                                }, {
+                                                                    value : 'TRACE',
+                                                                    label : msg.get('log-settings.level.TRACE')
+                                                                }, {
+                                                                    value : 'DEBUG',
+                                                                    label : msg.get('log-settings.level.DEBUG')
+                                                                }, {
+                                                                    value : 'INFO',
+                                                                    label : msg.get('log-settings.level.INFO')
+                                                                }, {
+                                                                    value : 'WARN',
+                                                                    label : msg.get('log-settings.level.WARN')
+                                                                }, {
+                                                                    value : 'ERROR',
+                                                                    label : msg.get('log-settings.level.ERROR')
+                                                                }, {
+                                                                    value : 'FATAL',
+                                                                    label : msg.get('log-settings.level.FATAL')
+                                                                } ]
+                                                            }
+                                                        }
+                                                    } ]
+                                                }
                                             } ]
                                         }
                                     } ]

@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016 Axel Faust
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -26,7 +27,7 @@ function buildLoggerState(logger)
     var RootLogger, loggerState, allAppenders, appender;
 
     RootLogger = Packages.org.apache.log4j.spi.RootLogger;
-    
+
     loggerState = {
         name : logger.name,
         isRoot : logger instanceof RootLogger,
@@ -51,20 +52,28 @@ function buildLoggerState(logger)
     return loggerState;
 }
 
-function buildLoggerStates(showUnconfiguredLoggers)
+function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
 {
-    var loggerRepository, loggerStates, loggerState, currentLoggers, logger;
+    var loggerRepository, loggerStates, loggerState, currentLoggers, effectiveLoggerNamePattern, logger;
 
     loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
 
     loggerStates = [];
 
     currentLoggers = loggerRepository.currentLoggers;
+
+    effectiveLoggerNamePattern = null;
+    if (loggerNamePattern !== null)
+    {
+        effectiveLoggerNamePattern = new RegExp(String(loggerNamePattern).replace(/\./g, '\\.').replace(/\*/g, '.+'), 'i');
+    }
+
     while (currentLoggers.hasMoreElements())
     {
         logger = currentLoggers.nextElement();
 
-        if (logger.level !== null || showUnconfiguredLoggers)
+        if ((effectiveLoggerNamePattern === null || effectiveLoggerNamePattern.test(logger.name))
+                && (logger.level !== null || showUnconfiguredLoggers))
         {
             loggerState = buildLoggerState(logger);
             loggerStates.push(loggerState);
@@ -82,4 +91,4 @@ function buildLoggerStates(showUnconfiguredLoggers)
     model.loggerStates = loggerStates;
 }
 
-buildLoggerStates(String(args.showUnconfiguredLoggers) === 'true');
+buildLoggerStates(String(args.showUnconfiguredLoggers) === 'true', args.loggerName);
