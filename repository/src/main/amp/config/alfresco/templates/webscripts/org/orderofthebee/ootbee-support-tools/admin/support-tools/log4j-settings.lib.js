@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos Copyright (C) 2016 Order of the
- * Bee
+ * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -99,7 +99,7 @@ function changeLoggerState(loggerName, level)
         logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
     }
     
-    if (String(level) === '')
+    if (String(level) === '' || String(level) === 'UNSET')
     {
         logger.setLevel(null);
     }

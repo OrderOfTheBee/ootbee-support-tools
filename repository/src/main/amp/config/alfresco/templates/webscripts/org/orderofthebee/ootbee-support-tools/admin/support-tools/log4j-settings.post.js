@@ -24,7 +24,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-var showUnconfiguredLoggers = processLoggerStateChangeFromFormData()
+var showUnconfiguredLoggers = processLoggerStateChangeFromFormData();
 
 // simply redirect to our get variant
 status.code = status.STATUS_MOVED_TEMPORARILY;
