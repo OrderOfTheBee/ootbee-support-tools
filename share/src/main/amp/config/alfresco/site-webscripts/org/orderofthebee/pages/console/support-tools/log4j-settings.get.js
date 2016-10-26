@@ -23,12 +23,31 @@
  */
 
 model.jsonModel = {
-    services : [ 'alfresco/services/CrudService' ],
+    services : [ 'alfresco/services/CrudService', 'alfresco/services/DialogService' ],
     widgets : [ {
         id : 'SET_PAGE_TITLE',
         name : 'alfresco/header/SetTitle',
         config : {
             title : 'tool.log4j-settings.label'
+        }
+    }, {
+        name : 'alfresco/html/Label',
+        config : {
+            label : 'log-settings.intro-text'
+        }
+    }, {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : 'log-settings.tail',
+            // TODO Report enhancement - dialog should support eager destroy
+            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
+            publishPayload : {
+                dialogId : 'TAIL',
+                dialogTitle : 'log-settings.tailDialog',
+                widgetsContent : [ {
+                    name : 'ootbee-support-tools/list/LogList'
+                } ]
+            }
         }
     }, {
         name : 'alfresco/lists/AlfFilteredList',
@@ -46,14 +65,18 @@ model.jsonModel = {
             widgetsForFilters : [ {
                 name : 'alfresco/forms/controls/TextBox',
                 config : {
+                    // TODO Report enhancement - filter widgets should align properly
+                    style : 'vertical-align:top;',
                     fieldId : 'LOGGER_NAME',
                     name : 'loggerName',
-                    label : 'log-settings.LoggerName',
+                    label : 'log-settings.loggerName',
                     placeHolder : 'log-settings.loggerName.filterPlaceHolder'
                 }
             }, {
                 name : 'alfresco/forms/controls/CheckBox',
                 config : {
+                    // TODO Report enhancement - filter widgets should align properly
+                    style : 'vertical-align:top;',
                     fieldId : 'UNCONFIGURED_LOGGERS',
                     name : 'showUnconfiguredLoggers',
                     offValue : false,

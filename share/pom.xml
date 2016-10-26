@@ -39,6 +39,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.alfresco</groupId>
+            <artifactId>alfresco-core</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
