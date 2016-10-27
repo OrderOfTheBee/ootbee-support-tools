@@ -1,0 +1,67 @@
+.alfresco-lists-views-layouts-Row.zebra-striping {
+	&.logMessage-OFF {
+	   &:nth-child(odd)
+	   {
+            background-color: Grey;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#808080, #000000);
+        }
+    }
+    
+    &.logMessage-TRACE {
+       &:nth-child(odd)
+       {
+            background-color: LightGrey;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#D3D3D3, #808080);
+        }
+    }
+    
+    &.logMessage-DEBUG {
+       &:nth-child(odd)
+       {
+            background-color: LightGreen;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#90EE90, #008000);
+        }
+    }
+    
+    &.logMessage-WARN {
+       &:nth-child(odd)
+       {
+            background-color: LightYellow;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#FFFFE0, #FFFF00);
+        }
+    }
+    
+    &.logMessage-ERROR {
+       &:nth-child(odd)
+       {
+            background-color: LightPink;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#FFB6C1, #FFC0CB);
+        }
+    }
+    
+    &.logMessage-FATAL {
+       &:nth-child(odd)
+       {
+            background-color: LightCoral;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#F08080, #FF7F50);
+        }
+    }
+}

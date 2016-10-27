@@ -1,15 +1,21 @@
 /**
- * Copyright (C) 2016 Axel Faust Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016 Axel Faust
+ * Copyright (C) 2016 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
- * Community Support Tools is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Community Support Tools is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  * 
- * Community Support Tools is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * Community Support Tools is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+ * General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License along with Community Support Tools. If not, see
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Community Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 /*
@@ -36,7 +42,9 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                             name : 'alfresco/lists/views/layouts/HeaderCell',
                             config : {
                                 // TODO Report bug - missing padding style options
-                                label : 'log-settings.tail.timestamp'
+                                label : 'log-settings.tail.timestamp',
+                                // force column width for timestamp not to be wrapped
+                                style : 'min-width: 28ex;'
                             }
                         }, {
                             name : 'alfresco/lists/views/layouts/HeaderCell',
@@ -52,7 +60,7 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                             }
                         } ],
                         widgets : [ {
-                            name : 'alfresco/lists/views/layouts/Row',
+                            name : 'ootbee-support-tools/list/LogRow',
                             config : {
                                 // TODO Report bug - property zebraStriping without effect
                                 additionalCssClasses : 'zebra-striping',
@@ -100,14 +108,25 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                 constructor : function ootbeeSupportTools_list_LogList__constructor()
                 {
                     // redefine the properties to avoid setting default values to the prototype
-                    Object.defineProperties(this, {
-                        widgets : {
-                            value : lang.clone(this.widgetsDefault)
-                        },
-                        loadDataPublishPayload : {
-                            value : lang.clone(this.loadDataPublishPayloadDefault)
-                        }
-                    });
+                    if (this.widgets === null)
+                    {
+                        Object.defineProperty(this, 'widgets', {
+                            value : lang.clone(this.widgetsDefault),
+                            enumerable : true,
+                            writable : true,
+                            configurable : true
+                        });
+                    }
+                    
+                    if (this.loadDataPublishPayload === null)
+                    {
+                        Object.defineProperty(this, 'loadDataPublishPayload', {
+                            value : lang.clone(this.loadDataPublishPayloadDefault),
+                            enumerable : true,
+                            writable : true,
+                            configurable : true
+                        });
+                    }
                 },
 
                 postMixInProperties : function ootbeeSupportTools_list_LogList__postMixInProperties()

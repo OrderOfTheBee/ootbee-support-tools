@@ -22,14 +22,17 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-function registerTailingAppender(uuid)
+function registerTailingAppender(uuidParam)
 {
-    var appender, rootLogger;
+    var uuid, appender, rootLogger;
 
+    uuid = uuidParam || String(Packages.java.util.UUID.randomUUID());
     appender = new Packages.org.orderofthebee.addons.support.tools.share.LimitedListAppender(uuid, 10000);
     rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
     appender.registerAsAppender(rootLogger);
 
+    model.uuid = uuid;
+    
     return appender;
 }
 
@@ -38,12 +41,6 @@ function retrieveTailingEvents()
     var uuid, rootLogger, appender;
 
     uuid = String(args.uuid || '');
-    if (uuid === '')
-    {
-        uuid = String(Packages.java.util.UUID.randomUUID());
-        model.uuid = uuid;
-    }
-
     rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
     appender = rootLogger.getAppender(uuid);
 

@@ -140,16 +140,18 @@ function processLoggerStateChangeFromFormData()
 }
 
 /* exported registerTailingAppender */
-function registerTailingAppender()
+function registerTailingAppender(uuidParam)
 {
     var uuid, appender, rootLogger;
 
-    uuid = String(Packages.java.util.UUID.randomUUID());
+    uuid = uuidParam || String(Packages.java.util.UUID.randomUUID());
     appender = new Packages.org.orderofthebee.addons.support.tools.repo.LimitedListAppender(uuid, 10000);
     rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
     appender.registerAsAppender(rootLogger);
 
     model.uuid = uuid;
+    
+    return appender;
 }
 
 /* exported retrieveTailingEvents */
@@ -158,17 +160,15 @@ function retrieveTailingEvents()
     var uuid, rootLogger, appender;
 
     uuid = String(args.uuid || '');
+    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
+    appender = rootLogger.getAppender(uuid);
 
-    if (uuid !== '')
+    if (appender === null)
     {
-        rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
-        appender = rootLogger.getAppender(uuid);
-
-        if (appender !== null)
-        {
-            model.events = appender.retrieveLogEvents();
-        }
+        appender = registerTailingAppender(uuid);
     }
+
+    model.events = appender.retrieveLogEvents();
 }
 
 /**

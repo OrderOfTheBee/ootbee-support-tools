@@ -63,7 +63,7 @@ function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
     currentLoggers = loggerRepository.currentLoggers;
 
     effectiveLoggerNamePattern = null;
-    if (loggerNamePattern !== null)
+    if (loggerNamePattern !== null && String(loggerNamePattern) !== '')
     {
         effectiveLoggerNamePattern = new RegExp(String(loggerNamePattern).replace(/\./g, '\\.').replace(/\*/g, '.+'), 'i');
     }

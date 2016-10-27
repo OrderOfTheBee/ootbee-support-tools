@@ -33,18 +33,50 @@ model.jsonModel = {
     }, {
         name : 'alfresco/html/Label',
         config : {
-            label : 'log-settings.intro-text'
+            label : 'log-settings.intro-text',
+            style : 'display: block; margin-bottom: 2ex;'
         }
     }, {
         name : 'alfresco/buttons/AlfButton',
         config : {
-            label : 'log-settings.tail',
+            label : 'log-settings.tailRepo',
             // TODO Report enhancement - dialog should support eager destroy
             publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
             publishPayload : {
                 dialogId : 'TAIL',
                 hideTopic : 'HIDE-LOG-TAIL-DIALOG',
-                dialogTitle : 'log-settings.tailDialog',
+                dialogTitle : 'log-settings.tailRepo',
+                dialogWidth : '80vw',
+                widgetsContent : [ {
+                    name : 'ootbee-support-tools/list/LogList',
+                    config : {
+                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
+                        style : 'min-height: 40ex;',
+                        loadDataPublishPayload : {
+                            url : 'ootbee/admin/log4j-tail-events',
+                            urlType : 'PROXY'
+                        }
+                    }
+                } ],
+                widgetsButtons : [ {
+                    name : 'alfresco/buttons/AlfButton',
+                    config : {
+                        label : 'log-settings.tail.close',
+                        publishTopic : 'HIDE-LOG-TAIL-DIALOG'
+                    }
+                } ]
+            }
+        }
+    }, {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : 'log-settings.tailShare',
+            // TODO Report enhancement - dialog should support eager destroy
+            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
+            publishPayload : {
+                dialogId : 'TAIL',
+                hideTopic : 'HIDE-LOG-TAIL-DIALOG',
+                dialogTitle : 'log-settings.tailShare',
                 dialogWidth : '80vw',
                 widgetsContent : [ {
                     name : 'ootbee-support-tools/list/LogList',
