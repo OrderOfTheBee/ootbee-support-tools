@@ -24,7 +24,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("admin.log.settings.tail.title" ) dialog=true customJSFiles=["ootbee-support-tools/js/log-tail.js"] customCSSFiles=["ootbee-support-tools/css/log4j-tail.css"]>
+<@page title=msg("admin.log.settings.tail.title" ) dialog=true customJSFiles=["ootbee-support-tools/js/log-tail.js"] customCSSFiles=["ootbee-support-tools/css/log-tail.css"]>
 
     <script type="text/javascript">//<![CDATA[
         AdminTL.setServiceUrl('${url.service}');

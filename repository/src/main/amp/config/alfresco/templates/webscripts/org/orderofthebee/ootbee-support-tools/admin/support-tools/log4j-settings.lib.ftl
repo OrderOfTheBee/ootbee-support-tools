@@ -22,7 +22,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
-<@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customCSSFiles=["ootbee-support-tools/css/log4j-settings.css"]>
+<@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customCSSFiles=["ootbee-support-tools/css/log-settings.css"]>
 <#-- close the dummy form -->
 </form>
 

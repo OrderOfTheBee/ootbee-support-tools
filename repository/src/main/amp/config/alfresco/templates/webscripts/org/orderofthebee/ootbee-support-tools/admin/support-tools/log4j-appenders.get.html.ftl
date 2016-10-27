@@ -24,7 +24,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("log-settings.appenders.title", (logger == '-root-')?string(msg('log-settings.rootLogger'), logger) ) dialog=true customCSSFiles=["ootbee-support-tools/css/log4j-appenders.css"]>
+<@page title=msg("log-settings.appenders.title", (logger == '-root-')?string(msg('log-settings.rootLogger'), logger) ) dialog=true customCSSFiles=["ootbee-support-tools/css/log-appenders.css"]>
 
     <div class="column-full">
 
