@@ -24,12 +24,12 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
 
                 loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
 
-                loadDataPublishPayload : {
+                loadDataPublishPayloadDefault : {
                     url : 'data/console/ootbee-support-tools/log4j-settings-tail',
                     urlType : 'SHARE'
                 },
 
-                widgets : [ {
+                widgetsDefault : [ {
                     name : 'alfresco/lists/views/AlfListView',
                     config : {
                         widgetsForHeader : [ {
@@ -97,6 +97,19 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                     }
                 } ],
 
+                constructor : function ootbeeSupportTools_list_LogList__constructor()
+                {
+                    // redefine the properties to avoid setting default values to the prototype
+                    Object.defineProperties(this, {
+                        widgets : {
+                            value : lang.clone(this.widgetsDefault)
+                        },
+                        loadDataPublishPayload : {
+                            value : lang.clone(this.loadDataPublishPayloadDefault)
+                        }
+                    });
+                },
+
                 postMixInProperties : function ootbeeSupportTools_list_LogList__postMixInProperties()
                 {
                     this.inherited(arguments);
@@ -135,18 +148,15 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                         this.currentData = {};
                         this.currentData.items = payload.response.events;
 
-                        if (this.currentData.items.length > 0)
-                        {
-                            this.processLoadedData(payload.response);
+                        this.processLoadedData(payload.response);
 
-                            // temporarily flip so data is appended
-                            // (we don't enable it generally since we don't need other aspects) 
-                            this.useInfiniteScroll = true;
-                            this.renderView();
-                            this.useInfiniteScroll = false;
+                        // temporarily flip so data is appended
+                        // (we don't enable it generally since we don't need other aspects)
+                        this.useInfiniteScroll = true;
+                        this.renderView();
+                        this.useInfiniteScroll = false;
 
-                            this.retainPreviousItemSelectionState(this.currentData.items);
-                        }
+                        this.retainPreviousItemSelectionState(this.currentData.items);
 
                         this.alfPublish(this.requestFinishedTopic, {});
                     }

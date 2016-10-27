@@ -43,9 +43,22 @@ model.jsonModel = {
             publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
             publishPayload : {
                 dialogId : 'TAIL',
+                hideTopic : 'HIDE-LOG-TAIL-DIALOG',
                 dialogTitle : 'log-settings.tailDialog',
+                dialogWidth : '80vw',
                 widgetsContent : [ {
-                    name : 'ootbee-support-tools/list/LogList'
+                    name : 'ootbee-support-tools/list/LogList',
+                    config : {
+                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
+                        style : 'min-height: 40ex;'
+                    }
+                } ],
+                widgetsButtons : [ {
+                    name : 'alfresco/buttons/AlfButton',
+                    config : {
+                        label : 'log-settings.tail.close',
+                        publishTopic : 'HIDE-LOG-TAIL-DIALOG'
+                    }
                 } ]
             }
         }

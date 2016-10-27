@@ -106,7 +106,7 @@ public class LimitedListAppender extends AppenderSkeleton
     protected void append(final LoggingEvent event)
     {
 
-        final boolean active = System.currentTimeMillis() - this.lastRetrievalTimestamp > AUTO_DEREGISTRATION_TIMEOUT;
+        final boolean active = (System.currentTimeMillis() - this.lastRetrievalTimestamp) < AUTO_DEREGISTRATION_TIMEOUT;
         if (active)
         {
             synchronized (this.storedEvents)
