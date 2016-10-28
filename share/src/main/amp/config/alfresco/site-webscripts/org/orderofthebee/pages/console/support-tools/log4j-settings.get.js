@@ -303,6 +303,7 @@ model.jsonModel = {
                                     widgets : [ {
                                         name : 'alfresco/renderers/Actions',
                                         config : {
+                                            onlyShowOnHover : true,
                                             // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
                                             customActions : [ {
                                                 id : 'EDIT_SETTING',
