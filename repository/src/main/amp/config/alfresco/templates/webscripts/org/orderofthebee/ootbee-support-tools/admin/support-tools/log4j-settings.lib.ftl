@@ -31,7 +31,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <@section label=msg("log-settings.logging") />
 
     <div class="column-full">
-        <div>Add logger:
+        <div>${msg("log-settings.column.addLogger")}:
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                 <input name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
@@ -45,7 +45,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <option class="setting-ERROR" value="ERROR">${msg("log-settings.level.ERROR")?html}</option>
                     <option class="setting-FATAL" value="FATAL">${msg("log-settings.level.FATAL")?html}</option>
                 </select>
-                <input type="submit" value="Add" style="margin-right:1em;" />
+                <input type="submit" value="${msg("log-settings.column.add")}" style="margin-right:1em;" />
             </form>
             <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
             <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
