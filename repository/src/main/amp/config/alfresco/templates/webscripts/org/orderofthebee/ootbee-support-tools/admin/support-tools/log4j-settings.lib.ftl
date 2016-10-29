@@ -31,7 +31,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <@section label=msg("log-settings.logging") />
 
     <div class="column-full">
-        <div>Add logger:
+        <div>${msg("log-settings.column.addLogger")}:
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                 <input name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
