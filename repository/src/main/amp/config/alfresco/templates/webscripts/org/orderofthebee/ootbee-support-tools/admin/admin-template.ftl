@@ -57,6 +57,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
    <link rel="stylesheet" type="text/css" href="${url.context}/css/alfresco.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/admin/css/admin.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/ootbee-support-tools/css/admin.css" />
+
    <!--[if IE 8 ]><style type="text/css">.dialog{width:100%}</style><![endif]-->
    <script type="text/javascript" src="${url.context}/ootbee-support-tools/js/admin.js"></script>
    <script type="text/javascript">//<![CDATA[

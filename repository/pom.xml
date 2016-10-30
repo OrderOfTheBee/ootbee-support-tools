@@ -38,6 +38,20 @@
             </exclusions>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/net.time4j/time4j-core -->
+        <dependency>
+            <groupId>net.time4j</groupId>
+            <artifactId>time4j-core</artifactId>
+            <version>3.23</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.time4j/time4j-i18n -->
+        <dependency>
+            <groupId>net.time4j</groupId>
+            <artifactId>time4j-i18n</artifactId>
+            <version>3.23</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -62,6 +76,11 @@
                         <exclude>amp/config/alfresco/templates/webscripts/**/*.get.js</exclude>
                         <exclude>amp/config/alfresco/templates/webscripts/**/*.post.js</exclude>
                         <exclude>amp/web/ootbee-support-tools/js/moment-with-locales.min.js</exclude>
+                        <exclude>amp/web/ootbee-support-tools/js/jquery-2.2.3.js</exclude>
+                        <exclude>amp/web/ootbee-support-tools/js/jquery.dataTables.js</exclude>
+                        <exclude>amp/web/ootbee-support-tools/js/dataTables.buttons.min.js</exclude>
+                        <exclude>amp/web/ootbee-support-tools/js/dataTables.bootstrap4.min.js</exclude>
+
                     </excludes>
                     <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
                 </configuration>
