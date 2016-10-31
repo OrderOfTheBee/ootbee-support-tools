@@ -45,8 +45,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <#list globalProperties?keys?sort as key>
                         <#assign keySensitive = false/>
                         <#list sensitiveKeys as sensitiveKey>
-                            <#if keySensitive==false>
-                                <#assign keySensitive = key ?contains(sensitiveKey)/>
+                            <#if !keySensitive && sensitiveKey?trim?has_content>
+                                <#assign keySensitive = key?lower_case?ends_with(sensitiveKey?trim?lower_case)/>
                             </#if>
                         </#list>
                         <tr>

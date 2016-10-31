@@ -24,32 +24,27 @@
 
 /* exported buildSystemInformation */
 function buildSystemInformation(){
-    var ctxt, managementFactory, runtime, globalProperties ;
+    var ctxt, managementFactory, runtime, globalProperties, duration, prettyUptime;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
     model.globalProperties = globalProperties;
-    model.sensitiveKeys = Packages.com.google.common.collect.Lists.newArrayList(Packages.com.google.common.base.Splitter
-                                   .on(',')
-                                   .trimResults()
-                                   .omitEmptyStrings()
-                                   .split(globalProperties["support-tools.systeminformation.sensitiveKeys"]));
+    model.sensitiveKeys = globalProperties["support-tools.systeminformation.sensitiveKeys"].split(',');
 
-    model.environmentProperties = java.lang.System.getenv();
-    model.systemProperties = java.lang.System.getProperties();
+    model.environmentProperties = Packages.java.lang.System.getenv();
+    model.systemProperties = Packages.java.lang.System.getProperties();
 
-    managementFactory = java.lang.management.ManagementFactory;
+    managementFactory = Packages.java.lang.management.ManagementFactory;
     runtime = managementFactory.getRuntimeMXBean();
 
     if (runtime.isBootClassPathSupported()){
-        model.bootClassPath = runtime.getBootClassPath().split(java.io.File.pathSeparator);
+        model.bootClassPath = runtime.getBootClassPath().split(Packages.java.io.File.pathSeparator);
     }
 
     model.javaArguments = runtime.getInputArguments();
 
-    var duration = Packages.net.time4j.Duration.of(runtime.getUptime(), Packages.net.time4j.ClockUnit.MILLIS).with(Packages.net.time4j.Duration.STD_PERIOD);
-    var prettyUptime = Packages.net.time4j.PrettyTime.of(Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale()).print(duration, Packages.net.time4j.format.TextWidth.WIDE);
+    duration = Packages.net.time4j.Duration.of(runtime.getUptime(), Packages.net.time4j.ClockUnit.MILLIS).with(Packages.net.time4j.Duration.STD_PERIOD);
+    prettyUptime = Packages.net.time4j.PrettyTime.of(Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale()).print(duration, Packages.net.time4j.format.TextWidth.WIDE);
     model.upTime = prettyUptime;
     model.startTime = runtime.getStartTime();
-
 }
