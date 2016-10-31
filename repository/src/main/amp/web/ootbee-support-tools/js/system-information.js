@@ -37,18 +37,6 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    var serviceUrl, messages = {};
-
-    AdminSI.setServiceUrl = function setServiceURL(url)
-    {
-        serviceUrl = url;
-    };
-
-    AdminSI.addMessage = function addMessage(key, message)
-    {
-        messages[key] = message;
-    };
-
     AdminSI.setupTables = function (){
 
         var dataTableConfig =
