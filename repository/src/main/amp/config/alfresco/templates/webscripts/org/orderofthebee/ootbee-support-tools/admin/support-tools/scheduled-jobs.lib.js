@@ -25,7 +25,7 @@
 /* exported buildScheduledJobsData */
 function buildScheduledJobsData()
 {
-    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count;
+    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count, executingJobs, quartz, cronDefinition, parser, descriptor, cronExpressionDescription, cronExpression, execContext, jobName;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
@@ -35,31 +35,31 @@ function buildScheduledJobsData()
     scheduledJobsName = [];
     runningJobs = [];
 
-    var executingJobs = scheduler.getCurrentlyExecutingJobs();
-    for(count=0;count<executingJobs.size();count++){
-        var execContext = executingJobs.get(count);
-        runningJobs.push(execContext.getJobDetail().getName()+"-"+execContext.getJobDetail().getGroup());
+    executingJobs = scheduler.getCurrentlyExecutingJobs();
+    for (count = 0; count < executingJobs.size(); count++)
+    {
+        execContext = executingJobs.get(count);
+        runningJobs.push(execContext.getJobDetail().getName() + "-" + execContext.getJobDetail().getGroup());
     }
 
-    var quartz = Packages.com.cronutils.model.CronType.QUARTZ;
-    var cronDefinition = Packages.com.cronutils.model.definition.CronDefinitionBuilder.instanceDefinitionFor(quartz);
-    var parser = new Packages.com.cronutils.parser.CronParser(cronDefinition);
-    var descriptor = Packages.com.cronutils.descriptor.CronDescriptor.instance(Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale());
-
-    var cronExpressionDescription;
-    var cronExpression;
+    quartz = Packages.com.cronutils.model.CronType.QUARTZ;
+    cronDefinition = Packages.com.cronutils.model.definition.CronDefinitionBuilder.instanceDefinitionFor(quartz);
+    parser = new Packages.com.cronutils.parser.CronParser(cronDefinition);
+    descriptor = Packages.com.cronutils.descriptor.CronDescriptor.instance(Packages.org.springframework.extensions.surf.util.I18NUtil
+            .getLocale());
 
     for (i = 0; i < jobsList.length; i++)
     {
-        var jobName = scheduler.getJobNames(jobsList[i]);
-        java.util.Arrays.sort(jobName);
+        jobName = scheduler.getJobNames(jobsList[i]);
+        Packages.java.util.Arrays.sort(jobName);
 
         for (j = 0; j < jobName.length; j++)
         {
             jobTriggerDetail = scheduler.getTriggersOfJob(jobName[j], jobsList[i]);
 
             cronExpression = jobTriggerDetail[0].cronExpression;
-            if (cronExpression) {
+            if (cronExpression)
+            {
                 cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
             }
 
@@ -73,40 +73,40 @@ function buildScheduledJobsData()
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
                 timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
                 jobGroup : jobsList[i],
-                running: (runningJobs.indexOf(jobName[j]+"-"+jobsList[i]) !== -1)
+                running : (runningJobs.indexOf(jobName[j] + "-" + jobsList[i]) !== -1)
             });
         }
     }
 
     model.scheduledjobs = scheduledJobsData;
+    model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }
 
-
 /**
-* uses the quartz scheduler to determine the current running jobs which are made available in the model via runningJobs
-*
-**/
+ * uses the quartz scheduler to determine the current running jobs which are made available in the model via runningJobs
+ * 
+ */
 
 /* exported buildRunningJobsData*/
-function buildRunningJobsData(){
-
-    var ctxt, scheduler, runningJobsData, count;
+function buildRunningJobsData()
+{
+    var ctxt, scheduler, runningJobsData, count, executingJobs, execContext;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-    runningJobsData =[];
+    runningJobsData = [];
 
-    var executingJobs = scheduler.getCurrentlyExecutingJobs();
-    for(count=0;count<executingJobs.size();count++){
-        var execContext = executingJobs.get(count);
+    executingJobs = scheduler.getCurrentlyExecutingJobs();
+    for (count = 0; count < executingJobs.size(); count++)
+    {
+        execContext = executingJobs.get(count);
         runningJobsData.push({
-            jobName: execContext.getJobDetail().getName(),
-            groupName: execContext.getJobDetail().getGroup()
+            jobName : execContext.getJobDetail().getName(),
+            groupName : execContext.getJobDetail().getGroup()
         });
     }
 
     model.runningJobs = runningJobsData;
-
 }
 
 /* exported executeJobNow */

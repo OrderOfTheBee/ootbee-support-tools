@@ -32,6 +32,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
         AdminSJ.addMessage('running', '${msg("scheduled-jobs.state.running")?js_string}');
         AdminSJ.addMessage('notRunning', '${msg("scheduled-jobs.state.notRunning")?js_string}');
+        
+        moment.locale('${locale?replace('_', '-')?js_string}');
     //]]></script>
 
     <div class="column-full">
