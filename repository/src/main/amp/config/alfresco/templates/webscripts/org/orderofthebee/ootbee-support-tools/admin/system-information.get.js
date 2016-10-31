@@ -1,5 +1,5 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/systeminformation/systeminformation.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/system-information.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -27,5 +27,5 @@
 
 buildSystemInformation();
 
-model.tools = Admin.getConsoleTools("systeminformation");
+model.tools = Admin.getConsoleTools("system-information");
 model.metadata = Admin.getServerMetaData();
