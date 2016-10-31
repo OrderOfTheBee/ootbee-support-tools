@@ -15,3 +15,9 @@ table.results tr:nth-child(even)
 {
    background-color: #f8f8f8;
 }
+
+.intro{
+    margin-bottom:  10px;
+    padding-bottom: 10px;
+    padding-top:    20px;
+}
