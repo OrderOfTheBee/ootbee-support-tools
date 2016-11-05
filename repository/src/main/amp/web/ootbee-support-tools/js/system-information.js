@@ -19,7 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco Copyright
+ * (C) 2005-2016 Alfresco Software Limited.
  */
 
 /* global Admin: false, $: false*/
