@@ -1,25 +1,25 @@
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
  * Copyright (C) 2016 Order of the Bee
- * 
+ *
  * This file is part of Community Support Tools
- * 
- * Community Support Tools is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- * 
+ *
+ * Community Support Tools is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
  * Community Support Tools is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
- * General Public License for more details.
- * 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Community Support Tools. If not, see
- * <http://www.gnu.org/licenses/>.
+ * along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco
+ * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
 /* global formdata: false */
@@ -29,7 +29,7 @@ function buildLoggerState(logger)
     var RootLogger, loggerState, allAppenders, appender;
 
     RootLogger = Packages.org.apache.log4j.spi.RootLogger;
-    
+
     loggerState = {
         name : logger.name,
         isRoot : logger instanceof RootLogger,
@@ -89,7 +89,7 @@ function buildLoggerStates(showUnconfiguredLoggers)
 function changeLoggerState(loggerName, level)
 {
     var logger;
-    
+
     if (loggerName === '-root-')
     {
         logger = Packages.org.apache.log4j.Logger.getRootLogger();
@@ -98,7 +98,7 @@ function changeLoggerState(loggerName, level)
     {
         logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
     }
-    
+
     if (String(level) === '' || String(level) === 'UNSET')
     {
         logger.setLevel(null);
@@ -150,7 +150,7 @@ function registerTailingAppender(uuidParam)
     appender.registerAsAppender(rootLogger);
 
     model.uuid = uuid;
-    
+
     return appender;
 }
 
@@ -174,25 +174,26 @@ function retrieveTailingEvents()
 /**
  * Builds a generic script model from a logger-/appender-related Java object.
  * 
- * @param javaObject the javaObject to transform into a script model
+ * @param javaObject
+ *            the javaObject to transform into a script model
  * @returns the script model for the javaObject
  */
 function buildGenericJavaObjectModel(javaObject)
 {
     var key, value, model;
-    
+
     model = {};
-    
+
     if (javaObject.name !== undefined)
     {
         model.name = javaObject.name;
     }
-    
+
     if (javaObject.class !== undefined)
     {
         model.class = javaObject.class.name;
     }
-    
+
     for (key in javaObject)
     {
         if (javaObject[key] !== undefined && javaObject[key] !== null && typeof javaObject[key] !== 'function')
@@ -213,19 +214,19 @@ function buildGenericJavaObjectModel(javaObject)
             }
         }
     }
-    
+
     return model;
 }
 
 function buidAppenderModelsForLogger(logger, appenders)
 {
     var allAppenders;
-    
+
     if (logger.additivity && logger.parent !== null)
     {
         buidAppenderModelsForLogger(logger.parent, appenders);
     }
-    
+
     allAppenders = logger.allAppenders;
     while (allAppenders.hasMoreElements())
     {
@@ -237,7 +238,7 @@ function buidAppenderModelsForLogger(logger, appenders)
 function buildAppenderModel(loggerName)
 {
     var logger, appenders;
-    
+
     if (loggerName === '-root-')
     {
         logger = Packages.org.apache.log4j.Logger.getRootLogger();
@@ -246,10 +247,74 @@ function buildAppenderModel(loggerName)
     {
         logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
     }
-    
+
     appenders = [];
     buidAppenderModelsForLogger(logger, appenders);
-    
+
     model.logger = loggerName;
     model.appenders = appenders;
+}
+
+/* exported buildLogFilesModel */
+function buildLogFilesModel(useAllLoggerAppenders)
+{
+    var filePatterns, logFiles, loggerRepository, loggers, logger, allAppenders, appender, filePattern, path, file, dirStream;
+
+    filePatterns = {};
+    logFiles = [];
+
+    if (useAllLoggerAppenders)
+    {
+        loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
+        loggers = loggerRepository.currentLoggers;
+        while (loggers.hasMoreElements())
+        {
+            logger = loggers.nextElement();
+            allAppenders = logger.allAppenders;
+            while (allAppenders.hasMoreElements())
+            {
+                appender = allAppenders.nextElement();
+                if (appender.file !== undefined && appender.file !== null)
+                {
+                    filePatterns[String(appender.file)] = true;
+                }
+            }
+        }
+    }
+
+    // root logger is not container in currentLoggers for some reason
+    logger = Packages.org.apache.log4j.Logger.getRootLogger();
+    allAppenders = logger.allAppenders;
+    while (allAppenders.hasMoreElements())
+    {
+        appender = allAppenders.nextElement();
+        if (appender.file !== undefined && appender.file !== null)
+        {
+            filePatterns[String(appender.file)] = true;
+        }
+    }
+
+    for (filePattern in filePatterns)
+    {
+        if (filePatterns.hasOwnProperty(filePattern) && filePatterns[filePattern] === true)
+        {
+            file = new Packages.java.io.File(filePattern);
+            path = Packages.java.nio.file.Paths.get(file.toURI()).getParent();
+            dirStream = Packages.java.nio.file.Files
+                    .newDirectoryStream(path, filePattern.substring(filePattern.lastIndexOf('/') + 1) + '*');
+            // Rhino does not support conversion of function to SAM type
+            dirStream.forEach({
+                accept : function(path)
+                {
+                    var logFileCandidate = path.toFile();
+                    if (logFileCandidate.isFile())
+                    {
+                        logFiles.push(logFileCandidate.toURI());
+                    }
+                }
+            });
+        }
+    }
+
+    model.logFiles = logFiles;
 }
