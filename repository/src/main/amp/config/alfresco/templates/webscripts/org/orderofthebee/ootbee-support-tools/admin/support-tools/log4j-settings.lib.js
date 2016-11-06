@@ -255,15 +255,11 @@ function buildAppenderModel(loggerName)
     model.appenders = appenders;
 }
 
-/* exported buildLogFilesModel */
-function buildLogFilesModel(useAllLoggerAppenders)
+function collectLogFilePatterns(allLoggerAppenders, logFilePatterns)
 {
-    var filePatterns, logFiles, loggerRepository, loggers, logger, allAppenders, appender, filePattern, path, file, dirStream;
-
-    filePatterns = {};
-    logFiles = [];
-
-    if (useAllLoggerAppenders)
+    var loggerRepository, loggers, logger, allAppenders, appender;
+    
+    if (allLoggerAppenders)
     {
         loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
         loggers = loggerRepository.currentLoggers;
@@ -276,12 +272,12 @@ function buildLogFilesModel(useAllLoggerAppenders)
                 appender = allAppenders.nextElement();
                 if (appender.file !== undefined && appender.file !== null)
                 {
-                    filePatterns[String(appender.file)] = true;
+                    logFilePatterns[String(appender.file)] = true;
                 }
             }
         }
     }
-
+    
     // root logger is not container in currentLoggers for some reason
     logger = Packages.org.apache.log4j.Logger.getRootLogger();
     allAppenders = logger.allAppenders;
@@ -290,9 +286,34 @@ function buildLogFilesModel(useAllLoggerAppenders)
         appender = allAppenders.nextElement();
         if (appender.file !== undefined && appender.file !== null)
         {
-            filePatterns[String(appender.file)] = true;
+            logFilePatterns[String(appender.file)] = true;
         }
     }
+}
+
+/* exported buildLogFilesModel */
+function buildLogFilesModel(useAllLoggerAppenders)
+{
+    var filePatterns, logFiles, matcherFn, filePattern, path, file, dirStream;
+
+    filePatterns = {};
+    logFiles = [];
+
+    collectLogFilePatterns(useAllLoggerAppenders, filePatterns);
+
+    matcherFn = function(path)
+    {
+        var logFileCandidate = path.toFile();
+        if (logFileCandidate.isFile())
+        {
+            logFiles.push({
+                name : String(logFileCandidate.name),
+                path : String(logFileCandidate.parentFile.toPath()),
+                size : logFileCandidate.length(),
+                lastModified : new Packages.java.util.Date(logFileCandidate.lastModified())
+            });
+        }
+    };
 
     for (filePattern in filePatterns)
     {
@@ -304,17 +325,11 @@ function buildLogFilesModel(useAllLoggerAppenders)
                     .newDirectoryStream(path, filePattern.substring(filePattern.lastIndexOf('/') + 1) + '*');
             // Rhino does not support conversion of function to SAM type
             dirStream.forEach({
-                accept : function(path)
-                {
-                    var logFileCandidate = path.toFile();
-                    if (logFileCandidate.isFile())
-                    {
-                        logFiles.push(logFileCandidate.toURI());
-                    }
-                }
+                accept : matcherFn
             });
         }
     }
 
     model.logFiles = logFiles;
+    model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }

@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-core</artifactId>
+            <artifactId>alfresco-remote-api</artifactId>
         </dependency>
 
         <dependency>

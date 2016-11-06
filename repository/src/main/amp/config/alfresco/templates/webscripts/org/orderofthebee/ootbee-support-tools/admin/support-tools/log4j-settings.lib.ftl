@@ -48,6 +48,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <input type="submit" value="${msg("log-settings.column.add")}" style="margin-right:1em;" />
             </form>
             <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
+            <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
             <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
