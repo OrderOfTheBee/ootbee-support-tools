@@ -28,3 +28,9 @@ table.results tr:nth-child(even)
 	float: left;
 	text-align: left;
 }
+
+.main-wrapper .buttons
+{
+	clear: both;
+	padding: 16px 0 8px;
+}

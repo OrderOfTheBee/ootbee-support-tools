@@ -308,7 +308,8 @@ function buildLogFilesModel(useAllLoggerAppenders)
         {
             logFiles.push({
                 name : String(logFileCandidate.name),
-                path : String(logFileCandidate.parentFile.toPath()),
+                directoryPath : String(logFileCandidate.parentFile.toPath()),
+                path : String(logFileCandidate.toPath()),
                 size : logFileCandidate.length(),
                 lastModified : new Packages.java.util.Date(logFileCandidate.lastModified())
             });

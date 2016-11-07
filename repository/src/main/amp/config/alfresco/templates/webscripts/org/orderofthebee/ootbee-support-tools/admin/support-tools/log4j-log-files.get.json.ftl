@@ -29,6 +29,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <#if logFiles??><#list logFiles as logFile>{
             name : "${logFile.name}",
             path : "${logFile.path}",
+            directoryPath : "${logFile.directoryPath}",
             size : "${logFile.size?c}",
             lastModified : "${xmldate(logFile)}"
         }<#if logFile_has_next>,</#if>

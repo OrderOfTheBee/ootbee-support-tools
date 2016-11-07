@@ -38,7 +38,14 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    AdminLF.adaptTimes = function()
+    var serviceContext;
+    
+    AdminLF.setServiceContext = function setServiceContext(context)
+    {
+        serviceContext = context;
+    };
+    
+    AdminLF.adaptTimes = function adaptTimes()
     {
         var table, i, cell;
 
@@ -51,6 +58,25 @@ Admin.addEventListener(window, 'load', function()
 
             cell.title = moment().to(cell.innerHTML);
         }
+    };
+    
+    AdminLF.deleteLogFile = function deleteLogFile(logFilePath, rowId)
+    {
+        Admin.request({
+            url : serviceContext + '/ootbee/admin/log4j-log-file?path=' + encodeURIComponent(logFilePath),
+            method : 'DELETE',
+            fnSuccess : function deleteLogFile_success()
+            {
+                var checkBox, row;
+                
+                row = el(rowId);
+                // just hide it - row deletion is kind of weird (compared to other DOM operations)
+                Admin.toggleHiddenElement(row);
+                
+                checkBox = el(rowId + '-check');
+                checkBox.parent.removeChild(checkBox);
+            }
+        });
     };
 
 }());

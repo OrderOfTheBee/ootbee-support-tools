@@ -22,19 +22,18 @@ package org.orderofthebee.addons.support.tools.repo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Writer;
 
 import org.alfresco.repo.web.scripts.content.ContentStreamer;
-import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
+import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
  * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
  */
-public class LogFileGet extends AbstractLogFileWebScript
+public class LogFileDelete extends AbstractLogFileWebScript
 {
 
     protected ContentStreamer delegate;
@@ -56,15 +55,25 @@ public class LogFileGet extends AbstractLogFileWebScript
     public void execute(final WebScriptRequest req, final WebScriptResponse res) throws IOException
     {
         final String filePath = req.getParameter("path");
-
-        final Map<String, Object> model = new HashMap<>();
-        final Status status = new Status();
-        final Cache cache = new Cache(this.getDescription().getRequiredCache());
-        model.put("status", status);
-        model.put("cache", cache);
-
         final File file = this.validateFilePath(filePath);
-        this.delegate.streamContent(req, res, file, file.lastModified(), false, file.getName(), model);
+        if (file.delete())
+        {
+            res.setStatus(Status.STATUS_OK);
+            // we "have" to send a dummy JSON as repository admin console client JS always tries to parse
+            final Writer writer = res.getWriter();
+            try
+            {
+                writer.write("{}");
+            }
+            finally
+            {
+                writer.close();
+            }
+        }
+        else
+        {
+            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Log file could not be deleted immediately");
+        }
     }
 
 }

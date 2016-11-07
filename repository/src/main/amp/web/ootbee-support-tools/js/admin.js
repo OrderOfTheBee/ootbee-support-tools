@@ -324,7 +324,7 @@ var Admin = Admin || {};
         {
             if (req.readyState === 4)
             {
-                if (req.status === 200)
+                if (req.status >= 200 && req.status < 300)
                 {
                     // success - call handler
                     if (config.fnSuccess)

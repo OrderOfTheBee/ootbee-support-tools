@@ -171,7 +171,7 @@ Admin.addEventListener(window, 'load', function()
     AdminTD.getDump = function getDump()
     {
         Admin.request({
-            url : serviceContext + "/ootbee/admin/" + toolName + "-getone.html",
+            url : serviceContext + "/ootbee/admin/" + encodeURIComponent(toolName) + "-getone.html",
             requestContentType : "text/html",
             responseContentType : "text/html",
             fnSuccess : function(res)
