@@ -54,7 +54,7 @@ Admin.addEventListener(window, 'load', function()
         // i starting at 1 to jump over the table header!
         for (i = 1; i < table.rows.length; i++)
         {
-            cell = table.rows[i].cells[3];
+            cell = table.rows[i].cells[4];
 
             cell.title = moment().to(cell.innerHTML);
         }

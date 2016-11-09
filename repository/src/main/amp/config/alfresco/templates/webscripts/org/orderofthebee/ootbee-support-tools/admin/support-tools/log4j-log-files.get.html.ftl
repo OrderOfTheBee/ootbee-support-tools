@@ -51,7 +51,17 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <td><input id="log-row-${logFile_index?c}-check" type="checkbox" name="paths" value="${logFile.path?html}" /></td>
                         <td>${logFile.name?html}</td>
                         <td>${logFile.directoryPath?html}</td>
-                        <td>${logFile.size?c}</td>
+                        <#assign readableSize = "" />
+                        <#if logFile.size &gt;= (1024 * 1024 * 1024)>
+                            <#assign readableSize = msg('log-settings.gibibytes', (logFile.size/1024/1024/1024)?string('0.00')) />
+                        <#elseif logFile.size &gt;= (1024 * 1024)>
+                            <#assign readableSize = msg('log-settings.mebibytes', (logFile.size/1024/1024)?string('0.00')) />
+                        <#elseif logFile.size &gt;= 1024>
+                            <#assign readableSize = msg('log-settings.kibibytes', (logFile.size/1024)?string('0.00')) />
+                        <#else>
+                            <#assign readableSize = msg('log-settings.bytes', logFile.size?c) />
+                        </#if>
+                        <td title="${readableSize}">${msg('log-settings.bytes', logFile.size?c)}</td>
                         <td>${xmldate(logFile.lastModified)?html}</td>
                         <#assign pathFragments = logFile.path?split('/') />
                         <#assign urlPath = "" />
