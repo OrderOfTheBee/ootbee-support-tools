@@ -22,7 +22,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-function roundToMegabyte(value)
+function roundToMebibyte(value)
 {
     var result = Math.round(value / 1024 / 1024);
     return result;
@@ -39,19 +39,19 @@ function buildMemoryMetrics()
     nonHeapUsage = memoryMXBean.nonHeapMemoryUsage;
 
     memoryMetrics = {
-            heapInit : roundToMegabyte(heapUsage.init),
-            heapFree : roundToMegabyte(heapUsage.max - heapUsage.used),
-            heapUsed : roundToMegabyte(heapUsage.used),
-            heapCommitted : roundToMegabyte(heapUsage.committed),
-            heapMax : roundToMegabyte(heapUsage.max),
-            nonHeapInit : roundToMegabyte(nonHeapUsage.init),
-            nonHeapFree : roundToMegabyte(nonHeapUsage.max - nonHeapUsage.used),
-            nonHeapUsed : roundToMegabyte(nonHeapUsage.used),
-            nonHeapCommitted : roundToMegabyte(nonHeapUsage.committed),
-            nonHeapMax : roundToMegabyte(nonHeapUsage.max),
-            freeMemory : roundToMegabyte(Runtime.freeMemory()),
-            totalMemory : roundToMegabyte(Runtime.totalMemory()),
-            maxMemory : roundToMegabyte(Runtime.maxMemory())
+            heapInit : roundToMebibyte(heapUsage.init),
+            heapFree : roundToMebibyte(heapUsage.max - heapUsage.used),
+            heapUsed : roundToMebibyte(heapUsage.used),
+            heapCommitted : roundToMebibyte(heapUsage.committed),
+            heapMax : roundToMebibyte(heapUsage.max),
+            nonHeapInit : roundToMebibyte(nonHeapUsage.init),
+            nonHeapFree : roundToMebibyte(nonHeapUsage.max - nonHeapUsage.used),
+            nonHeapUsed : roundToMebibyte(nonHeapUsage.used),
+            nonHeapCommitted : roundToMebibyte(nonHeapUsage.committed),
+            nonHeapMax : roundToMebibyte(nonHeapUsage.max),
+            freeMemory : roundToMebibyte(Runtime.freeMemory()),
+            totalMemory : roundToMebibyte(Runtime.totalMemory()),
+            maxMemory : roundToMebibyte(Runtime.maxMemory())
     };
 
     model.memoryMetrics = memoryMetrics;
