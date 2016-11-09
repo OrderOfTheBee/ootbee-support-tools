@@ -6,5 +6,5 @@
     <format default="json" />
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <transaction allow="readonly">required</transaction>
+    <transaction>none</transaction>
 </webscript>

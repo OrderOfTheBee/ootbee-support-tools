@@ -6,6 +6,5 @@
     <format default="html">argument</format>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <!-- though we do make changes they are not persisted on DB -->
-    <transaction allow="readonly">required</transaction>
+    <transaction>none</transaction>
 </webscript>
