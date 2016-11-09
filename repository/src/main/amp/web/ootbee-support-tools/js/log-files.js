@@ -62,8 +62,17 @@ Admin.addEventListener(window, 'load', function()
     
     AdminLF.deleteLogFile = function deleteLogFile(logFilePath, rowId)
     {
+        var pathFragments, idx, realPath;
+
+        pathFragments = logFilePath.split(/\//);
+        for (idx = 0; idx < pathFragments.length; idx++)
+        {
+            pathFragments[idx] = encodeURIComponent(pathFragments[idx]).replace(/:/g, '%3A');
+        }
+        realPath = pathFragments.join('/');
+
         Admin.request({
-            url : serviceContext + '/ootbee/admin/log4j-log-file?path=' + encodeURIComponent(logFilePath),
+            url : serviceContext + '/ootbee/admin/log4j-log-file/' + realPath,
             method : 'DELETE',
             fnSuccess : function deleteLogFile_success()
             {

@@ -55,7 +55,9 @@ public class LogFileGet extends AbstractLogFileWebScript
     @Override
     public void execute(final WebScriptRequest req, final WebScriptResponse res) throws IOException
     {
-        final String filePath = req.getParameter("path");
+        final String servicePath = req.getServicePath();
+        final String matchPath = req.getServiceMatch().getPath();
+        final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
 
         final Map<String, Object> model = new HashMap<>();
         final Status status = new Status();

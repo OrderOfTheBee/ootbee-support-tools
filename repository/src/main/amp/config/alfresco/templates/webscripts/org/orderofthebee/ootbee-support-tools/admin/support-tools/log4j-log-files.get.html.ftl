@@ -53,7 +53,13 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <td>${logFile.directoryPath?html}</td>
                         <td>${logFile.size?c}</td>
                         <td>${xmldate(logFile.lastModified)?html}</td>
-                        <td><a href="${url.serviceContext}/ootbee/admin/log4j-log-file?path=${logFile.path?url('UTF-8')}">${msg("log-settings.download")?html}</a></td>
+                        <#assign pathFragments = logFile.path?split('/') />
+                        <#assign urlPath = "" />
+                        <#list pathFragments as pathFragment>
+                            <#assign urlPath = urlPath + pathFragment?url('UTF-8')?replace(':', '%3A', 'f') />
+                            <#if pathFragment_has_next><#assign urlPath = urlPath + '/' /></#if>
+                        </#list>
+                        <td><a href="${url.serviceContext}/ootbee/admin/log4j-log-file/${urlPath}" target="_blank">${msg("log-settings.download")?html}</a></td>
                         <td><a href="#" onclick="AdminLF.deleteLogFile('${logFile.path?js_string}', 'log-row-${logFile_index?c}');">${msg("log-settings.delete")?html}</a></td>
                     </tr>
                 </#list></#if>
