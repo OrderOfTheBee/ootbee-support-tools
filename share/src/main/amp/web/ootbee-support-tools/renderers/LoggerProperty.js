@@ -21,6 +21,8 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
+
+/* global define: false */
 define([ 'dojo/_base/declare', 'alfresco/renderers/Property', 'dojo/_base/lang', 'alfresco/core/ObjectTypeUtils', 'dojox/html/entities',
         'dojo/dom-attr' ], function ootbeeSupportTools_renderers_LoggerProperty(declare, Property, lang, ObjectTypeUtils, htmlEntities,
         domAttr)
