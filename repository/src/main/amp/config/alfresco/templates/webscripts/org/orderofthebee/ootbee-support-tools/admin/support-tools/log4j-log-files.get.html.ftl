@@ -24,7 +24,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("log-settings.logFiles.title") dialog=true customJSFiles=["ootbee-support-tools/js/log-files.js", "ootbee-support-tools/js/moment-with-locales.min.js"]>
+<@page title=msg("log-settings.logFiles.title") dialog=true readonly=true customCSSFiles=["ootbee-support-tools/css/jquery.dataTables.css"]
+    customJSFiles=["ootbee-support-tools/js/jquery-2.2.3.js", "ootbee-support-tools/js/jquery.dataTables.js", "ootbee-support-tools/js/log-files.js", "ootbee-support-tools/js/moment-with-locales.min.js"]>
     <#-- close the dummy form -->
     </form>
     
@@ -37,15 +38,18 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <div class="column-full">
         <form action="${url.serviceContext}/ootbee/admin/log4j-log-files.zip" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
             <table id="log-files-table" class="results">
-                <tr>
-                    <th></th>
-                    <th>${msg("log-settings.logFile")?html}</th>
-                    <th>${msg("log-settings.path")?html}</th>
-                    <th>${msg("log-settings.size")?html}</th>
-                    <th>${msg("log-settings.lastModified")?html}</th>
-                    <th></th>
-                    <th></th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>${msg("log-settings.logFile")?html}</th>
+                        <th>${msg("log-settings.path")?html}</th>
+                        <th>${msg("log-settings.size")?html}</th>
+                        <th>${msg("log-settings.lastModified")?html}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
                 <#if logFiles??><#list logFiles as logFile>
                     <tr id="log-row-${logFile_index?c}">
                         <td><input id="log-row-${logFile_index?c}-check" type="checkbox" name="paths" value="${logFile.path?html}" /></td>
@@ -73,6 +77,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <td><a href="#" onclick="AdminLF.deleteLogFile('${logFile.path?js_string}', 'log-row-${logFile_index?c}');">${msg("log-settings.delete")?html}</a></td>
                     </tr>
                 </#list></#if>
+                </tbody>
             </table>
             <@dialogbuttons>
                 <input type="submit" value="${msg("log-settings.downloadZIP")}"/>

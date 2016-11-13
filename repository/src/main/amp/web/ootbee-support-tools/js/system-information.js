@@ -44,7 +44,6 @@ Admin.addEventListener(window, 'load', function()
         {
             paging: false,
             scrollY: 500,
-            select: true,
             fixedHeader: true,
             autoWidth: false,
             columns: [

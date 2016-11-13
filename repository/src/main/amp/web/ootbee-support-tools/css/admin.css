@@ -1,7 +1,22 @@
-div.main-wrapper > div.main
+div.main-wrapper > div.main,
+.dialog-body div.navigation-wrapper div.main,
+.main .column-full table
 {
 	width: 100%;
 }
+
+.dialog-body div.navigation-wrapper div.main
+{
+	float: none;
+}
+
+/* use as much space as possible */
+body > iframe.dialog
+{
+    left: 5%;
+    width: 90%;
+}
+
 
 /* for whatever reason default admin.css does not include left / right padding */
 table.results td,
@@ -14,6 +29,12 @@ table.results th
 table.results tr:nth-child(even)
 {
    background-color: #f8f8f8;
+}
+
+/* override collapse from jQuery tables */
+table.results.dataTable
+{
+	border-collapse: collapse;
 }
 
 .intro

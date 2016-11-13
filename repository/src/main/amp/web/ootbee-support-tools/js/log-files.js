@@ -23,7 +23,7 @@
  * (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* global Admin: false, el: false, moment: false */
+/* global Admin: false, el: false, moment: false, $: false */
 
 /**
  * Admin Log Files
@@ -34,23 +34,24 @@ var AdminLF = AdminLF || {};
 Admin.addEventListener(window, 'load', function()
 {
     AdminLF.adaptTimes();
+    AdminLF.setupTables();
 });
 
 (function()
 {
     var serviceContext;
-    
+
     AdminLF.setServiceContext = function setServiceContext(context)
     {
         serviceContext = context;
     };
-    
+
     AdminLF.adaptTimes = function adaptTimes()
     {
         var table, i, cell;
 
         table = el("log-files-table");
-        
+
         // i starting at 1 to jump over the table header!
         for (i = 1; i < table.rows.length; i++)
         {
@@ -59,7 +60,7 @@ Admin.addEventListener(window, 'load', function()
             cell.title = moment().to(cell.innerHTML);
         }
     };
-    
+
     AdminLF.deleteLogFile = function deleteLogFile(logFilePath, rowId)
     {
         var pathFragments, idx, realPath;
@@ -77,15 +78,34 @@ Admin.addEventListener(window, 'load', function()
             fnSuccess : function deleteLogFile_success()
             {
                 var checkBox, row;
-                
+
                 row = el(rowId);
                 // just hide it - row deletion is kind of weird (compared to other DOM operations)
                 Admin.toggleHiddenElement(row);
-                
+
                 checkBox = el(rowId + '-check');
                 checkBox.parent.removeChild(checkBox);
             }
         });
+    };
+
+    AdminLF.setupTables = function()
+    {
+        var dataTableConfig;
+        
+        dataTableConfig = {
+            paging : false,
+            searching : false,
+            autoWidth : false,
+            columnDefs : [
+                {
+                    orderable : false,
+                    targets: [0, 3, 5, 6]
+                }
+            ]
+        };
+
+        $('#log-files-table').DataTable(dataTableConfig);
     };
 
 }());
