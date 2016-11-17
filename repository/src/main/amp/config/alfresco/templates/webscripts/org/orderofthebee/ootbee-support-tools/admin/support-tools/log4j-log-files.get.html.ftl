@@ -66,7 +66,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <#assign readableSize = msg('log-settings.bytes', logFile.size?c) />
                         </#if>
                         <td title="${readableSize}">${msg('log-settings.bytes', logFile.size?c)}</td>
-                        <td>${xmldate(logFile.lastModified)?html}</td>
+                        <td>${xmldate(logFile.lastModified?number_to_datetime)?html}</td>
                         <#assign pathFragments = logFile.path?split('/') />
                         <#assign urlPath = "" />
                         <#list pathFragments as pathFragment>

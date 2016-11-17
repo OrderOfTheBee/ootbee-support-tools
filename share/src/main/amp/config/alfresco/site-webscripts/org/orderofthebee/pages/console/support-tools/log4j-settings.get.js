@@ -22,6 +22,183 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+function buildTailButton(repoTier)
+{
+    var button = {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : repoTier ? 'log-settings.tailRepo' : 'log-settings.tailShare',
+            // TODO Report enhancement - dialog should support eager destroy
+            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
+            publishPayload : {
+                dialogId : 'TAIL',
+                hideTopic : 'HIDE-LOG-TAIL-DIALOG',
+                dialogTitle : repoTier ? 'log-settings.tailRepo' : 'log-settings.tailShare',
+                dialogWidth : '80vw',
+                widgetsContent : [ {
+                    name : 'ootbee-support-tools/list/LogList',
+                    config : {
+                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
+                        style : 'min-height: 40ex;',
+                        loadDataPublishPayload : {
+                            url : repoTier ? 'ootbee/admin/log4j-tail-events' : 'data/console/ootbee-support-tools/log4j-settings-tail',
+                            urlType : repoTier ? 'PROXY' : 'SHARE'
+                        }
+                    }
+                } ],
+                widgetsButtons : [ {
+                    name : 'alfresco/buttons/AlfButton',
+                    config : {
+                        label : 'button.close',
+                        publishTopic : 'HIDE-LOG-TAIL-DIALOG'
+                    }
+                } ]
+            }
+        }
+    };
+
+    return button;
+}
+
+function buildLogFilesButton(repoTier)
+{
+    var button = {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : repoTier ? 'log-settings.repoLogFiles' : 'log-settings.shareLogFiles',
+            // TODO Report enhancement - dialog should support eager destroy
+            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
+            publishPayload : {
+                dialogId : 'FILES',
+                hideTopic : 'HIDE-LOG-FILES-DIALOG',
+                dialogTitle : repoTier ? 'log-settings.repoLogFiles' : 'log-settings.shareLogFiles',
+                dialogWidth : '80vw',
+                widgetsContent : [ {
+                    name : 'alfresco/lists/AlfList',
+                    config : {
+                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
+                        style : 'min-height: 40ex;',
+                        loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
+                        loadDataPublishPayload : {
+                            url : repoTier ? 'ootbee/admin/log4j-log-files.json' : 'data/console/ootbee-support-tools/log4j-settings-files',
+                            urlType : repoTier ? 'PROXY' : 'SHARE'
+                        },
+                        itemsProperty : 'logFiles',
+                        widgets : [ {
+                            name : 'alfresco/lists/views/AlfListView',
+                            config : {
+                                additionalCssClasses : 'bordered',
+                                widgetsForHeader : [ {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        label : ''
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        // TODO Report bug - missing padding style options
+                                        label : 'log-settings.files.name'
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        // TODO Report bug - missing padding style options
+                                        label : 'log-settings.files.path'
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        // TODO Report bug - missing padding style options
+                                        label : 'log-settings.files.size'
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        // TODO Report bug - missing padding style options
+                                        label : 'log-settings.files.lastModified'
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/HeaderCell',
+                                    config : {
+                                        label : ''
+                                    }
+                                } ],
+                                widgets : [ {
+                                    name : 'alfresco/lists/views/layouts/Row',
+                                    config : {
+                                        // TODO Report bug - property zebraStriping without effect
+                                        additionalCssClasses : 'zebra-striping',
+                                        widgets : [ {
+                                            name : 'alfresco/lists/views/layouts/Cell'
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/Cell',
+                                            config : {
+                                                additionalCssClasses : 'smallpad',
+                                                widgets : [ {
+                                                    name : 'alfresco/renderers/Property',
+                                                    config : {
+                                                        propertyToRender : 'name'
+                                                    }
+                                                } ]
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/Cell',
+                                            config : {
+                                                additionalCssClasses : 'smallpad',
+                                                widgets : [ {
+                                                    name : 'alfresco/renderers/Property',
+                                                    config : {
+                                                        propertyToRender : 'directoryPath'
+                                                    }
+                                                } ]
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/Cell',
+                                            config : {
+                                                additionalCssClasses : 'smallpad',
+                                                widgets : [ {
+                                                    name : 'alfresco/renderers/Size',
+                                                    config : {
+                                                        sizeProperty : 'size'
+                                                    }
+                                                } ]
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/Cell',
+                                            config : {
+                                                additionalCssClasses : 'smallpad',
+                                                widgets : [ {
+                                                    name : 'alfresco/renderers/Date',
+                                                    config : {
+                                                        simple : true,
+                                                        format : 'yyyy-mm-dd HH:MM:ss.lo',
+                                                        propertyToRender : 'lastModified.iso8601'
+                                                    }
+                                                } ]
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/Cell'
+                                        } ]
+                                    }
+                                } ]
+                            }
+                        } ]
+                    }
+                } ],
+                widgetsButtons : [ {
+                    name : 'alfresco/buttons/AlfButton',
+                    config : {
+                        label : 'button.close',
+                        publishTopic : 'HIDE-LOG-FILES-DIALOG'
+                    }
+                } ]
+            }
+        }
+    };
+
+    return button;
+}
+
 model.jsonModel = {
     services : [ 'alfresco/services/CrudService', 'alfresco/services/DialogService' ],
     widgets : [ {
@@ -36,65 +213,7 @@ model.jsonModel = {
             label : 'log-settings.intro-text',
             style : 'display: block; margin-bottom: 2ex;'
         }
-    }, {
-        name : 'alfresco/buttons/AlfButton',
-        config : {
-            label : 'log-settings.tailRepo',
-            // TODO Report enhancement - dialog should support eager destroy
-            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
-            publishPayload : {
-                dialogId : 'TAIL',
-                hideTopic : 'HIDE-LOG-TAIL-DIALOG',
-                dialogTitle : 'log-settings.tailRepo',
-                dialogWidth : '80vw',
-                widgetsContent : [ {
-                    name : 'ootbee-support-tools/list/LogList',
-                    config : {
-                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
-                        style : 'min-height: 40ex;',
-                        loadDataPublishPayload : {
-                            url : 'ootbee/admin/log4j-tail-events',
-                            urlType : 'PROXY'
-                        }
-                    }
-                } ],
-                widgetsButtons : [ {
-                    name : 'alfresco/buttons/AlfButton',
-                    config : {
-                        label : 'log-settings.tail.close',
-                        publishTopic : 'HIDE-LOG-TAIL-DIALOG'
-                    }
-                } ]
-            }
-        }
-    }, {
-        name : 'alfresco/buttons/AlfButton',
-        config : {
-            label : 'log-settings.tailShare',
-            // TODO Report enhancement - dialog should support eager destroy
-            publishTopic : 'ALF_CREATE_DIALOG_REQUEST',
-            publishPayload : {
-                dialogId : 'TAIL',
-                hideTopic : 'HIDE-LOG-TAIL-DIALOG',
-                dialogTitle : 'log-settings.tailShare',
-                dialogWidth : '80vw',
-                widgetsContent : [ {
-                    name : 'ootbee-support-tools/list/LogList',
-                    config : {
-                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
-                        style : 'min-height: 40ex;'
-                    }
-                } ],
-                widgetsButtons : [ {
-                    name : 'alfresco/buttons/AlfButton',
-                    config : {
-                        label : 'log-settings.tail.close',
-                        publishTopic : 'HIDE-LOG-TAIL-DIALOG'
-                    }
-                } ]
-            }
-        }
-    }, {
+    }, buildTailButton(true), buildLogFilesButton(true), buildTailButton(false), buildLogFilesButton(false), {
         name : 'alfresco/lists/AlfFilteredList',
         config : {
             pubSubScope : 'LOGGER_LIST/',
