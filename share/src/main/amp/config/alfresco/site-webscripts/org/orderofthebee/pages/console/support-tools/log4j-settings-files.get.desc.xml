@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>Log4J Settings - Files</shortname>
-    <url>/data/console/ootbee-support-tools/log4j-settings-files</url>
+    <url>/data/console/ootbee-support-tools/log4j-log-files</url>
     <format default="json" />
     <authentication>admin</authentication>
 </webscript>

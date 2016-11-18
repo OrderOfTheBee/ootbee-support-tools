@@ -73,118 +73,205 @@ function buildLogFilesButton(repoTier)
                 hideTopic : 'HIDE-LOG-FILES-DIALOG',
                 dialogTitle : repoTier ? 'log-settings.repoLogFiles' : 'log-settings.shareLogFiles',
                 dialogWidth : '80vw',
-                widgetsContent : [ {
-                    name : 'alfresco/lists/AlfList',
-                    config : {
-                        // TODO Report enhancement - table should not force "loading" to be larger than current table view
-                        style : 'min-height: 40ex;',
-                        loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
-                        loadDataPublishPayload : {
-                            url : repoTier ? 'ootbee/admin/log4j-log-files.json' : 'data/console/ootbee-support-tools/log4j-settings-files',
-                            urlType : repoTier ? 'PROXY' : 'SHARE'
-                        },
-                        itemsProperty : 'logFiles',
-                        widgets : [ {
-                            name : 'alfresco/lists/views/AlfListView',
+                widgetsContent : [
+                        {
+                            name : 'alfresco/menus/AlfMenuBar',
                             config : {
-                                additionalCssClasses : 'bordered',
-                                widgetsForHeader : [ {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        label : ''
-                                    }
-                                }, {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        // TODO Report bug - missing padding style options
-                                        label : 'log-settings.files.name'
-                                    }
-                                }, {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        // TODO Report bug - missing padding style options
-                                        label : 'log-settings.files.path'
-                                    }
-                                }, {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        // TODO Report bug - missing padding style options
-                                        label : 'log-settings.files.size'
-                                    }
-                                }, {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        // TODO Report bug - missing padding style options
-                                        label : 'log-settings.files.lastModified'
-                                    }
-                                }, {
-                                    name : 'alfresco/lists/views/layouts/HeaderCell',
-                                    config : {
-                                        label : ''
-                                    }
-                                } ],
+                                pubSubScope : 'OOTBEE_SUPPORT_TOOLS_FILES_DIALOG/',
                                 widgets : [ {
-                                    name : 'alfresco/lists/views/layouts/Row',
+                                    name : 'alfresco/documentlibrary/AlfSelectedItemsMenuBarPopup',
                                     config : {
-                                        // TODO Report bug - property zebraStriping without effect
-                                        additionalCssClasses : 'zebra-striping',
+                                        // can't believe "selected-items.label" is not a global label
+                                        // we prefix it to not mess with any global labels others may have added
+                                        label : 'log-settings.files.selected-items.label',
+                                        passive : false,
+                                        itemKeyProperty : 'path',
                                         widgets : [ {
-                                            name : 'alfresco/lists/views/layouts/Cell'
-                                        }, {
-                                            name : 'alfresco/lists/views/layouts/Cell',
+                                            id : 'DOWNLOAD_LOG_FILES_ZIP',
+                                            name : 'alfresco/menus/AlfSelectedItemsMenuItem',
                                             config : {
-                                                additionalCssClasses : 'smallpad',
-                                                widgets : [ {
-                                                    name : 'alfresco/renderers/Property',
-                                                    config : {
-                                                        propertyToRender : 'name'
-                                                    }
-                                                } ]
+                                                label : 'actions.download-as-zip',
+                                                iconClass : "alf-doclib-action alf-download-as-zip-icon",
+                                                publishTopic : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILES_ZIP',
+                                                publishPayload : {
+
+                                                }
                                             }
-                                        }, {
-                                            name : 'alfresco/lists/views/layouts/Cell',
-                                            config : {
-                                                additionalCssClasses : 'smallpad',
-                                                widgets : [ {
-                                                    name : 'alfresco/renderers/Property',
-                                                    config : {
-                                                        propertyToRender : 'directoryPath'
-                                                    }
-                                                } ]
-                                            }
-                                        }, {
-                                            name : 'alfresco/lists/views/layouts/Cell',
-                                            config : {
-                                                additionalCssClasses : 'smallpad',
-                                                widgets : [ {
-                                                    name : 'alfresco/renderers/Size',
-                                                    config : {
-                                                        sizeProperty : 'size'
-                                                    }
-                                                } ]
-                                            }
-                                        }, {
-                                            name : 'alfresco/lists/views/layouts/Cell',
-                                            config : {
-                                                additionalCssClasses : 'smallpad',
-                                                widgets : [ {
-                                                    name : 'alfresco/renderers/Date',
-                                                    config : {
-                                                        simple : true,
-                                                        format : 'yyyy-mm-dd HH:MM:ss.lo',
-                                                        propertyToRender : 'lastModified.iso8601'
-                                                    }
-                                                } ]
-                                            }
-                                        }, {
-                                            name : 'alfresco/lists/views/layouts/Cell'
                                         } ]
                                     }
                                 } ]
                             }
-                        } ]
-                    }
-                } ],
+                        },
+                        {
+                            name : 'alfresco/lists/AlfList',
+                            config : {
+                                pubSubScope : 'OOTBEE_SUPPORT_TOOLS_FILES_DIALOG/',
+                                // TODO Report enhancement - table should not force "loading" to be larger than current table view
+                                style : 'min-height: 40ex;',
+                                loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
+                                loadDataPublishPayload : {
+                                    url : repoTier ? 'ootbee/admin/log4j-log-files.json'
+                                            : 'data/console/ootbee-support-tools/log4j-log-files',
+                                    urlType : repoTier ? 'PROXY' : 'SHARE'
+                                },
+                                itemsProperty : 'logFiles',
+                                widgets : [ {
+                                    name : 'alfresco/lists/views/AlfListView',
+                                    config : {
+                                        additionalCssClasses : 'bordered',
+                                        widgetsForHeader : [ {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                label : ''
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                // TODO Report bug - missing padding style options
+                                                label : 'log-settings.files.name'
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                // TODO Report bug - missing padding style options
+                                                label : 'log-settings.files.path'
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                // TODO Report bug - missing padding style options
+                                                label : 'log-settings.files.size'
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                // TODO Report bug - missing padding style options
+                                                label : 'log-settings.files.lastModified'
+                                            }
+                                        }, {
+                                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                                            config : {
+                                                label : ''
+                                            }
+                                        } ],
+                                        widgets : [ {
+                                            name : 'alfresco/lists/views/layouts/Row',
+                                            config : {
+                                                // TODO Report bug - property zebraStriping without effect
+                                                additionalCssClasses : 'zebra-striping',
+                                                widgets : [
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Selector',
+                                                                    itemKey : 'path'
+                                                                } ]
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                additionalCssClasses : 'smallpad',
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Property',
+                                                                    config : {
+                                                                        propertyToRender : 'name'
+                                                                    }
+                                                                } ]
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                additionalCssClasses : 'smallpad',
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Property',
+                                                                    config : {
+                                                                        propertyToRender : 'directoryPath'
+                                                                    }
+                                                                } ]
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                additionalCssClasses : 'smallpad',
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Size',
+                                                                    config : {
+                                                                        sizeProperty : 'size'
+                                                                    }
+                                                                } ]
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                additionalCssClasses : 'smallpad',
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Date',
+                                                                    config : {
+                                                                        simple : true,
+                                                                        format : 'yyyy-mm-dd HH:MM:ss.lo',
+                                                                        propertyToRender : 'lastModified.iso8601'
+                                                                    }
+                                                                } ]
+                                                            }
+                                                        },
+                                                        {
+                                                            name : 'alfresco/lists/views/layouts/Cell',
+                                                            config : {
+                                                                // TODO Report enhancement - there should be a nopad option
+                                                                additionalCssClasses : 'nopad',
+                                                                style : 'padding: 0;',
+                                                                widgets : [ {
+                                                                    name : 'alfresco/renderers/Actions',
+                                                                    config : {
+                                                                        onlyShowOnHover : true,
+                                                                        // TODO Report enhancement - make size of Actions configurable (it
+                                                                        // is frigging huge)
+                                                                        // TODO Report enhancement - Actions should allow providing custom actions like the pre-defined action widgets
+                                                                        // (currently customActions are mapped into AlfMenuItem dropping some options and adding some non-suppressable ones)
+                                                                        customActions : [
+                                                                                {
+                                                                                    id : 'DOWNLOAD_LOG_FILE',
+                                                                                    label : 'actions.download',
+                                                                                    icon : 'document-download', // force to do this due Actions mapping
+                                                                                    iconClass : 'alf-doclib-action alf-download-icon',
+                                                                                    publishTopic : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILE',
+                                                                                    publishPayloadType : 'CONFIGURED',
+                                                                                    publishPayloadItemMixin : true,
+                                                                                    publishPayload : {
+                                                                                        urlType : repoTier ? 'PROXY' : 'SHARE',
+                                                                                        baseUrl : repoTier ? 'ootbee/admin/log4j-log-file'
+                                                                                                : 'data/console/ootbee-support-tools/log4j-log-file'
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    id : 'DELETE_LOG_FILE',
+                                                                                    label : 'actions.delete',
+                                                                                    icon : 'document-delete', // force to do this due Actions mapping
+                                                                                    iconClass : 'alf-doclib-action alf-delete-icon',
+                                                                                    publishTopic : 'OOTBEE_SUPPORT_TOOLS_DELETE_LOG_FILE',
+                                                                                    publishPayloadType : 'CONFIGURED',
+                                                                                    publishPayloadItemMixin : true,
+                                                                                    publishPayload : {
+                                                                                        urlType : repoTier ? 'PROXY' : 'SHARE',
+                                                                                        baseUrl : repoTier ? 'ootbee/admin/log4j-log-file'
+                                                                                                : 'data/console/ootbee-support-tools/log4j-log-file'
+                                                                                    }
+                                                                                } ]
+                                                                    }
+                                                                } ]
+                                                            }
+                                                        } ]
+                                            }
+                                        } ]
+                                    }
+                                } ]
+                            }
+                        } ],
                 widgetsButtons : [ {
                     name : 'alfresco/buttons/AlfButton',
                     config : {
@@ -200,7 +287,7 @@ function buildLogFilesButton(repoTier)
 }
 
 model.jsonModel = {
-    services : [ 'alfresco/services/CrudService', 'alfresco/services/DialogService' ],
+    services : [ 'alfresco/services/CrudService', 'alfresco/services/DialogService', 'ootbee-support-tools/service/LogFileService' ],
     widgets : [ {
         id : 'SET_PAGE_TITLE',
         name : 'alfresco/header/SetTitle',

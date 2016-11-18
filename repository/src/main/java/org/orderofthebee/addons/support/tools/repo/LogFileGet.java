@@ -65,8 +65,11 @@ public class LogFileGet extends AbstractLogFileWebScript
         model.put("status", status);
         model.put("cache", cache);
 
+        final String attachParam = req.getParameter("a");
+        final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
+
         final File file = this.validateFilePath(filePath);
-        this.delegate.streamContent(req, res, file, file.lastModified(), false, file.getName(), model);
+        this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
     }
 
 }
