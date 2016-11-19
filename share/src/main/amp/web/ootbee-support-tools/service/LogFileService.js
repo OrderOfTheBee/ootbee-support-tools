@@ -58,7 +58,7 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
             {
                 if (this.downloadZipForm)
                 {
-                    documentBody.removeChild(this.downloadForm);
+                    document.body.removeChild(this.downloadForm);
                 }
 
                 this.downloadZipForm = domConstruct.create('form', {
