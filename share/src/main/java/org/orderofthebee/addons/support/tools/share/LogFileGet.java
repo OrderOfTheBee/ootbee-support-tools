@@ -18,21 +18,22 @@
  * along with Community Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.orderofthebee.addons.support.tools.repo;
+package org.orderofthebee.addons.support.tools.share;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
  * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
  */
-public class LogFileDelete extends AbstractLogFileWebScript
+public class LogFileGet extends AbstractLogFileWebScript
 {
 
     /**
@@ -46,25 +47,20 @@ public class LogFileDelete extends AbstractLogFileWebScript
         final String matchPath = req.getServiceMatch().getPath();
         final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
 
+        final Map<String, Object> model = new HashMap<>();
+        final Status status = new Status();
+        final Cache cache = new Cache(this.getDescription().getRequiredCache());
+        model.put("status", status);
+        model.put("cache", cache);
+
+        final String attachParam = req.getParameter("a");
+        final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
+
         final File file = this.validateFilePath(filePath);
-        if (file.delete())
-        {
-            res.setStatus(Status.STATUS_OK);
-            // we "have" to send a dummy JSON as repository admin console client JS always tries to parse
-            final Writer writer = res.getWriter();
-            try
-            {
-                writer.write("{}");
-            }
-            finally
-            {
-                writer.close();
-            }
-        }
-        else
-        {
-            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Log file could not be deleted immediately");
-        }
+
+        // chances are log file is text/plain but might also be a compressed file (i.e. via logrotate)
+        final String mimetype = "application/octet-stream";
+        this.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model, mimetype);
     }
 
 }

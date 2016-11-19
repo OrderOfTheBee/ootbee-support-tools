@@ -37,7 +37,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             },
             </#if>
             "additivity" : "${loggerState.additivity?string}",
-            "level" : "${loggerState.level!'OFF'}",
+            "level" : "${loggerState.level!'UNSET'}",
             "effectiveLevel" : "${loggerState.effectiveLevel!'OFF'}"
         }<#if loggerState_has_next>,</#if>
     </#list>

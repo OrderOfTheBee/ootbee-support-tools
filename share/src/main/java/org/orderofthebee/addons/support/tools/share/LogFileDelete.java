@@ -18,7 +18,7 @@
  * along with Community Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.orderofthebee.addons.support.tools.repo;
+package org.orderofthebee.addons.support.tools.share;
 
 import java.io.File;
 import java.io.IOException;

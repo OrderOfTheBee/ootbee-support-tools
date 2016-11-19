@@ -41,7 +41,7 @@ function buildTailButton(repoTier)
                         // TODO Report enhancement - table should not force "loading" to be larger than current table view
                         style : 'min-height: 40ex;',
                         loadDataPublishPayload : {
-                            url : repoTier ? 'ootbee/admin/log4j-tail-events' : 'data/console/ootbee-support-tools/log4j-settings-tail',
+                            url : repoTier ? 'ootbee/admin/log4j-tail-events' : 'data/console/ootbee-support-tools/log4j-tail',
                             urlType : repoTier ? 'PROXY' : 'SHARE'
                         }
                     }
@@ -106,6 +106,7 @@ function buildLogFilesButton(repoTier)
                             name : 'alfresco/lists/AlfList',
                             config : {
                                 pubSubScope : 'OOTBEE_SUPPORT_TOOLS_FILES_DIALOG/',
+                                reloadDataTopic : 'OOTBEE_SUPPORT_TOOLS_RELOAD_LOG_FILES',
                                 // TODO Report enhancement - table should not force "loading" to be larger than current table view
                                 style : 'min-height: 40ex;',
                                 loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
@@ -163,6 +164,7 @@ function buildLogFilesButton(repoTier)
                                                         {
                                                             name : 'alfresco/lists/views/layouts/Cell',
                                                             config : {
+                                                                additionalCssClasses : 'smallpad',
                                                                 widgets : [ {
                                                                     name : 'alfresco/renderers/Selector',
                                                                     itemKey : 'path'
@@ -257,6 +259,12 @@ function buildLogFilesButton(repoTier)
                                                                                     publishPayloadType : 'CONFIGURED',
                                                                                     publishPayloadItemMixin : true,
                                                                                     publishPayload : {
+                                                                                        // TODO Report requirement: consistent topic paramaters
+                                                                                        // alfSuccessTopic is primarily used in CoreXhr
+                                                                                        // responseTopic and alfResponseTopic are inconsistently used in various places
+                                                                                        // _SUCCESS is typically appended to the topic when signalling success to subscribers
+                                                                                        // there is no common default pattern for an "as-is" topic parameter for success publications
+                                                                                        alfSuccessTopic : 'OOTBEE_SUPPORT_TOOLS_RELOAD_LOG_FILES',
                                                                                         urlType : repoTier ? 'PROXY' : 'SHARE',
                                                                                         baseUrl : repoTier ? 'ootbee/admin/log4j-log-file'
                                                                                                 : 'data/console/ootbee-support-tools/log4j-log-file'
@@ -308,7 +316,7 @@ model.jsonModel = {
             reloadDataTopic : 'ALF_DOCLIST_RELOAD_DATA',
             loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
             loadDataPublishPayload : {
-                url : 'data/console/ootbee-support-tools/log4j-settings-loggers',
+                url : 'data/console/ootbee-support-tools/log4j-loggers',
                 urlType : 'SHARE'
             },
             // TODO Report enhancement - filtering should not require these form topic cludges
@@ -524,7 +532,7 @@ model.jsonModel = {
                                                     formSubmissionPayloadMixin : {
                                                         // TODO Report enhancement - ALF_CRUD_UPDATE should differentiate request config
                                                         // from request data instead of submitting EVERYTHING
-                                                        url : 'data/console/ootbee-support-tools/log4j-settings-loggers',
+                                                        url : 'data/console/ootbee-support-tools/log4j-loggers',
                                                         urlType : 'SHARE',
                                                         alfResponseTopic : 'LOGGER_LIST/'
                                                     // TODO Report enhancement - any pubSub should support response topic without forcing

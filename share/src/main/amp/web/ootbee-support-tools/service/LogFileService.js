@@ -36,9 +36,9 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
             this.alfSubscribe(this.DELETE_LOG_FILE_TOPIC, lang.hitch(this, this.onDeleteLogFile));
         },
 
-        onDowloadLogFilesZip : function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip(payload)
+        onDowloadLogFilesZip : function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip()
         {
-
+            // TODO similar to downloadIFrame: create invisible form and use that for POST-based download
         },
 
         onDownloadLogFile : function ootbeeSupportTools_service_LogFileService__onDownloadLogFile(payload)
@@ -49,13 +49,13 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
             {
                 baseUrl = Constants.PROXY_URI;
             }
-            else if (payload.urlType === 'PROXY')
+            else if (payload.urlType === 'SHARE')
             {
                 baseUrl = Constants.URL_SERVICECONTEXT;
             }
-            
+
             path = this._toPath(payload);
-            
+
             if (lang.isString(path) && baseUrl !== undefined && lang.isString(payload.baseUrl))
             {
                 url = baseUrl + payload.baseUrl + '/' + path;
@@ -80,12 +80,54 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
 
         onDeleteLogFile : function ootbeeSupportTools_service_LogFileService__onDeleteLogFile(payload)
         {
+            var baseUrl, path, url;
 
+            if (payload.urlType === 'PROXY')
+            {
+                baseUrl = Constants.PROXY_URI;
+            }
+            else if (payload.urlType === 'SHARE')
+            {
+                baseUrl = Constants.URL_SERVICECONTEXT;
+            }
+
+            path = this._toPath(payload);
+
+            if (lang.isString(path) && baseUrl !== undefined && lang.isString(payload.baseUrl))
+            {
+                url = baseUrl + payload.baseUrl + '/' + path;
+            }
+
+            if (url !== undefined)
+            {
+                this
+                        .serviceXhr({
+                            url : url,
+                            method : 'DELETE',
+                            // default callback in CoreXhr annoyingly exposes too much detail data
+                            // it also requires too much mapping
+                            // someone ought to provide a better CoreXhr mixin one day...
+                            successCallback : function ootbeeSupportTools_service_LogFileService__onDeleteLogFile_successCallback()
+                            {
+                                if (payload.alfSuccessTopic)
+                                {
+                                    this.alfPublish(payload.alfSuccessTopic, {}, false, false, payload.alfSuccessScope
+                                            || payload.alfResponseScope);
+                                }
+
+                                if (payload.alfResponseTopic)
+                                {
+                                    this.alfPublish(payload.alfResponseTopic + '_SUCCESS', {}, false, false, payload.alfSuccessScope
+                                            || payload.alfResponseScope);
+                                }
+                            }
+                        });
+            }
         },
 
         _toPath : function ootbeeSupportTools_service_LogFileService__toPath(logFileItem)
         {
-            var pathFragments, path;
+            var pathFragments, path, idx;
 
             if (lang.isString(logFileItem.path))
             {
