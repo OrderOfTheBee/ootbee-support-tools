@@ -93,8 +93,11 @@ function buildLogFilesButton(repoTier)
                                                 label : 'actions.download-as-zip',
                                                 iconClass : "alf-doclib-action alf-download-as-zip-icon",
                                                 publishTopic : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILES_ZIP',
+                                                publishGlobal : true,
                                                 publishPayload : {
-
+                                                    urlType : repoTier ? 'PROXY' : 'SHARE',
+                                                    baseUrl : repoTier ? 'ootbee/admin/log4j-log-files'
+                                                            : 'data/console/ootbee-support-tools/log4j-log-files'
                                                 }
                                             }
                                         } ]
@@ -242,6 +245,8 @@ function buildLogFilesButton(repoTier)
                                                                                     icon : 'document-download', // force to do this due Actions mapping
                                                                                     iconClass : 'alf-doclib-action alf-download-icon',
                                                                                     publishTopic : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILE',
+                                                                                    // actions always publish global but for consistency with toolbar action we includes this here
+                                                                                    publishGlobal : true,
                                                                                     publishPayloadType : 'CONFIGURED',
                                                                                     publishPayloadItemMixin : true,
                                                                                     publishPayload : {
@@ -256,6 +261,8 @@ function buildLogFilesButton(repoTier)
                                                                                     icon : 'document-delete', // force to do this due Actions mapping
                                                                                     iconClass : 'alf-doclib-action alf-delete-icon',
                                                                                     publishTopic : 'OOTBEE_SUPPORT_TOOLS_DELETE_LOG_FILE',
+                                                                                    // actions always publish global but for consistency with toolbar action we includes this here
+                                                                                    publishGlobal : true,
                                                                                     publishPayloadType : 'CONFIGURED',
                                                                                     publishPayloadItemMixin : true,
                                                                                     publishPayload : {

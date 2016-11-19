@@ -17,9 +17,9 @@
  */
 
 /* global define: false */
-define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/CoreXhr', 'dojo/_base/lang', 'service/constants/Default',
-        'dojo/dom-construct' ], function ootbeeSupportTools_service_LogFileService(declare, BaseService, CoreXhr, lang, Constants,
-        domConstruct)
+define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/CoreXhr', 'dojo/_base/lang', 'dojo/_base/array',
+        'service/constants/Default', 'dojo/dom-construct' ], function ootbeeSupportTools_service_LogFileService(declare, BaseService,
+        CoreXhr, lang, array, Constants, domConstruct)
 {
     return declare([ BaseService, CoreXhr ], {
 
@@ -36,9 +36,51 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
             this.alfSubscribe(this.DELETE_LOG_FILE_TOPIC, lang.hitch(this, this.onDeleteLogFile));
         },
 
-        onDowloadLogFilesZip : function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip()
+        onDownloadLogFilesZip : function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip(payload)
         {
-            // TODO similar to downloadIFrame: create invisible form and use that for POST-based download
+            var baseUrl, url;
+
+            if (payload.urlType === 'PROXY')
+            {
+                baseUrl = Constants.PROXY_URI;
+            }
+            else if (payload.urlType === 'SHARE')
+            {
+                baseUrl = Constants.URL_SERVICECONTEXT;
+            }
+
+            if (baseUrl !== undefined && lang.isString(payload.baseUrl))
+            {
+                url = baseUrl + payload.baseUrl;
+            }
+
+            if (url !== undefined && lang.isArray(payload.selectedItems))
+            {
+                if (this.downloadZipForm)
+                {
+                    documentBody.removeChild(this.downloadForm);
+                }
+
+                this.downloadZipForm = domConstruct.create('form', {
+                    id : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILEs_ZIP_FORM',
+                    action : url + '.zip',
+                    method : 'POST',
+                    enctype : 'multipart/form-data',
+                    'accept-charset' : 'utf-8',
+                    style : 'display:none'
+                }, document.body);
+
+                array.forEach(payload.selectedItems, lang.hitch(this,
+                        function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip_forEachSelectedItem(logFile)
+                        {
+                            var checkbox = domConstruct.create('checkbox', {
+                                name : 'paths'
+                            }, this.downloadZipForm);
+                            checkbox.value = logFile.path;
+                        }));
+                
+                this.downloadZipForm.submit();
+            }
         },
 
         onDownloadLogFile : function ootbeeSupportTools_service_LogFileService__onDownloadLogFile(payload)
