@@ -442,9 +442,10 @@ model.jsonModel = {
                                     } ]
                                 }
                             }, {
-                                name : 'alfresco/lists/views/layouts/Cell',
+                                name : 'ootbee-support-tools/list/LogLevelHighlightedCell',
                                 config : {
                                     additionalCssClasses : 'smallpad',
+                                    logLevelPropertyKey : 'level',
                                     widgets : [ {
                                         // TODO Report enhancement - make InlineEditProperty usable
                                         // (e.g. support all types of input elements with simple+smart config)
@@ -480,9 +481,10 @@ model.jsonModel = {
                                     } ]
                                 }
                             }, {
-                                name : 'alfresco/lists/views/layouts/Cell',
+                                name : 'ootbee-support-tools/list/LogLevelHighlightedCell',
                                 config : {
                                     additionalCssClasses : 'smallpad',
+                                    logLevelPropertyKey : 'effectiveLevel',
                                     widgets : [ {
                                         name : 'alfresco/renderers/Property',
                                         config : {

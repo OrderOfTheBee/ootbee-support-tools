@@ -23,22 +23,7 @@
  */
 
 /* global define: false */
-define([ 'dojo/_base/declare', 'alfresco/lists/views/layouts/Row' ], function ootbeeSupportTools_list_LogRow(declare, Row)
+define([ 'dojo/_base/declare', 'alfresco/lists/views/layouts/Cell', './LogLevelHighlightMixin' ], function ootbeeSupportTools_list_LogLevelHighlightedCell(declare, Cell, LogLevelHighlightMixin)
 {
-    return declare([ Row ], {
-        
-        cssRequirements: [{cssFile: './css/LogRow.css'}],
-
-        postMixInProperties : function ootbeeSupportTools_list_LogRow__postMixInProperties()
-        {
-            this.inherited(arguments);
-
-            if (this.currentItem && this.currentItem.level)
-            {
-                this.additionalCssClasses = this.additionalCssClasses || '';
-                this.additionalCssClasses += ' ootbee-support-tools-list-LogRow logMessage-' + this.currentItem.level;
-            }
-        }
-
-    });
+    return declare([ Cell, LogLevelHighlightMixin], {});
 });

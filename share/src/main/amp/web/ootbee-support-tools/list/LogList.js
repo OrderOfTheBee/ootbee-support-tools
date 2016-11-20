@@ -66,7 +66,7 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                             }
                         } ],
                         widgets : [ {
-                            name : 'ootbee-support-tools/list/LogRow',
+                            name : 'ootbee-support-tools/list/LogLevelHighlightedRow',
                             config : {
                                 // TODO Report bug - property zebraStriping without effect
                                 additionalCssClasses : 'zebra-striping',

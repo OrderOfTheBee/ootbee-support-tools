@@ -1,0 +1,119 @@
+.alfresco-lists-views-layouts-Row.ootbee-support-tools-list-LogLevelHighlightMixin.zebra-striping {
+	&.logMessage-OFF {
+	   &:nth-child(odd)
+	   {
+            background-color: overlay(#A0A0A0, #808080);
+        }
+
+        &:nth-child(even) {
+            background-color: Grey;
+        }
+    }
+    
+    &.logMessage-TRACE {
+       &:nth-child(odd)
+       {
+            background-color: LightGrey;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#D3D3D3, #808080);
+        }
+    }
+    
+    &.logMessage-DEBUG {
+       &:nth-child(odd)
+       {
+            background-color: LightGreen;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#90EE90, #008000);
+        }
+    }
+    
+    &.logMessage-WARN {
+       &:nth-child(odd)
+       {
+            background-color: LightYellow;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#FFFFE0, #FFFF00);
+        }
+    }
+    
+    &.logMessage-ERROR {
+       &:nth-child(odd)
+       {
+            background-color: LightPink;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#FFB6C1, #FFC0CB);
+        }
+    }
+    
+    &.logMessage-FATAL {
+       &:nth-child(odd)
+       {
+            background-color: LightCoral;
+        }
+
+        &:nth-child(even) {
+            background-color: overlay(#F08080, #FF7F50);
+        }
+    }
+}
+
+.alfresco-lists-views-layouts-Row.zebra-striping:nth-child(odd) {
+    .logMessage-OFF {
+        background-color: overlay(#A0A0A0, #808080);
+    }
+    
+    .logMessage-TRACE {
+        background-color: LightGrey;
+    }
+    
+    .logMessage-DEBUG {
+        background-color: LightGreen;
+    }
+    
+    .logMessage-WARN {
+        background-color: LightYellow;
+    }
+    
+    .logMessage-ERROR {
+        background-color: LightPink;
+    }
+    
+    .logMessage-FATAL {
+        background-color: LightCoral;
+    }
+}
+
+.alfresco-lists-views-layouts-Row.zebra-striping:nth-child(even) {
+    .logMessage-OFF {
+        background-color: Grey;
+    }
+    
+    .logMessage-TRACE {
+        background-color: overlay(#D3D3D3, #808080);
+    }
+    
+    .logMessage-DEBUG {
+        background-color: overlay(#90EE90, #008000);
+    }
+    
+    .logMessage-WARN {
+        background-color: overlay(#FFFFE0, #FFFF00);
+    }
+    
+    .logMessage-ERROR {
+        background-color: overlay(#FFB6C1, #FFC0CB);
+    }
+    
+    .logMessage-FATAL {
+        background-color: overlay(#F08080, #FF7F50);
+    }
+}
