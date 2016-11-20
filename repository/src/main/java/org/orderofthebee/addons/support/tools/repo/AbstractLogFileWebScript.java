@@ -134,7 +134,7 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                     for (final Path path : paths)
                     {
                         allPathsAllowed = allPathsAllowed && path.startsWith(configuredFilePath)
-                                && path.getFileName().toString().startsWith(appenderFile);
+                                && path.toAbsolutePath().toString().startsWith(appenderFile);
 
                         if (!allPathsAllowed)
                         {
