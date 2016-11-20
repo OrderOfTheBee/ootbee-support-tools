@@ -73,8 +73,7 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                 {
                     final String file = ((FileAppender) appender).getFile();
                     final Path configuredFilePath = new File(file).toPath().toAbsolutePath().getParent();
-
-                    pathAllowed = pathAllowed || (path.startsWith(configuredFilePath) && path.getFileName().toString().startsWith(file));
+                    pathAllowed = pathAllowed || (path.startsWith(configuredFilePath) && path.toAbsolutePath().toString().startsWith(file));
                 }
             }
         }
@@ -82,14 +81,14 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
         if (!pathAllowed)
         {
             throw new WebScriptException(Status.STATUS_FORBIDDEN,
-                    "The log file path could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
+                    "The log file path "+filePath+" could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
         }
 
         final File file = path.toFile();
 
         if (!file.exists())
         {
-            throw new WebScriptException(Status.STATUS_NOT_FOUND, "The log file path could not be resolved to an existing log file");
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "The log file path "+filePath+" could not be resolved to an existing log file");
         }
 
         return file;
