@@ -3,7 +3,7 @@
     <shortname>Log4J Settings - Log Files</shortname>
     <description>Display Log4J log files</description>
     <url>/ootbee/admin/log4j-log-files</url>
-    <format default="json" />
+    <format default="html" />
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>

@@ -51,34 +51,36 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
 
             if (baseUrl !== undefined && lang.isString(payload.baseUrl))
             {
-                url = baseUrl + payload.baseUrl;
+                url = baseUrl + payload.baseUrl + '?' + this.getCsrfParameter() + "=" + encodeURIComponent(this.getCsrfToken());
             }
 
             if (url !== undefined && lang.isArray(payload.selectedItems))
             {
                 if (this.downloadZipForm)
                 {
-                    document.body.removeChild(this.downloadForm);
+                    document.body.removeChild(this.downloadZipForm);
                 }
 
                 this.downloadZipForm = domConstruct.create('form', {
                     id : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILEs_ZIP_FORM',
-                    action : url + '.zip',
+                    action : url,
                     method : 'POST',
                     enctype : 'multipart/form-data',
                     'accept-charset' : 'utf-8',
                     style : 'display:none'
                 }, document.body);
-
+                
                 array.forEach(payload.selectedItems, lang.hitch(this,
                         function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip_forEachSelectedItem(logFile)
                         {
-                            var checkbox = domConstruct.create('checkbox', {
-                                name : 'paths'
+                            domConstruct.create('input', {
+                                name : 'paths',
+                                type : 'checkbox',
+                                checked : true,
+                                value : logFile.path
                             }, this.downloadZipForm);
-                            checkbox.value = logFile.path;
                         }));
-                
+
                 this.downloadZipForm.submit();
             }
         },

@@ -125,7 +125,7 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
         {
             @SuppressWarnings("unchecked")
             final Enumeration<Appender> allAppenders = logger.getAllAppenders();
-            while (allAppenders.hasMoreElements() && !allPathsAllowed)
+            while (allAppenders.hasMoreElements() && allPathsAllowed)
             {
                 final Appender appender = allAppenders.nextElement();
                 if (appender instanceof FileAppender)

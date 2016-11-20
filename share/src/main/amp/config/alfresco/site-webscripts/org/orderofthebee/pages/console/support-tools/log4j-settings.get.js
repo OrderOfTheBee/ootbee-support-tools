@@ -96,8 +96,8 @@ function buildLogFilesButton(repoTier)
                                                 publishGlobal : true,
                                                 publishPayload : {
                                                     urlType : repoTier ? 'PROXY' : 'SHARE',
-                                                    baseUrl : repoTier ? 'ootbee/admin/log4j-log-files'
-                                                            : 'data/console/ootbee-support-tools/log4j-log-files'
+                                                    baseUrl : repoTier ? 'ootbee/admin/log4j-log-files.zip'
+                                                            : 'data/console/ootbee-support-tools/log4j-log-files.zip'
                                                 }
                                             }
                                         } ]
