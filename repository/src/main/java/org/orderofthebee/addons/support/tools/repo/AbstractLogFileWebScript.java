@@ -71,9 +71,11 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                 final Appender appender = allAppenders.nextElement();
                 if (appender instanceof FileAppender)
                 {
-                    final String file = ((FileAppender) appender).getFile();
-                    final Path configuredFilePath = new File(file).toPath().toAbsolutePath().getParent();
-                    pathAllowed = pathAllowed || (path.startsWith(configuredFilePath) && path.toAbsolutePath().toString().startsWith(file));
+                    final String appenderFile = ((FileAppender) appender).getFile();
+                    final File configuredFile = new File(appenderFile);
+                    final Path configuredFilePath = configuredFile.toPath().toAbsolutePath().getParent();
+                    pathAllowed = pathAllowed
+                            || (path.startsWith(configuredFilePath) && path.getFileName().toString().startsWith(configuredFile.getName()));
                 }
             }
         }
@@ -129,12 +131,13 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                 if (appender instanceof FileAppender)
                 {
                     final String appenderFile = ((FileAppender) appender).getFile();
-                    final Path configuredFilePath = new File(appenderFile).toPath().toAbsolutePath().getParent();
+                    final File configuredFile = new File(appenderFile);
+                    final Path configuredFilePath = configuredFile.toPath().toAbsolutePath().getParent();
 
                     for (final Path path : paths)
                     {
                         allPathsAllowed = allPathsAllowed && path.startsWith(configuredFilePath)
-                                && path.toAbsolutePath().toString().startsWith(appenderFile);
+                                && path.getFileName().toString().startsWith(configuredFile.getName());
 
                         if (!allPathsAllowed)
                         {
