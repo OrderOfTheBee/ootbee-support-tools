@@ -110,23 +110,23 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                 {
                     final String file = ((FileAppender) appender).getFile();
                     final Path configuredFilePath = new File(file).toPath().toAbsolutePath().getParent();
-
-                    pathAllowed = pathAllowed || (path.startsWith(configuredFilePath) && path.getFileName().toString().startsWith(file));
+                    pathAllowed = pathAllowed || (path.startsWith(configuredFilePath) && path.toAbsolutePath().toString().startsWith(file));
                 }
             }
         }
 
         if (!pathAllowed)
         {
-            throw new WebScriptException(Status.STATUS_FORBIDDEN,
-                    "The log file path could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
+            throw new WebScriptException(Status.STATUS_FORBIDDEN, "The log file path " + filePath
+                    + " could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
         }
 
         final File file = path.toFile();
 
         if (!file.exists())
         {
-            throw new WebScriptException(Status.STATUS_NOT_FOUND, "The log file path could not be resolved to an existing log file");
+            throw new WebScriptException(Status.STATUS_NOT_FOUND,
+                    "The log file path " + filePath + " could not be resolved to an existing log file");
         }
 
         return file;
@@ -154,6 +154,7 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
 
         boolean allPathsAllowed = true;
         final List<Logger> allLoggers = this.getAllLoggers();
+        final List<File> files = new ArrayList<>();
 
         for (final Logger logger : allLoggers)
         {
@@ -164,35 +165,31 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
                 final Appender appender = allAppenders.nextElement();
                 if (appender instanceof FileAppender)
                 {
-                    final String file = ((FileAppender) appender).getFile();
-                    final Path configuredFilePath = new File(file).toPath().toAbsolutePath().getParent();
+                    final String appenderFile = ((FileAppender) appender).getFile();
+                    final Path configuredFilePath = new File(appenderFile).toPath().toAbsolutePath().getParent();
 
                     for (final Path path : paths)
                     {
                         allPathsAllowed = allPathsAllowed && path.startsWith(configuredFilePath)
-                                && path.getFileName().toString().startsWith(file);
+                                && path.getFileName().toString().startsWith(appenderFile);
+
+                        if (!allPathsAllowed)
+                        {
+                            throw new WebScriptException(Status.STATUS_FORBIDDEN, "The log file path " + path
+                                    + " could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
+                        }
+
+                        final File file = path.toFile();
+                        if (!file.exists())
+                        {
+                            throw new WebScriptException(Status.STATUS_NOT_FOUND,
+                                    "The log file path " + path + " could not be resolved to an existing log file");
+                        }
+
+                        files.add(file);
                     }
                 }
             }
-        }
-
-        if (!allPathsAllowed)
-        {
-            throw new WebScriptException(Status.STATUS_FORBIDDEN,
-                    "A log file path could not be resolved to a valid log file - access to any other file system contents is forbidden via this web script");
-        }
-
-        final List<File> files = new ArrayList<>();
-        for (final Path path : paths)
-        {
-            final File file = path.toFile();
-
-            if (!file.exists())
-            {
-                throw new WebScriptException(Status.STATUS_NOT_FOUND, "A log file path could not be resolved to an existing log file");
-            }
-
-            files.add(file);
         }
 
         return files;
