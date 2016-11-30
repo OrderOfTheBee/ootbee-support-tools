@@ -22,7 +22,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-/* global formdata: false */
+/* global formdata: false, logSettingTracker: false */
 
 function buildLoggerState(logger)
 {
@@ -38,6 +38,7 @@ function buildLoggerState(logger)
         level : logger.level !== null ? String(logger.level) : null,
         effectiveLevel : String(logger.effectiveLevel),
         additivity : logger.additivity,
+        canBeReset : logSettingTracker.canBeReset(logger),
         appenders : []
     };
 
@@ -88,7 +89,7 @@ function buildLoggerStates(showUnconfiguredLoggers)
 
 function changeLoggerState(loggerName, level)
 {
-    var logger;
+    var logger, newLevel;
 
     if (loggerName === '-root-')
     {
@@ -101,12 +102,15 @@ function changeLoggerState(loggerName, level)
 
     if (String(level) === '' || String(level) === 'UNSET')
     {
-        logger.setLevel(null);
+        newLevel = null;
     }
     else
     {
-        logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
+        newLevel = Packages.org.apache.log4j.Level.toLevel(level);
     }
+    
+    logSettingTracker.recordChange(logger, logger.level, newLevel);
+    logger.level = newLevel;
 }
 
 /* exported processLoggerStateChangeFromFormData */
@@ -137,6 +141,33 @@ function processLoggerStateChangeFromFormData()
     changeLoggerState(loggerName, level);
 
     return showUnconfiguredLoggers;
+}
+
+/* exported resetLoggerSetting */
+function resetLoggerSetting(loggerName)
+{
+    var logger;
+    
+    if (loggerName !== undefined && loggerName !== null)
+    {
+        if (String(loggerName) === '-root-')
+        {
+            logger = Packages.org.apache.log4j.Logger.getRootLogger();
+        }
+        else
+        {
+            logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+        }
+    }
+    
+    if (logger === undefined)
+    {
+        logSettingTracker.resetToDefault();
+    }
+    else
+    {
+        logSettingTracker.resetToDefault(logger);
+    }
 }
 
 /* exported registerTailingAppender */

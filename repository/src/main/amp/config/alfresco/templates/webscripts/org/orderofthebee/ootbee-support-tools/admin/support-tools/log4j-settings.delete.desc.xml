@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings</shortname>
+    <description>Reset Log4J settings</description>
+    <url>/ootbee/admin/log4j-settings</url>
+    <url>/ootbee/admin/log4j-settings/{logger}</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>
