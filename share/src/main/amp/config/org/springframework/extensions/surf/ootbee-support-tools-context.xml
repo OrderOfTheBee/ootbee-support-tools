@@ -10,6 +10,13 @@
             </list>
         </property>
     </bean>
+    
+    <bean id="webscript.org.orderofthebee.pages.console.support-tools.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
+        parent="webscript" />
+    <bean id="webscript.org.orderofthebee.pages.console.support-tools.log4j-loggers.put" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
+        parent="webscript" />
+    <bean id="webscript.org.orderofthebee.pages.console.support-tools.log4j-loggers.delete" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
+        parent="webscript" />
 
     <bean id="webscript.org.orderofthebee.pages.console.support-tools.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.share.LogFileGet"
         parent="webscript" />

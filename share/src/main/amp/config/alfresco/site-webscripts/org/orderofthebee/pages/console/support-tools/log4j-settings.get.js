@@ -316,6 +316,19 @@ model.jsonModel = {
             style : 'display: block; margin-bottom: 2ex;'
         }
     }, buildTailButton(true), buildLogFilesButton(true), buildTailButton(false), buildLogFilesButton(false), {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : 'log-settings.action.resetAllLoggerSettings',
+            publishTopic : 'ALF_CRUD_DELETE',
+            publishPayload : {
+                url : 'data/console/ootbee-support-tools/log4j-loggers',
+                urlType : 'SHARE',
+                // just to avoid an unnecessary warning
+                alfResponseTopic : String(Packages.java.util.UUID.randomUUID()),
+                alfResponseScope : 'LOGGER_LIST/'
+            }
+        }
+    }, {
         name : 'alfresco/lists/AlfFilteredList',
         config : {
             pubSubScope : 'LOGGER_LIST/',
@@ -543,7 +556,8 @@ model.jsonModel = {
                                                         // from request data instead of submitting EVERYTHING
                                                         url : 'data/console/ootbee-support-tools/log4j-loggers',
                                                         urlType : 'SHARE',
-                                                        alfResponseTopic : 'LOGGER_LIST/'
+                                                        // just to avoid an unnecessary warning
+                                                        alfResponseTopic : String(Packages.java.util.UUID.randomUUID())
                                                     // TODO Report enhancement - any pubSub should support response topic without forcing
                                                     // _SUCCESS suffix
                                                     },
@@ -590,6 +604,20 @@ model.jsonModel = {
                                                             }
                                                         }
                                                     } ]
+                                                }
+                                            }, {
+                                                id : 'RESET_SETTING',
+                                                label : 'log-settings.action.resetLoggerSetting',
+                                                // TODO Report enhancement - customActions should support widget-like renderFilter
+                                                // TODO Filter based on "canBeReset" when possible
+                                                publishTopic : 'ALF_CRUD_DELETE',
+                                                publishPayloadType : 'PROCESS',
+                                                publishPayloadModifiers : [ 'processCurrentItemTokens' ],
+                                                publishPayload : {
+                                                    url : 'data/console/ootbee-support-tools/log4j-loggers/{urlName}',
+                                                    urlType : 'SHARE',
+                                                    // just to avoid an unnecessary warning
+                                                    alfResponseTopic : String(Packages.java.util.UUID.randomUUID())
                                                 }
                                             } ]
                                         }

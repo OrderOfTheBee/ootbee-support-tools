@@ -29,6 +29,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <#list loggerStates as loggerState>
         {
             "name" : "<#if loggerState.isRoot>-root-<#else>${loggerState.name}</#if>",
+            "urlName" : "<#if loggerState.isRoot>-root-<#else>${loggerState.name?replace('.', '%dot%')?url('UTF-8')}</#if>",
             "displayName" : "<#if loggerState.isRoot>${msg('log-settings.rootLogger')}<#else>${loggerState.name}</#if>",
             <#if loggerState.parentIsRoot || loggerState.parent??>
             "parent" : {
@@ -38,6 +39,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             </#if>
             "additivity" : "${loggerState.additivity?string}",
             "level" : "${loggerState.level!'UNSET'}",
+            "canBeReset" : "${loggerState.canBeReset?string}",
             "effectiveLevel" : "${loggerState.effectiveLevel!'OFF'}"
         }<#if loggerState_has_next>,</#if>
     </#list>

@@ -22,6 +22,8 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+/* global logSettingTracker: false */
+
 function buildLoggerState(logger)
 {
     var RootLogger, loggerState, allAppenders, appender;
@@ -36,6 +38,7 @@ function buildLoggerState(logger)
         level : logger.level !== null ? String(logger.level) : null,
         effectiveLevel : String(logger.effectiveLevel),
         additivity : logger.additivity,
+        canBeReset : logSettingTracker.canBeReset(logger),
         appenders : []
     };
 

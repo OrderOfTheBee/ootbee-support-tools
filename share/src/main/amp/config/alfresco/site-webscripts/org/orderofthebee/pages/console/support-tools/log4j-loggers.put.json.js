@@ -22,10 +22,12 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+/* global logSettingTracker: false */
+
 function changeLoggerState(loggerName, level)
 {
-    var logger;
-    
+    var logger, newLevel;
+
     if (loggerName === '-root-')
     {
         logger = Packages.org.apache.log4j.Logger.getRootLogger();
@@ -34,15 +36,18 @@ function changeLoggerState(loggerName, level)
     {
         logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
     }
-    
+
     if (String(level) === '' || String(level) === 'UNSET')
     {
-        logger.setLevel(null);
+        newLevel = null;
     }
     else
     {
-        logger.setLevel(Packages.org.apache.log4j.Level.toLevel(level));
+        newLevel = Packages.org.apache.log4j.Level.toLevel(level);
     }
+    
+    logSettingTracker.recordChange(logger, logger.level, newLevel);
+    logger.level = newLevel;
 }
 
 function processLoggerStateChangeFromJSONData()
