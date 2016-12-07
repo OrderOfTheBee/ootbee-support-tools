@@ -14,6 +14,7 @@
 
     <packaging>pom</packaging>
     <name>Order of the Bee - Community Support Tools - Parent</name>
+    <url>https://github.com/AFaust/ootbee-support-tools</url>
 
     <licenses>
         <license>
@@ -23,9 +24,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:Acosix/alfresco-maven.git</connection>
-        <developerConnection>scm:git:git@github.com:Acosix/alfresco-maven.git</developerConnection>
-        <url>git@github.com:Acosix/alfresco-maven.git</url>
+        <connection>scm:git:git@github.com:AFaust/ootbee-support-tools.git</connection>
+        <developerConnection>scm:git:git@github.com:AFaust/ootbee-support-tools.git</developerConnection>
+        <url>git@github.com:AFaust/ootbee-support-tools.git</url>
     </scm>
 
     <developers>

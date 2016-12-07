@@ -56,11 +56,17 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                             name : 'alfresco/lists/views/layouts/HeaderCell',
                             config : {
                                 // TODO Report bug - missing padding style options
+                                label : 'log-settings.tail.logger'
+                            }
+                        }, {
+                            name : 'alfresco/lists/views/layouts/HeaderCell',
+                            config : {
+                                // TODO Report bug - missing padding style options
                                 label : 'log-settings.tail.message'
                             }
                         } ],
                         widgets : [ {
-                            name : 'ootbee-support-tools/list/LogRow',
+                            name : 'ootbee-support-tools/list/LogLevelHighlightedRow',
                             config : {
                                 // TODO Report bug - property zebraStriping without effect
                                 additionalCssClasses : 'zebra-striping',
@@ -86,6 +92,14 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                                             config : {
                                                 propertyToRender : 'level'
                                             }
+                                        } ]
+                                    }
+                                }, {
+                                    name : 'alfresco/lists/views/layouts/Cell',
+                                    config : {
+                                        additionalCssClasses : 'smallpad',
+                                        widgets : [ {
+                                            name : 'ootbee-support-tools/renderers/LoggerProperty'
                                         } ]
                                     }
                                 }, {

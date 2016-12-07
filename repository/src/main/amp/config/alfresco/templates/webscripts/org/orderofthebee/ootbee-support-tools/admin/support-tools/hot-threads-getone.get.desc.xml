@@ -5,5 +5,5 @@
     <url>/ootbee/admin/hot-threads-getone</url>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <transaction allow="readonly">required</transaction>
+    <transaction>none</transaction>
 </webscript>

@@ -19,7 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco Copyright
+ * (C) 2005-2016 Alfresco Software Limited.
  */
 
 /* global Admin: false, el: false */
@@ -137,11 +138,17 @@ Admin.addEventListener(window, 'load', function()
                             logCell = document.createElement('td');
                             logCell.innerHTML = Admin.html(json.events[i].timestamp.nice);
                             logRow.appendChild(logCell);
-
+                            
                             logMessage += ' ' + json.events[i].level;
                             logCell = document.createElement('td');
                             logCell.innerHTML = Admin.html(json.events[i].level);
                             logRow.appendChild(logCell);
+                            
+                            logCell = document.createElement('td');
+                            logCell.innerHTML = Admin.html(json.events[i].loggerCompressedName);
+                            logCell.setAttribute('title', json.events[i].loggerName);
+                            logRow.appendChild(logCell);
+                            logMessage += ' [' + json.events[i].loggerCompressedName + ']';
 
                             logMessage += ' ' + json.events[i].message;
                             logCell = document.createElement('td');

@@ -41,7 +41,25 @@
 
         <dependency>
             <groupId>org.alfresco</groupId>
-            <artifactId>alfresco-core</artifactId>
+            <artifactId>share</artifactId>
+            <classifier>classes</classifier>
+            <scope>provided</scope>
+            <exclusions>
+                <!-- Alfresco is incapable of properly including transitive dependency versions -->
+                <exclusion>
+                    <groupId>org.alfresco.surf</groupId>
+                    <artifactId>spring-surf</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.alfresco.surf</groupId>
+                    <artifactId>spring-surf-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
         </dependency>
 
     </dependencies>

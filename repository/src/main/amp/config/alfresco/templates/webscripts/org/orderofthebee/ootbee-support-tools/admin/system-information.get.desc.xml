@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>System information</shortname>
+    <description>Overview of information about the backend system</description>
+    <url>/ootbee/admin/system-information</url>
+    <family>AdminConsole</family>
+    <!-- Enterprise console does not handle tool URL + grouping properly - so restrict to Community only -->
+    <family>AdminConsole:Edition:Community</family>
+    <format default="html">argument</format>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>

@@ -24,7 +24,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("admin.log.settings.tail.title" ) dialog=true customJSFiles=["ootbee-support-tools/js/log-tail.js"] customCSSFiles=["ootbee-support-tools/css/log-tail.css"]>
+<@page title=msg("log-tail.title" ) dialog=true customJSFiles=["ootbee-support-tools/js/log-tail.js"] customCSSFiles=["ootbee-support-tools/css/log-tail.css"]>
 
     <script type="text/javascript">//<![CDATA[
         AdminTL.setServiceUrl('${url.service}');
@@ -33,6 +33,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 	<div id="loggrid" class="datagrid" >
         <table>
+            <thead>
+                <tr>
+                    <th>${msg("log-tail.timestamp")?html}</th>
+                    <th>${msg("log-tail.level")?html}</th>
+                    <th>${msg("log-tail.logger")?html}</th>
+                    <th>${msg("log-tail.message")?html}</th>
+                </tr>
+            </thead>
             <tbody id="loggridBody">			 
             </tbody>
         </table>

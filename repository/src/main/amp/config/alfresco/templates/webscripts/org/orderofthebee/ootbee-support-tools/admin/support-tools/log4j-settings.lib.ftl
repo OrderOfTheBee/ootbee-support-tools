@@ -22,9 +22,13 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
-<@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customCSSFiles=["ootbee-support-tools/css/log-settings.css"]>
+<@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customJSFiles=["ootbee-support-tools/js/log-settings.js"] customCSSFiles=["ootbee-support-tools/css/log-settings.css"]>
 <#-- close the dummy form -->
 </form>
+
+<script type="text/javascript">//<![CDATA[
+    AdminLS.setServiceContext('${url.serviceContext}');
+//]]></script>
 
 <div class="column-full">
     <p class="intro">${msg("log-settings.intro-text")?html}</p>
@@ -47,8 +51,12 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 </select>
                 <input type="submit" value="${msg("log-settings.column.add")}" style="margin-right:1em;" />
             </form>
-            <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
-            <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+            <div class="buttons">
+                <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
+                <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
+                <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
+                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+            </div>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
         </#if>
@@ -61,6 +69,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <th><b>${msg("log-settings.column.additivity")}</b></th>
                 <th><b>${msg("log-settings.column.setting")}</b></th>
                 <th><b>${msg("log-settings.column.effectiveValue")}</b></th>
+                <th></th>
                 <th></th>
             </tr>
             <#list loggerStates as loggerState>
@@ -85,7 +94,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         </form>
                     </td>
                     <td class="effectiveLevel setting-${loggerState.effectiveLevel}">${msg("log-settings.level." + loggerState.effectiveLevel)?html}</td>
-                    <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/log4j-appenders?logger=<#if loggerState.isRoot>-root-<#else>${loggerState.name?url('UTF-8')}</#if>');">${msg("log-settings.appenderDetails")?html}</a></td>
+                    <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/log4j-appenders?logger=<#if loggerState.isRoot>-root-<#else>${loggerState.name?url('UTF-8')?js_string}</#if>');">${msg("log-settings.appenderDetails")?html}</a></td>
+                    <td><#if loggerState.canBeReset><a href="#" onclick="AdminLS.resetLogLevel('<#if loggerState.isRoot>-root-<#else>${loggerState.name?js_string}</#if>');">${msg("log-settings.reset")?html}</a></#if></td>
                 </tr>
             </#list>
         </table>

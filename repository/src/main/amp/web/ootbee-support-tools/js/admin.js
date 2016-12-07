@@ -19,7 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco Copyright
+ * (C) 2005-2016 Alfresco Software Limited.
  */
 
 /* global alert: false */
@@ -323,7 +324,7 @@ var Admin = Admin || {};
         {
             if (req.readyState === 4)
             {
-                if (req.status === 200)
+                if (req.status >= 200 && req.status < 300)
                 {
                     // success - call handler
                     if (config.fnSuccess)

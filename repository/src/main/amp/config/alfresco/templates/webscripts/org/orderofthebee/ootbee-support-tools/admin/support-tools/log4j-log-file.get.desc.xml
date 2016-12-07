@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings - Log File</shortname>
+    <description>Accesses a specific Log4J log file</description>
+    <url>/ootbee/admin/log4j-log-file/{path}</url>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

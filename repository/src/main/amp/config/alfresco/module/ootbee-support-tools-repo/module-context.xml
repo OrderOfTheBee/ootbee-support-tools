@@ -12,4 +12,24 @@
         </property>
     </bean>
 
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-settings.get" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
+        parent="webscript" />
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-settings.post" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
+        parent="webscript" />
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-settings.delete" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
+        parent="webscript" />
+
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.repo.LogFileGet"
+        parent="webscript">
+        <property name="delegate" ref="webscript.content.streamer" />
+    </bean>
+
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-file.delete" class="org.orderofthebee.addons.support.tools.repo.LogFileDelete"
+        parent="webscript" />
+
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.repo.LogFilesZIPPost"
+        parent="webscript">
+        <property name="delegate" ref="webscript.content.streamer" />
+    </bean>
+
 </beans>
