@@ -42,7 +42,7 @@ var AdminLS = AdminLS || {};
     AdminLS.resetLogLevel = function resetLogLevel(loggerName)
     {
         Admin.request({
-            url : serviceContext + '/ootbee/admin/log4j-settings'
+            url : serviceContext + '/ootbee/admin/log4j-loggers'
                     + (loggerName !== undefined ? ('/' + encodeURI(String(loggerName).replace(/\./, '%dot%'))) : ''),
             method : 'DELETE',
             fnSuccess : function resetLogLevel_success()

@@ -24,11 +24,13 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-if (url.templateArgs.logger !== null)
+var showUnconfiguredLoggers = processLoggerStateChangeFromFormData(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+
+if (status.redirect !== true)
 {
-    resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/, '.'));
-}
-else
-{
-    resetLoggerSetting();
+    // this is the form-based controller so caller is Repository-tier admin console
+    // simply redirect to our get variant
+    status.code = status.STATUS_MOVED_TEMPORARILY;
+    status.location = url.service.substring(0, url.service.lastIndexOf('/')) + "?showUnconfiguredLoggers=" + (showUnconfiguredLoggers == 'true');
+    status.redirect = true;
 }

@@ -22,6 +22,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
+<#include "../admin-template.ftl" />
+
 <@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customJSFiles=["ootbee-support-tools/js/log-settings.js"] customCSSFiles=["ootbee-support-tools/css/log-settings.css"]>
 <#-- close the dummy form -->
 </form>
@@ -55,7 +57,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
                 <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
                 <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
-                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-loggers?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
             </div>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
@@ -78,8 +80,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                     <td><#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${(loggerState.parent!"")?html}</#if></td>
                     <td>${loggerState.additivity?string(msg("log-settings.column.additivity.true"), msg("log-settings.column.additivity.false"))?html}</td>
                     <td>
-                        <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                            <input type="hidden" name="logger" value="<#if loggerState.isRoot>-root-<#else>${loggerState.name?html}</#if>" />
+                        <form action="${url.service}/<#if loggerState.isRoot>-root-<#else>${loggerState.name?replace('.', '%dot%')?url('UTF-8')}</#if>" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                             <input type="hidden" name="showUnconfiguredLoggers" value="${showUnconfiguredLoggers?string}" />
                             <select name="level" onchange="this.form.submit();">
                                 <option value="" <#if loggerState.level?? == false>selected</#if>>${msg("log-settings.level.UNSET")?html}</option>
