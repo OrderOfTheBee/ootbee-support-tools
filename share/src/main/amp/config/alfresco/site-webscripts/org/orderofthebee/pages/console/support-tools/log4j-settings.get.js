@@ -405,11 +405,9 @@ function buildPanel(repoTier)
                                     widgets : [ {
                                         name : 'alfresco/lists/views/layouts/Row',
                                         config : {
-                                            // TODO Report bug - property zebraStriping without
-                                            // effect
+                                            // TODO Report bug - property zebraStriping without effect
                                             additionalCssClasses : 'zebra-striping',
-                                            // TODO Report enhancement - simple CellProperty
-                                            // widget
+                                            // TODO Report enhancement - simple CellProperty widget
                                             widgets : [
                                                     {
                                                         name : 'alfresco/lists/views/layouts/Cell',
@@ -445,10 +443,7 @@ function buildPanel(repoTier)
                                                                 name : 'alfresco/renderers/Property',
                                                                 config : {
                                                                     propertyToRender : 'additivity',
-                                                                    // TODO Report enhancement -
-                                                                    // valueDisplayMap should inherently
-                                                                    // I18n the label (like label in
-                                                                    // HeaderCell)
+                                                                    // TODO Report enhancement - valueDisplayMap should inherently I18n the label (like label in HeaderCell)
                                                                     valueDisplayMap : [ {
                                                                         value : 'true',
                                                                         label : msg.get('log-settings.additivity.true')
@@ -466,8 +461,7 @@ function buildPanel(repoTier)
                                                             additionalCssClasses : 'smallpad',
                                                             logLevelPropertyKey : 'level',
                                                             widgets : [ {
-                                                                // TODO Report enhancement - make InlineEditProperty usable
-                                                                // (e.g. support all types of input elements with simple+smart config)
+                                                                // TODO Report enhancement - make InlineEditProperty usable (e.g. support all types of input elements with simple+smart config)
                                                                 name : 'alfresco/renderers/Property',
                                                                 config : {
                                                                     propertyToRender : 'level',
@@ -548,8 +542,7 @@ function buildPanel(repoTier)
                                                                 name : 'alfresco/renderers/Actions',
                                                                 config : {
                                                                     onlyShowOnHover : true,
-                                                                    // TODO Report enhancement - make size of Actions configurable (it is
-                                                                    // frigging huge)
+                                                                    // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
                                                                     customActions : [
                                                                             {
                                                                                 id : 'EDIT_SETTING',
@@ -562,10 +555,7 @@ function buildPanel(repoTier)
                                                                                     dialogTitle : 'log-settings.action.editLoggerSetting',
                                                                                     formSubmissionTopic : 'ALF_CRUD_UPDATE',
                                                                                     formSubmissionPayloadMixin : {
-                                                                                        // TODO Report enhancement - ALF_CRUD_UPDATE should
-                                                                                        // differentiate request config
-                                                                                        // from request data instead of submitting
-                                                                                        // EVERYTHING
+                                                                                        // TODO Report enhancement - ALF_CRUD_UPDATE should differentiate request config from request data instead of submitting EVERYTHING
                                                                                         url : (repoTier ? 'ootbee/admin/log4j-loggers'
                                                                                                 : 'data/console/ootbee-support-tools/log4j-loggers')
                                                                                                 + '/{urlName}',
@@ -573,13 +563,9 @@ function buildPanel(repoTier)
                                                                                         // just to avoid an unnecessary warning
                                                                                         alfResponseTopic : String(Packages.java.util.UUID
                                                                                                 .randomUUID())
-                                                                                    // TODO Report enhancement - any pubSub should support
-                                                                                    // response
-                                                                                    // topic without forcing
-                                                                                    // _SUCCESS suffix
+                                                                                    // TODO Report enhancement - any pubSub should support response topic without forcing _SUCCESS suffix
                                                                                     },
                                                                                     formValue : {
-                                                                                        logger : '{name}',
                                                                                         level : '{level}'
                                                                                     },
                                                                                     widgets : [
@@ -692,10 +678,7 @@ model.jsonModel = {
     }, {
         name : 'alfresco/layout/AlfTabContainer',
         config : {
-            widgets : [
-                buildPanel(true),
-                buildPanel(false)
-            ]
+            widgets : [ buildPanel(true), buildPanel(false) ]
         }
     } ]
 };

@@ -52,7 +52,7 @@ function resetLoggerSetting(loggerName)
 
 if (url.templateArgs.logger !== null)
 {
-    resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+    resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
 }
 else
 {

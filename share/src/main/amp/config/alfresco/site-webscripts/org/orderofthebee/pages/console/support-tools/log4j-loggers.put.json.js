@@ -67,4 +67,4 @@ function processLoggerStateChangeFromJSONData(loggerName)
     }
 }
 
-processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));

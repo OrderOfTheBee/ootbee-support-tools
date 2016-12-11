@@ -24,4 +24,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/g, '.'));

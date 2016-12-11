@@ -24,7 +24,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-var showUnconfiguredLoggers = processLoggerStateChangeFromFormData(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+var showUnconfiguredLoggers = processLoggerStateChangeFromFormData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
 
 if (status.redirect !== true)
 {
