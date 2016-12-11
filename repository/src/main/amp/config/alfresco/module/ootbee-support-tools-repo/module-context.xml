@@ -12,7 +12,7 @@
         </property>
     </bean>
 
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-settings.get" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
         parent="webscript" />
     <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.repo.LogStateWebScript"
         parent="webscript" />
