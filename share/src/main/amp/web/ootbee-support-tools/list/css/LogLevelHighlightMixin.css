@@ -2,10 +2,18 @@
 	&.logMessage-OFF {
 	   &:nth-child(odd)
 	   {
+            .alfresco-renderers-Property > span {
+                color : #fff;
+            }
+            
             background-color: overlay(#A0A0A0, #808080);
         }
 
         &:nth-child(even) {
+            .alfresco-renderers-Property > span {
+                color : #fff;
+            }
+            
             background-color: Grey;
         }
     }
@@ -46,28 +54,31 @@
     &.logMessage-ERROR {
        &:nth-child(odd)
        {
-            background-color: LightPink;
+            background-color: overlay(#FFB6C1, #FFC0CB);
         }
 
         &:nth-child(even) {
-            background-color: overlay(#FFB6C1, #FFC0CB);
+            background-color: LightPink;
         }
     }
     
     &.logMessage-FATAL {
        &:nth-child(odd)
        {
-            background-color: LightCoral;
+            background-color: overlay(#F08080, #FF7F50);
         }
 
         &:nth-child(even) {
-            background-color: overlay(#F08080, #FF7F50);
+            background-color: LightCoral;
         }
     }
 }
 
 .alfresco-lists-views-layouts-Row.zebra-striping:nth-child(odd) {
     .logMessage-OFF {
+        .alfresco-renderers-Property > span {
+            color : #fff;
+        }
         background-color: overlay(#A0A0A0, #808080);
     }
     
@@ -84,16 +95,19 @@
     }
     
     .logMessage-ERROR {
-        background-color: LightPink;
+        background-color: overlay(#FFB6C1, #FFC0CB);
     }
     
     .logMessage-FATAL {
-        background-color: LightCoral;
+        background-color: overlay(#F08080, #FF7F50);
     }
 }
 
 .alfresco-lists-views-layouts-Row.zebra-striping:nth-child(even) {
     .logMessage-OFF {
+        .alfresco-renderers-Property > span {
+            color : #fff;
+        }
         background-color: Grey;
     }
     
@@ -110,10 +124,10 @@
     }
     
     .logMessage-ERROR {
-        background-color: overlay(#FFB6C1, #FFC0CB);
+        background-color: LightPink;
     }
     
     .logMessage-FATAL {
-        background-color: overlay(#F08080, #FF7F50);
+        background-color: LightCoral;
     }
 }
