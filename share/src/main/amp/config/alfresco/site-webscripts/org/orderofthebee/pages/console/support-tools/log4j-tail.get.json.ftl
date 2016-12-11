@@ -30,19 +30,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             "level" : "${event.level?string}",
             "loggerName" : "${event.loggerName}",
             "loggerSimpleName" : "${event.loggerName?substring(event.loggerName?last_index_of(".") + 1)}",
-            <#assign loggerCompressedName = "" />
-            <#assign fragments = event.loggerName?split(".") />
-            <#list fragments as loggerNameFragment>
-                <#if loggerNameFragment_index != 0>
-                    <#assign loggerCompressedName = loggerCompressedName + "." />
-                </#if>
-                <#if loggerNameFragment_index &lt; fragments?size - 2>
-                    <#assign loggerCompressedName = loggerCompressedName + loggerNameFragment?substring(0, 1) />
-                <#else>
-                    <#assign loggerCompressedName = loggerCompressedName + loggerNameFragment />
-                </#if>
-            </#list>
-            "loggerCompressedName" : "${loggerCompressedName}",
+            "loggerCompressedName" : "${compressName(event.loggerName)}",
             "message": "${event.renderedMessage}",
             "timestamp" : {
                 "raw" : "${event.timeStamp?c}",
@@ -55,3 +43,23 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 }
 </#escape>
 </#compress>
+
+<#function compressName loggerName subCall = false>
+    <#local loggerCompressedName = "" />
+    <#if loggerName?contains('$')>
+        <#local loggerCompressedName = compressName(loggerName?substring(0, loggerName?index_of('$')), true) + loggerName?substring(loggerName?index_of('$')) />
+    <#else>
+        <#local fragments = loggerName?split(".") />
+        <#list fragments as loggerNameFragment>
+            <#if loggerNameFragment_index != 0>
+                <#local loggerCompressedName = loggerCompressedName + "." />
+            </#if>
+            <#if loggerNameFragment_index &lt; fragments?size - 2 || (subCall && loggerNameFragment_index &lt; fragments?size - 1)>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment?substring(0, 1) />
+            <#else>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment />
+            </#if>
+        </#list>
+    </#if>
+    <#return loggerCompressedName />
+</#function>

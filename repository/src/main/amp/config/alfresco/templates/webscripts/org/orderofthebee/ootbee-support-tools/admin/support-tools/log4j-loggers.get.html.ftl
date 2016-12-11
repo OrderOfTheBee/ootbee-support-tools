@@ -76,8 +76,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             </tr>
             <#list loggerStates as loggerState>
                 <tr>
-                    <td><#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if></td>
-                    <td><#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${(loggerState.parent!"")?html}</#if></td>
+                    <td title="<#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if>">${compressName(loggerState.name, loggerState.isRoot)?html}</td>
+                    <td title="<#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.parent!''?html}</#if>">${compressName(loggerState.parent!'', loggerState.parentIsRoot)?html}</td>
                     <td>${loggerState.additivity?string(msg("log-settings.column.additivity.true"), msg("log-settings.column.additivity.false"))?html}</td>
                     <td>
                         <form action="${url.service}/<#if loggerState.isRoot>-root-<#else>${loggerState.name?replace('.', '%dot%')?url('UTF-8')}</#if>" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
@@ -103,3 +103,25 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
 </div>
 </@page>
+
+<#function compressName loggerName loggerIsRoot subCall = false>
+    <#local loggerCompressedName = "" />
+    <#if loggerIsRoot>
+        <#local loggerCompressedName = msg('log-settings.rootLogger') />
+    <#elseif loggerName?contains('$')>
+        <#local loggerCompressedName = compressName(loggerName?substring(0, loggerName?index_of('$')), loggerIsRoot, true) + loggerName?substring(loggerName?index_of('$')) />
+    <#else>
+        <#local fragments = loggerName?split(".") />
+        <#list fragments as loggerNameFragment>
+            <#if loggerNameFragment_index != 0>
+                <#local loggerCompressedName = loggerCompressedName + "." />
+            </#if>
+            <#if loggerNameFragment_index &lt; fragments?size - 2 || (subCall && loggerNameFragment_index &lt; fragments?size - 1)>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment?substring(0, 1) />
+            <#else>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment />
+            </#if>
+        </#list>
+    </#if>
+    <#return loggerCompressedName />
+</#function>

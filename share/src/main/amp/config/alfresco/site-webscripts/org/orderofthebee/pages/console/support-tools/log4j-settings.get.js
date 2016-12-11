@@ -416,9 +416,10 @@ function buildPanel(repoTier)
                                                         config : {
                                                             additionalCssClasses : 'smallpad',
                                                             widgets : [ {
-                                                                name : 'alfresco/renderers/Property',
+                                                                name : 'ootbee-support-tools/renderers/LoggerProperty',
                                                                 config : {
-                                                                    propertyToRender : 'displayName'
+                                                                    propertyToRender : 'shortDisplayName',
+                                                                    propertyToRenderTitle : 'displayName'
                                                                 }
                                                             } ]
                                                         }
@@ -428,9 +429,10 @@ function buildPanel(repoTier)
                                                         config : {
                                                             additionalCssClasses : 'smallpad',
                                                             widgets : [ {
-                                                                name : 'alfresco/renderers/Property',
+                                                                name : 'ootbee-support-tools/renderers/LoggerProperty',
                                                                 config : {
-                                                                    propertyToRender : 'parent.displayName'
+                                                                    propertyToRender : 'parent.shortDisplayName',
+                                                                    propertyToRenderTitle : 'parent.displayName'
                                                                 }
                                                             } ]
                                                         }
