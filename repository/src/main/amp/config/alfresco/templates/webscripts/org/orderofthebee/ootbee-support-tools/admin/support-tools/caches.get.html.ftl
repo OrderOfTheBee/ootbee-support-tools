@@ -57,7 +57,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td>${cacheInfo.type?html}</td>
 
                             <td class="numericalCellValue">${cacheInfo.size?c}</td>
-                            <td class="numericalCellValue"><#if cacheInfo.maxSize != -1>${cacheInfo.maxSize?c}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.maxSize &gt; 0>${cacheInfo.maxSize?c}</#if></td>
 
                             <td class="numericalCellValue"><#if cacheInfo.cacheGets != -1>${cacheInfo.cacheGets?c}</#if></td>
                             <td class="numericalCellValue"><#if cacheInfo.cacheHits != -1>${cacheInfo.cacheHits?c}</#if></td>
