@@ -22,6 +22,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
 
+<#include "../admin-template.ftl" />
+
 <@page title=msg("log-settings.title") controller="/ootbee/admin" readonly=true customJSFiles=["ootbee-support-tools/js/log-settings.js"] customCSSFiles=["ootbee-support-tools/css/log-settings.css"]>
 <#-- close the dummy form -->
 </form>
@@ -55,7 +57,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
                 <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
                 <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
-                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-settings?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-loggers?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
             </div>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
@@ -74,12 +76,11 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             </tr>
             <#list loggerStates as loggerState>
                 <tr>
-                    <td><#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if></td>
-                    <td><#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${(loggerState.parent!"")?html}</#if></td>
+                    <td title="<#if loggerState.isRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.name?html}</#if>">${compressName(loggerState.name, loggerState.isRoot)?html}</td>
+                    <td title="<#if loggerState.parentIsRoot>${msg('log-settings.rootLogger')?html}<#else>${loggerState.parent!''?html}</#if>">${compressName(loggerState.parent!'', loggerState.parentIsRoot)?html}</td>
                     <td>${loggerState.additivity?string(msg("log-settings.column.additivity.true"), msg("log-settings.column.additivity.false"))?html}</td>
                     <td>
-                        <form action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                            <input type="hidden" name="logger" value="<#if loggerState.isRoot>-root-<#else>${loggerState.name?html}</#if>" />
+                        <form action="${url.service}/<#if loggerState.isRoot>-root-<#else>${loggerState.name?replace('.', '%dot%')?url('UTF-8')}</#if>" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
                             <input type="hidden" name="showUnconfiguredLoggers" value="${showUnconfiguredLoggers?string}" />
                             <select name="level" onchange="this.form.submit();">
                                 <option value="" <#if loggerState.level?? == false>selected</#if>>${msg("log-settings.level.UNSET")?html}</option>
@@ -102,3 +103,25 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
 </div>
 </@page>
+
+<#function compressName loggerName loggerIsRoot subCall = false>
+    <#local loggerCompressedName = "" />
+    <#if loggerIsRoot>
+        <#local loggerCompressedName = msg('log-settings.rootLogger') />
+    <#elseif loggerName?contains('$')>
+        <#local loggerCompressedName = compressName(loggerName?substring(0, loggerName?index_of('$')), loggerIsRoot, true) + loggerName?substring(loggerName?index_of('$')) />
+    <#else>
+        <#local fragments = loggerName?split(".") />
+        <#list fragments as loggerNameFragment>
+            <#if loggerNameFragment_index != 0>
+                <#local loggerCompressedName = loggerCompressedName + "." />
+            </#if>
+            <#if loggerNameFragment_index &lt; fragments?size - 2 || (subCall && loggerNameFragment_index &lt; fragments?size - 1)>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment?substring(0, 1) />
+            <#else>
+                <#local loggerCompressedName = loggerCompressedName + loggerNameFragment />
+            </#if>
+        </#list>
+    </#if>
+    <#return loggerCompressedName />
+</#function>

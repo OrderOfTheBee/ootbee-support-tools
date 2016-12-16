@@ -114,7 +114,7 @@ function changeLoggerState(loggerName, level)
 }
 
 /* exported processLoggerStateChangeFromFormData */
-function processLoggerStateChangeFromFormData()
+function processLoggerStateChangeFromFormData(urlLoggerName)
 {
     var fields, field, i, loggerName, level, showUnconfiguredLoggers;
 
@@ -125,6 +125,12 @@ function processLoggerStateChangeFromFormData()
         switch (String(field.name))
         {
             case 'logger':
+                if (urlLoggerName !== undefined && urlLoggerName !== null)
+                {
+                    status.setCode(status.STATUS_BAD_REQUEST, 'Form data for logger update must not contain the logger name - that is to be part of the URL');
+                    status.redirect = true;
+                    return;
+                }
                 loggerName = String(field.value);
                 break;
             case 'level':
@@ -136,6 +142,11 @@ function processLoggerStateChangeFromFormData()
             default:
                 logger.debug('Unknown field: ' + field.name);
         }
+    }
+    
+    if (loggerName === undefined && urlLoggerName !== undefined && urlLoggerName !== null)
+    {
+        loggerName = urlLoggerName;
     }
 
     changeLoggerState(loggerName, level);

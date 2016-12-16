@@ -50,11 +50,10 @@ function changeLoggerState(loggerName, level)
     logger.level = newLevel;
 }
 
-function processLoggerStateChangeFromJSONData()
+function processLoggerStateChangeFromJSONData(loggerName)
 {
-    var loggerName, level;
+    var level;
 
-    loggerName = json.has('logger') ? String(json.get('logger')) : null;
     level = json.has('level') ? String(json.get('level')) : null;
     
     if (loggerName !== null && level !== null)
@@ -63,9 +62,9 @@ function processLoggerStateChangeFromJSONData()
     }
     else
     {
-        logger.warn('[log4j-settings.post.json.js] data missing in request');
+        logger.warn('[log4j-loggers.put.json.js] data missing in request');
         status.setCode(status.STATUS_BAD_REQUEST, 'Request incomplete');
     }
 }
 
-processLoggerStateChangeFromJSONData();
+processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));

@@ -59,6 +59,7 @@
         "utils" : false,
         "webprojects" : false,
         "workflow" : false,
+        "siteService" : false,
         
         "Admin" : false
     }

@@ -55,3 +55,8 @@ table.results.dataTable
 	clear: both;
 	padding: 16px 0 8px;
 }
+
+table.data td.numericalCellValue
+{
+	text-align: right;
+}

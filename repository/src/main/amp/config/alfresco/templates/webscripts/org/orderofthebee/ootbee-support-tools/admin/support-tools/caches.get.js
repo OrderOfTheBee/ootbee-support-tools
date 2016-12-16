@@ -1,7 +1,8 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/log4j.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/caches.lib.js">
 
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Axel Faust
  * Copyright (C) 2016 Order of the Bee
  *
  * This file is part of Community Support Tools
@@ -24,9 +25,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-var showUnconfiguredLoggers = processLoggerStateChangeFromFormData();
+buildCaches();
 
-// simply redirect to our get variant
-status.code = status.STATUS_MOVED_TEMPORARILY;
-status.location = url.full + "?showUnconfiguredLoggers=" + (showUnconfiguredLoggers == 'true');
-status.redirect = true;
+model.tools = Admin.getConsoleTools("caches");
+model.metadata = Admin.getServerMetaData();

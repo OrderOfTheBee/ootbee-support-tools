@@ -24,11 +24,21 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-if (url.templateArgs.logger !== null)
+function processLoggerStateChangeFromJSONData(loggerName)
 {
-    resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/, '.'));
+    var level;
+
+    level = json.has('level') ? String(json.get('level')) : null;
+    
+    if (loggerName !== null && level !== null)
+    {
+        changeLoggerState(loggerName, level);
+    }
+    else
+    {
+        logger.warn('[log4j-logger.put.json.js] data missing in request');
+        status.setCode(status.STATUS_BAD_REQUEST, 'Request incomplete');
+    }
 }
-else
-{
-    resetLoggerSetting();
-}
+
+processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Caches</shortname>
+    <description>View cache status and metrics</description>
+    <url>/ootbee/admin/caches</url>
+    <family>AdminConsole</family>
+    <!-- Enterprise console does not handle tool URL + grouping properly - so restrict to Community only -->
+    <family>AdminConsole:Edition:Community</family>
+    <format default="html">argument</format>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>
