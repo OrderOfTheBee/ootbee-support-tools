@@ -24,14 +24,14 @@
 
 function buildCacheInfo(cacheBeanName, cache, globalProperties)
 {
-    var maxItems, cacheInfo, internalCacheField, internalCache, stats;
+    var maxItems, cacheInfo, invHandler, internalCacheField, internalCache, stats;
 
     maxItems = globalProperties[cacheBeanName + '.maxItems'] || '-1';
 
     cacheInfo = {
         name : cacheBeanName,
         definedType : globalProperties[cacheBeanName + '.cluster.type'],
-        type : String(cache.class.name),
+        type : '',
         size : cache.keys.size(),
         maxSize : parseInt(maxItems, 10),
         cacheGets : -1,
@@ -42,6 +42,21 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
         cacheEvictions : -1
     };
 
+    // some cache implementations (i.e. EE) may be using proxies where the class is not really informative
+    if (Packages.java.lang.reflect.Proxy.isProxyClass(cache.class))
+    {
+        // maybe the invocation handler provides access to the backing cache
+        invHandler = Packages.java.lang.reflect.Proxy.getInvocationHandler(cache);
+        if (invHandler.backingObject !== undefined && invHandler.backingObject !== null)
+        {
+            cacheInfo.type = String(invHandler.backingObject.class.name);
+        }
+    }
+    else
+    {
+        cacheInfo.type = String(cache.class.name);
+    }
+
     if (cacheInfo.type === 'org.alfresco.repo.cache.DefaultSimpleCache')
     {
         try
@@ -51,7 +66,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
             internalCacheField.setAccessible(true);
             internalCache = internalCacheField.get(cache);
             stats = internalCache.stats();
-            
+
             cacheInfo.cacheGets = stats.requestCount();
             cacheInfo.cacheHits = stats.hitCount();
             cacheInfo.cacheMisses = stats.missCount();
@@ -64,7 +79,43 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
             logger.log('Failed to retrieve statistics from ' + cacheBeanName + ': ' + String(e));
         }
     }
-    // TODO What other types of caches can/should we handle?
+    // check support of CacheWithMetrics without requiring explicit interface inheritance
+    else if (cache.metrics !== undefined && cache.metrics !== null)
+    {
+        try
+        {
+            stats = cache.metrics;
+
+            if (stats.cacheGets !== undefined && stats.cacheGets !== null)
+            {
+                cacheInfo.cacheGets = stats.cacheGets;
+            }
+            if (stats.cacheHits !== undefined && stats.cacheHits !== null)
+            {
+                cacheInfo.cacheHits = stats.cacheHits;
+            }
+            if (stats.cacheMisses !== undefined && stats.cacheMisses !== null)
+            {
+                cacheInfo.cacheMisses = stats.cacheMisses;
+            }
+            if (stats.cacheEvictions !== undefined && stats.cacheEvictions !== null)
+            {
+                cacheInfo.cacheEvictions = stats.cacheEvictions;
+            }
+            if (stats.cacheHitPercentage !== undefined && stats.cacheHitPercentage !== null)
+            {
+                cacheInfo.cacheHitRate = stats.cacheHitPercentage;
+            }
+            if (stats.cacheMissPercentage !== undefined && stats.cacheMissPercentage !== null)
+            {
+                cacheInfo.cacheMissRate = stats.cacheMissPercentage;
+            }
+        }
+        catch (e)
+        {
+            logger.log('Failed to retrieve statistics from ' + cacheBeanName + ': ' + String(e));
+        }
+    }
 
     return cacheInfo;
 }

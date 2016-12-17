@@ -60,13 +60,13 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td class="numericalCellValue">${cacheInfo.size?c}</td>
                             <td class="numericalCellValue"><#if cacheInfo.maxSize &gt; 0>${cacheInfo.maxSize?c}</#if></td>
 
-                            <td class="numericalCellValue"><#if cacheInfo.cacheGets != -1>${cacheInfo.cacheGets?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheHits != -1>${cacheInfo.cacheHits?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheHitRate != -1>${cacheInfo.cacheHitRate?string["0.0"]}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheMisses != -1>${cacheInfo.cacheMisses?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheMissRate != -1>${cacheInfo.cacheMissRate?string["0.0"]}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheGets &gt;= 0>${cacheInfo.cacheGets?c}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheHits &gt;= 0>${cacheInfo.cacheHits?c}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheHitRate &gt;= 0>${cacheInfo.cacheHitRate?string["0.0"]}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheMisses &gt;= 0>${cacheInfo.cacheMisses?c}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheMissRate &gt;= 0>${cacheInfo.cacheMissRate?string["0.0"]}</#if></td>
                             
-                            <td class="numericalCellValue"><#if cacheInfo.cacheEvictions != -1>${cacheInfo.cacheEvictions?c}</#if></td>
+                            <td class="numericalCellValue"><#if cacheInfo.cacheEvictions &gt;= 0>${cacheInfo.cacheEvictions?c}</#if></td>
                         </tr>
                     </#list>
                 </tbody>
