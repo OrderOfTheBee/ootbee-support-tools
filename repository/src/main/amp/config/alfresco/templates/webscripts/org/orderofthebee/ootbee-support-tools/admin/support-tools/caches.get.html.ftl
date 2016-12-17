@@ -24,13 +24,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("caches.title") readonly=true>
+<@page title=msg("caches.title") readonly=true customCSSFiles=["ootbee-support-tools/css/jquery.dataTables.css"]
+    customJSFiles=["ootbee-support-tools/js/jquery-2.2.3.js", "ootbee-support-tools/js/jquery.dataTables.js", "ootbee-support-tools/js/caches.js"]>
 
     <div class="column-full">
         <p class="intro">${msg("caches.intro")?html}</p>      
 
         <div class="control">
-            <table class="data results" width="100%">
+            <table id="caches-table" class="data results" width="100%">
                 <thead>
                     <tr>
                         <th>${msg("caches.attr.name")?html}</th>
