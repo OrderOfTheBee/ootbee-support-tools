@@ -18,35 +18,22 @@
  * along with Community Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.orderofthebee.addons.support.tools.repo;
+package org.orderofthebee.addons.support.tools.repo.web.scripts;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Writer;
 
-import org.alfresco.repo.web.scripts.content.ContentStreamer;
-import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
+import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
  * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
  */
-public class LogFileGet extends AbstractLogFileWebScript
+public class LogFileDelete extends AbstractLogFileWebScript
 {
-
-    protected ContentStreamer delegate;
-
-    /**
-     * @param delegate
-     *            ContentStreamer
-     */
-    public void setDelegate(final ContentStreamer delegate)
-    {
-        this.delegate = delegate;
-    }
 
     /**
      *
@@ -59,17 +46,25 @@ public class LogFileGet extends AbstractLogFileWebScript
         final String matchPath = req.getServiceMatch().getPath();
         final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
 
-        final Map<String, Object> model = new HashMap<>();
-        final Status status = new Status();
-        final Cache cache = new Cache(this.getDescription().getRequiredCache());
-        model.put("status", status);
-        model.put("cache", cache);
-
-        final String attachParam = req.getParameter("a");
-        final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
-
         final File file = this.validateFilePath(filePath);
-        this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
+        if (file.delete())
+        {
+            res.setStatus(Status.STATUS_OK);
+            // we "have" to send a dummy JSON as repository admin console client JS always tries to parse
+            final Writer writer = res.getWriter();
+            try
+            {
+                writer.write("{}");
+            }
+            finally
+            {
+                writer.close();
+            }
+        }
+        else
+        {
+            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Log file could not be deleted immediately");
+        }
     }
 
 }
