@@ -38,4 +38,9 @@
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
+    <bean id="ootb.addons.extendedExceptionTranslateHack"
+          class="org.orderofthebee.addons.support.tools.repo.security.ExtendedExceptionHackBeanFactoryPostProcessor">
+        <property name="enabled" value="${support-tools.extendedExceptionTranslationEnabled}"/>
+    </bean>
+
 </beans>
