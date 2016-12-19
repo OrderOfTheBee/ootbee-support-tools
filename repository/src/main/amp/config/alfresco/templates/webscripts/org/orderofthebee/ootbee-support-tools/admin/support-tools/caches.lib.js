@@ -24,7 +24,7 @@
 
 function buildCacheInfo(cacheBeanName, cache, globalProperties)
 {
-    var maxItems, cacheInfo, invHandler, internalCacheField, internalCache, stats;
+    var maxItems, cacheInfo, invHandler, stats;
 
     maxItems = globalProperties[cacheBeanName + '.maxItems'] || '-1';
 
@@ -57,32 +57,49 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
         cacheInfo.type = String(cache.class.name);
     }
 
-    if (cacheInfo.type === 'org.alfresco.repo.cache.DefaultSimpleCache')
+    try
     {
-        try
+        if (cacheInfo.type === 'org.alfresco.repo.cache.DefaultSimpleCache')
         {
-            internalCacheField = cache.class.getDeclaredField('cache');
-            // will fail on Java 9 but there is currently no other way to get to the internal cache
-            internalCacheField.setAccessible(true);
-            internalCache = internalCacheField.get(cache);
-            stats = internalCache.stats();
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils.getDefaultSimpleCacheStats(cache);
 
             cacheInfo.cacheGets = stats.requestCount();
             cacheInfo.cacheHits = stats.hitCount();
             cacheInfo.cacheMisses = stats.missCount();
             cacheInfo.cacheEvictions = stats.evictionCount();
             cacheInfo.cacheHitRate = stats.hitRate() * 100;
-            cacheInfo.cacheMissRate = stats.missRate() * 100;
+            cacheInfo.cacheMissRate = stats.missRate() * 100
         }
-        catch (e)
+        else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache' && invHandler
+                && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
         {
-            logger.log('Failed to retrieve statistics from ' + cacheBeanName + ': ' + String(e));
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils
+                    .getHzInvalidatingCacheStats(invHandler.backingObject);
+
+            cacheInfo.cacheGets = stats.requestCount();
+            cacheInfo.cacheHits = stats.hitCount();
+            cacheInfo.cacheMisses = stats.missCount();
+            cacheInfo.cacheEvictions = stats.evictionCount();
+            cacheInfo.cacheHitRate = stats.hitRate() * 100;
+            cacheInfo.cacheMissRate = stats.missRate() * 100
         }
-    }
-    // check support of CacheWithMetrics without requiring explicit interface inheritance
-    else if (cache.metrics !== undefined && cache.metrics !== null)
-    {
-        try
+        else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache' && invHandler
+                && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
+        {
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils
+                    .getHzSimpleCacheStats(invHandler.backingObject);
+
+            cacheInfo.cacheGets = stats.operationStats.numberOfGets;
+            /* The values that Hazelcast provides are complete bogus. Hits are only tracked on locally owned entries. The numberOfGets are tracked on a separate layer than hits, and these values appear to be out of sync quite often (hits larger
+            than gets). */
+            // cacheInfo.cacheHits = stats.hits;
+            // cacheInfo.cacheMisses = cacheInfo.cacheGets - cacheInfo.cacheHits;
+            // cacheInfo.cacheHitRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheHits / cacheInfo.cacheGets * 100) : 1;
+            // cacheInfo.cacheMissRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheMisses / cacheInfo.cacheGets * 100) : 0;
+            // can't find anything about evictions in either LocalMapStats or LocalMapOperationStats
+        }
+        // check support of CacheWithMetrics without requiring explicit interface inheritance
+        else if (cache.metrics !== undefined && cache.metrics !== null)
         {
             stats = cache.metrics;
 
@@ -111,10 +128,10 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
                 cacheInfo.cacheMissRate = stats.cacheMissPercentage;
             }
         }
-        catch (e)
-        {
-            logger.log('Failed to retrieve statistics from ' + cacheBeanName + ': ' + String(e));
-        }
+    }
+    catch (e)
+    {
+        logger.log('Failed to retrieve statistics from ' + cacheBeanName + ': ' + String(e));
     }
 
     return cacheInfo;
