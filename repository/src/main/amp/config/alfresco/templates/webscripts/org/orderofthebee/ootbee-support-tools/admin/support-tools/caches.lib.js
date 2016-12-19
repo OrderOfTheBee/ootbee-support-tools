@@ -68,7 +68,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
             cacheInfo.cacheMisses = stats.missCount();
             cacheInfo.cacheEvictions = stats.evictionCount();
             cacheInfo.cacheHitRate = stats.hitRate() * 100;
-            cacheInfo.cacheMissRate = stats.missRate() * 100
+            cacheInfo.cacheMissRate = stats.missRate() * 100;
         }
         else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache' && invHandler
                 && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
@@ -81,7 +81,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
             cacheInfo.cacheMisses = stats.missCount();
             cacheInfo.cacheEvictions = stats.evictionCount();
             cacheInfo.cacheHitRate = stats.hitRate() * 100;
-            cacheInfo.cacheMissRate = stats.missRate() * 100
+            cacheInfo.cacheMissRate = stats.missRate() * 100;
         }
         else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache' && invHandler
                 && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
