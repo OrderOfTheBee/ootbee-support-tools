@@ -4,7 +4,7 @@
     <description>Overview of applied patches</description>
     <url>/ootbee/admin/applied-patches</url>
     <family>AdminConsole</family>
-    <!-- Enterprise console does not handle tool URL + grouping properly - so restrict to Community only -->
+    <!-- would conflict with Alfresco provided Support Tools project -->
     <family>AdminConsole:Edition:Community</family>
     <format default="html">argument</format>
     <authentication>admin</authentication>

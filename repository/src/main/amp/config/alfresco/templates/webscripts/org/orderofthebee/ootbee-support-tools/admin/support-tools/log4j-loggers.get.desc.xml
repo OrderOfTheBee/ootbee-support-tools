@@ -4,7 +4,7 @@
     <description>View and update Log4J logger settings</description>
     <url>/ootbee/admin/log4j-loggers</url>
     <family>AdminConsole</family>
-    <!-- Enterprise console does not handle tool URL + grouping properly - so restrict to Community only -->
+    <!-- would conflict with Alfresco provided Support Tools project -->
     <family>AdminConsole:Edition:Community</family>
     <format default="html" />
     <authentication>admin</authentication>
