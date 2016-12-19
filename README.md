@@ -7,7 +7,7 @@ This addon aims to bring the functionality provided by the [Alfresco Support Too
 
 This project has been built to be compatible with Alfresco Community 5.0.d+ and Alfresco Enterprise 5.1+.
 
-Though it can technically be installed in Alfresco Enterprise 5.0 it will not work properly in that version as the Enterprise Administration Console cannot handle Community Edition tools. The tools will be listed in the navigation but cannot be accessed (result in HTTO 404 errors due to hardcoded URL patterns).
+Though it can technically be installed in Alfresco Enterprise 5.0 it will not work properly in that version as the Enterprise Administration Console cannot handle Community Edition tools. The tools will be listed in the navigation but cannot be accessed (result in HTTP 404 errors due to hardcoded URL patterns).
 
 In order to avoid conflicts with tools provided by the official [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) for Alfresco Enterprise Edition most of the tools this module provides have been configured to be "Community-only", that is they will not show up in an Enterprise Edition system. This behaviour can be changed by overriding the web script descriptor XML files via the *&lt;configRoot&gt;/alfresco/extension/templates/webscripts/* method. Specifically all the web script descriptors of [Repository-tier web scripts in this module](https://github.com/AFaust/ootbee-support-tools/tree/master/repository/src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin) that contain the following fragment need to be overridden and the snippet removed.
 
