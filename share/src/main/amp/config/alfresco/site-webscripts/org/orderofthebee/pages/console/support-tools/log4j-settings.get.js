@@ -22,6 +22,31 @@
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
+function buildAddLoggerForm(repoTier)
+{
+    var form = {
+            name : 'ootbee-support-tools/forms/AddLoggerForm',
+            config : {
+                additionalCssClasses : 'addLoggerForm',
+                widgets : [{
+                    name : 'alfresco/forms/controls/TextBox',
+                    config : {
+                        name : 'logger',
+                        label : '',
+                        placeHolder : 'log-settings.loggerName.addLoggerPlaceHolder',
+                        requirementConfig : {
+                            initialValue : true
+                        }
+                    }
+                }],
+                okButtonLabel : 'log-settings.addLogger',
+                showCancelButton : false
+            }
+    };
+    
+    return form;
+}
+
 function buildTailButton(repoTier)
 {
     var button = {
@@ -301,6 +326,26 @@ function buildLogFilesButton(repoTier)
     return button;
 }
 
+function buildResetLoggerButton(repoTier)
+{
+    var button = {
+        name : 'alfresco/buttons/AlfButton',
+        config : {
+            label : 'log-settings.action.resetAllLoggerSettings',
+            publishTopic : 'ALF_CRUD_DELETE',
+            publishPayload : {
+                url : repoTier ? 'ootbee/admin/log4j-loggers' : 'data/console/ootbee-support-tools/log4j-loggers',
+                urlType : repoTier ? 'PROXY' : 'SHARE',
+                // just to avoid an unnecessary warning
+                alfResponseTopic : String(Packages.java.util.UUID.randomUUID()),
+                alfResponseScope : (repoTier ? 'REPO_' : 'SHARE_') + 'LOGGER_LIST/'
+            }
+        }
+    };
+
+    return button;
+}
+
 function buildPanel(repoTier)
 {
     var model = {
@@ -312,22 +357,10 @@ function buildPanel(repoTier)
         config : {
             style : 'padding-top: 2ex;',
             widgets : [
+                    buildAddLoggerForm(repoTier),
                     buildTailButton(repoTier),
                     buildLogFilesButton(repoTier),
-                    {
-                        name : 'alfresco/buttons/AlfButton',
-                        config : {
-                            label : 'log-settings.action.resetAllLoggerSettings',
-                            publishTopic : 'ALF_CRUD_DELETE',
-                            publishPayload : {
-                                url : repoTier ? 'ootbee/admin/log4j-loggers' : 'data/console/ootbee-support-tools/log4j-loggers',
-                                urlType : repoTier ? 'PROXY' : 'SHARE',
-                                // just to avoid an unnecessary warning
-                                alfResponseTopic : String(Packages.java.util.UUID.randomUUID()),
-                                alfResponseScope : (repoTier ? 'REPO_' : 'SHARE_') + 'LOGGER_LIST/'
-                            }
-                        }
-                    },
+                    buildResetLoggerButton(repoTier),
                     {
                         name : 'alfresco/lists/AlfFilteredList',
                         config : {
@@ -345,6 +378,7 @@ function buildPanel(repoTier)
                                 name : 'alfresco/forms/controls/TextBox',
                                 config : {
                                     // TODO Report enhancement - filter widgets should align properly
+                                    // TODO Report enhancement - simple width customisation
                                     style : 'vertical-align:top;',
                                     fieldId : 'LOGGER_NAME' + (repoTier ? '_REPO' : '_SHARE'),
                                     name : 'loggerName',
