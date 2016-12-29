@@ -38,10 +38,10 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    AdminCA.setupTables = function (){
+    AdminCA.setupTables = function()
+    {
+        var dataTableConfig;
 
-var dataTableConfig;
-        
         dataTableConfig = {
             paging : false,
             searching : false,
