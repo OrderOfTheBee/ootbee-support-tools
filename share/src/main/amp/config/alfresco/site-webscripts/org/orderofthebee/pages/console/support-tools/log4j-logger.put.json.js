@@ -62,7 +62,7 @@ function processLoggerStateChangeFromJSONData(loggerName)
     }
     else
     {
-        logger.warn('[log4j-loggers.put.json.js] data missing in request');
+        logger.warn('[log4j-logger.put.json.js] data missing in request');
         status.setCode(status.STATUS_BAD_REQUEST, 'Request incomplete');
     }
 }

@@ -25,25 +25,72 @@
 function buildAddLoggerForm(repoTier)
 {
     var form = {
-            name : 'ootbee-support-tools/forms/AddLoggerForm',
-            config : {
-                additionalCssClasses : 'addLoggerForm',
-                widgets : [{
-                    name : 'alfresco/forms/controls/TextBox',
-                    config : {
-                        name : 'logger',
-                        label : '',
-                        placeHolder : 'log-settings.loggerName.addLoggerPlaceHolder',
-                        requirementConfig : {
-                            initialValue : true
-                        }
+        name : 'ootbee-support-tools/forms/AddLoggerForm',
+        config : {
+            additionalCssClasses : 'addLoggerForm',
+            widgets : [ {
+                name : 'alfresco/forms/controls/TextBox',
+                config : {
+                    name : 'logger',
+                    label : '',
+                    placeHolder : 'log-settings.loggerName.addLoggerPlaceHolder',
+                    requirementConfig : {
+                        initialValue : true
                     }
-                }],
-                okButtonLabel : 'log-settings.addLogger',
-                showCancelButton : false
-            }
+                }
+            }, {
+                name : 'alfresco/forms/controls/Select',
+                config : {
+                    name : 'level',
+                    label : '',
+                    value : 'INFO',
+                    optionsConfig : {
+                        fixed : [ {
+                            value : 'UNSET',
+                            label : msg.get('log-settings.level.UNSET')
+                        }, {
+                            value : 'OFF',
+                            label : msg.get('log-settings.level.OFF')
+                        }, {
+                            value : 'TRACE',
+                            label : msg.get('log-settings.level.TRACE')
+                        }, {
+                            value : 'DEBUG',
+                            label : msg.get('log-settings.level.DEBUG')
+                        }, {
+                            value : 'INFO',
+                            label : msg.get('log-settings.level.INFO')
+                        }, {
+                            value : 'WARN',
+                            label : msg.get('log-settings.level.WARN')
+                        }, {
+                            value : 'ERROR',
+                            label : msg.get('log-settings.level.ERROR')
+                        }, {
+                            value : 'FATAL',
+                            label : msg.get('log-settings.level.FATAL')
+                        } ]
+                    },
+                    requirementConfig : {
+                        initialValue : true
+                    }
+                }
+            } ],
+            okButtonLabel : 'log-settings.addLogger',
+            okButtonPublishTopic : 'ALF_CRUD_CREATE',
+            okButtonPublishGlobal : true,
+            okButtonPublishPayload : {
+                url : (repoTier ? 'ootbee/admin/log4j-loggers.json' : 'data/console/ootbee-support-tools/log4j-loggers'),
+                urlType : repoTier ? 'PROXY' : 'SHARE',
+                // just to avoid an unnecessary warning
+                alfResponseTopic : String(Packages.java.util.UUID.randomUUID()),
+                alfResponseScope : (repoTier ? 'REPO_' : 'SHARE_') + 'LOGGER_LIST/'
+            },
+            // TODO Report enhancement - simple/standardised reset to original state on successful publish
+            showCancelButton : false
+        }
     };
-    
+
     return form;
 }
 
