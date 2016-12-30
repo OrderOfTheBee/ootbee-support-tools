@@ -154,6 +154,25 @@ function processLoggerStateChangeFromFormData(urlLoggerName)
     return showUnconfiguredLoggers;
 }
 
+/* exported processLoggerStateChangeFromJSONData */
+function processLoggerStateChangeFromJSONData(loggerName)
+{
+    var level;
+
+    loggerName = loggerName ? loggerName : (json.has('logger') ? String(json.get('logger')) : null);
+    level = json.has('level') ? String(json.get('level')) : null;
+    
+    if (loggerName !== null && level !== null)
+    {
+        changeLoggerState(loggerName, level);
+    }
+    else
+    {
+        logger.warn('Data missing in request');
+        status.setCode(status.STATUS_BAD_REQUEST, 'Request incomplete');
+    }
+}
+
 /* exported resetLoggerSetting */
 function resetLoggerSetting(loggerName)
 {

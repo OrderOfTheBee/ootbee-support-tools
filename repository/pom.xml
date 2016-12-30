@@ -77,6 +77,8 @@
                         <exclude>amp/config/alfresco/templates/webscripts/**/*.delete.js</exclude>
                         <exclude>amp/config/alfresco/templates/webscripts/**/*.post.js</exclude>
                         <exclude>amp/config/alfresco/templates/webscripts/**/*.put.js</exclude>
+                        <exclude>amp/config/alfresco/templates/webscripts/**/*.post.json.js</exclude>
+                        <exclude>amp/config/alfresco/templates/webscripts/**/*.put.json.js</exclude>
                         <exclude>amp/web/ootbee-support-tools/js/moment-with-locales.min.js</exclude>
                         <exclude>amp/web/ootbee-support-tools/js/jquery-2.2.3.js</exclude>
                         <exclude>amp/web/ootbee-support-tools/js/jquery.dataTables.js</exclude>

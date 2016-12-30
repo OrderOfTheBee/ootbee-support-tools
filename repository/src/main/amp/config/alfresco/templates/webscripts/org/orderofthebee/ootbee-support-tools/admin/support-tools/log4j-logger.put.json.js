@@ -24,21 +24,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-function processLoggerStateChangeFromJSONData(loggerName)
-{
-    var level;
-
-    level = json.has('level') ? String(json.get('level')) : null;
-    
-    if (loggerName !== null && level !== null)
-    {
-        changeLoggerState(loggerName, level);
-    }
-    else
-    {
-        logger.warn('[log4j-logger.put.json.js] data missing in request');
-        status.setCode(status.STATUS_BAD_REQUEST, 'Request incomplete');
-    }
-}
-
 processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
