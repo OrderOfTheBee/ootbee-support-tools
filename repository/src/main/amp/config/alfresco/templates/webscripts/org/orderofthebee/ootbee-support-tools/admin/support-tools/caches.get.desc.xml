@@ -4,7 +4,7 @@
     <description>View cache status and metrics</description>
     <url>/ootbee/admin/caches</url>
     <family>AdminConsole</family>
-    <format default="html">argument</format>
+    <format default="html"/>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>

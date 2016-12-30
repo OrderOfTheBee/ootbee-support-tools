@@ -6,7 +6,7 @@
     <family>AdminConsole</family>
     <!-- would conflict with Alfresco provided Support Tools project -->
     <family>AdminConsole:Edition:Community</family>
-    <format default="html">argument</format>
+    <format default="html"/>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>

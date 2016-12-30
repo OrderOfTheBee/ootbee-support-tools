@@ -3,7 +3,7 @@
     <shortname>Job state</shortname>
     <description>delivers the current state of all jobs in alfresco repository</description>
     <url>/ootbee/admin/scheduled-jobs-states</url>
-    <format default="json">argument</format>
+    <format default="json"/>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>

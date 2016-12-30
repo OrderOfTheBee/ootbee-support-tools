@@ -3,7 +3,7 @@
     <shortname>Active Sessions Update Users</shortname>
     <description>Update active user list</description>
     <url>/ootbee/admin/active-sessions-updateUsers</url>
-    <format default="json">argument</format>
+    <format default="json"/>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction allow="readonly">required</transaction>
