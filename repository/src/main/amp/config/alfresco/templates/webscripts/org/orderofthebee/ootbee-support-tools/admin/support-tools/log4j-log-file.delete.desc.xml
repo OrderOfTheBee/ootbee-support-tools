@@ -6,4 +6,5 @@
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
 </webscript>

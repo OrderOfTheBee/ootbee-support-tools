@@ -5,4 +5,5 @@
     <format default="html">argument</format>
     <authentication>admin</authentication>
     <family>admin-console</family>
+    <family>OOTBee Support Tools</family>
 </webscript>

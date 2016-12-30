@@ -7,4 +7,5 @@
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
 </webscript>

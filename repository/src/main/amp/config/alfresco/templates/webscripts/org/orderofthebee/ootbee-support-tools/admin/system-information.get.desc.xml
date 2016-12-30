@@ -4,6 +4,7 @@
     <description>Overview of information about the backend system</description>
     <url>/ootbee/admin/system-information</url>
     <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
     <format default="html"/>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>

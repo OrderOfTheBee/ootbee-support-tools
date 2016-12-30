@@ -4,4 +4,5 @@
     <url>/data/console/ootbee-support-tools/log4j-tail</url>
     <format default="json" />
     <authentication>admin</authentication>
+    <family>OOTBee Support Tools</family>
 </webscript>
