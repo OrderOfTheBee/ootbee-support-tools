@@ -88,8 +88,11 @@ function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
         return a.name.localeCompare(b.name);
     });
 
-    loggerState = buildLoggerState(loggerRepository.rootLogger);
-    loggerStates.splice(0, 0, loggerState);
+    if (effectiveLoggerNamePattern === null)
+    {
+        loggerState = buildLoggerState(loggerRepository.rootLogger);
+        loggerStates.splice(0, 0, loggerState);
+    }
 
     model.loggerStates = loggerStates;
 }

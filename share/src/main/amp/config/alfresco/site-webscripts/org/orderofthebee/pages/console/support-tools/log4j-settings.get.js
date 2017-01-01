@@ -420,7 +420,7 @@ function buildPanel(repoTier)
                                 urlType : repoTier ? 'PROXY' : 'SHARE'
                             },
                             // TODO Report enhancement - filtering should not require these form topic cludges
-                            filteringTopics : [ '_valueChangeOf_LOGGER_NAME', '_valueChangeOf_UNCONFIGURED_LOGGERS' ],
+                            filteringTopics : [ '_valueChangeOf_LOGGER_NAME' + (repoTier ? '_REPO' : '_SHARE'), '_valueChangeOf_UNCONFIGURED_LOGGERS' + (repoTier ? '_REPO' : '_SHARE') ],
                             widgetsForFilters : [ {
                                 name : 'alfresco/forms/controls/TextBox',
                                 config : {

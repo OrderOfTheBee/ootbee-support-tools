@@ -56,20 +56,28 @@ function buildLoggerState(logger)
 }
 
 /* exported buildLoggerStates */
-function buildLoggerStates(showUnconfiguredLoggers)
+function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
 {
-    var loggerRepository, loggerStates, loggerState, currentLoggers, logger;
+    var loggerRepository, loggerStates, loggerState, currentLoggers, effectiveLoggerNamePattern, logger;
 
     loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
 
     loggerStates = [];
 
     currentLoggers = loggerRepository.currentLoggers;
+    
+    effectiveLoggerNamePattern = null;
+    if (loggerNamePattern !== null && String(loggerNamePattern) !== '')
+    {
+        effectiveLoggerNamePattern = new RegExp(String(loggerNamePattern).replace(/\./g, '\\.').replace(/\*/g, '.+'), 'i');
+    }
+    
     while (currentLoggers.hasMoreElements())
     {
         logger = currentLoggers.nextElement();
 
-        if (logger.level !== null || showUnconfiguredLoggers)
+        if ((effectiveLoggerNamePattern === null || effectiveLoggerNamePattern.test(logger.name))
+                && (logger.level !== null || showUnconfiguredLoggers))
         {
             loggerState = buildLoggerState(logger);
             loggerStates.push(loggerState);
@@ -81,8 +89,11 @@ function buildLoggerStates(showUnconfiguredLoggers)
         return a.name.localeCompare(b.name);
     });
 
-    loggerState = buildLoggerState(loggerRepository.rootLogger);
-    loggerStates.splice(0, 0, loggerState);
+    if (effectiveLoggerNamePattern === null)
+    {
+        loggerState = buildLoggerState(loggerRepository.rootLogger);
+        loggerStates.splice(0, 0, loggerState);
+    }
 
     model.loggerStates = loggerStates;
 }
