@@ -28,6 +28,40 @@ function buildPanel()
         id : 'DASHBOARD_COMPONENTS_PANEL',
         config : {
             widgets : [ {
+                name : 'alfresco/menus/AlfMenuBar',
+                config : {
+                    pubSubScope : 'COMPONENT_LIST/',
+                    widgets : [ {
+                        name : 'ootbee-support-tools/menu/SelectedItemsMenuBarPopup',
+                        config : {
+                            // can't believe "selected-items.label" is not a global label
+                            // we prefix it to not mess with any global labels others may have added
+                            label : 'dashboard-components.selected-items.label',
+                            passive : false,
+                            itemKeyProperty : 'id',
+                            widgets : [ {
+                                id : 'DELETE_',
+                                name : 'alfresco/menus/AlfSelectedItemsMenuItem',
+                                config : {
+                                    label : 'dashboard-components.action.deleteComponents',
+                                    iconClass : "alf-doclib-action alf-delete",
+                                    // not really a create but ALF_CRUD_CREATE uses POST
+                                    publishTopic : 'ALF_CRUD_CREATE',
+                                    publishGlobal : true,
+                                    publishPayload : {
+                                        urlType : 'SHARE',
+                                        url : 'data/console/ootbee-support-tools/components/bulk-delete',
+                                        componentIds : '{itemKeys}',
+                                        // just to avoid an unnecessary warning
+                                        alfResponseTopic : String(Packages.java.util.UUID
+                                                .randomUUID())
+                                    }
+                                }
+                            } ]
+                        }
+                    } ]
+                }
+            }, {
                 name : 'alfresco/lists/AlfFilteredList',
                 config : {
                     pubSubScope : 'COMPONENT_LIST/',
@@ -107,6 +141,11 @@ function buildPanel()
                             widgetsForHeader : [ {
                                 name : 'alfresco/lists/views/layouts/HeaderCell',
                                 config : {
+                                    label : ''
+                                }
+                            }, {
+                                name : 'alfresco/lists/views/layouts/HeaderCell',
+                                config : {
                                     // TODO Report bug - missing padding style options
                                     label : 'dashboard-components.dashboardType'
                                 }
@@ -138,6 +177,15 @@ function buildPanel()
                                     additionalCssClasses : 'zebra-striping',
                                     // TODO Report enhancement - simple CellProperty widget
                                     widgets : [ {
+                                        name : 'alfresco/lists/views/layouts/Cell',
+                                        config : {
+                                            additionalCssClasses : 'smallpad',
+                                            widgets : [ {
+                                                name : 'alfresco/renderers/Selector',
+                                                itemKey : 'id'
+                                            } ]
+                                        }
+                                    }, {
                                         name : 'alfresco/lists/views/layouts/Cell',
                                         config : {
                                             additionalCssClasses : 'smallpad',
@@ -199,7 +247,22 @@ function buildPanel()
                                                 config : {
                                                     onlyShowOnHover : true,
                                                     // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
-                                                    customActions : []
+                                                    customActions : [{
+                                                        id : 'DELETE_COMPONENT',
+                                                        label : 'dashboard-components.action.deleteComponent',
+                                                        // TODO Report enhancement - customActions should support widget-like renderFilter
+                                                        // TODO Filter based on "canBeReset" when possible
+                                                        publishTopic : 'ALF_CRUD_DELETE',
+                                                        publishPayloadType : 'PROCESS',
+                                                        publishPayloadModifiers : [ 'processCurrentItemTokens' ],
+                                                        publishPayload : {
+                                                            url : 'data/console/ootbee-support-tools/components/{scope}/{region}/{source}',
+                                                            urlType : 'SHARE',
+                                                            // just to avoid an unnecessary warning
+                                                            alfResponseTopic : String(Packages.java.util.UUID
+                                                                    .randomUUID())
+                                                        }
+                                                    }]
                                                 }
                                             } ]
                                         }

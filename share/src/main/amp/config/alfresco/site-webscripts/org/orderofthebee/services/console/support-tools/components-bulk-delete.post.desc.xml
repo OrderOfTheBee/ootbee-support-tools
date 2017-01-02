@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Components (Data)</shortname>
+    <description>Delete multiple components</description>
+    <url>/data/console/ootbee-support-tools/components/bulk-delete</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <family>OOTBee Support Tools</family>
+</webscript>

@@ -172,7 +172,9 @@ function buildLogFilesButton(repoTier)
                                                             : 'data/console/ootbee-support-tools/log4j-log-files.zip'
                                                 }
                                             }
-                                        } ]
+                                        }
+                                        // TODO bulk delete action
+                                        ]
                                     }
                                 } ]
                             }
