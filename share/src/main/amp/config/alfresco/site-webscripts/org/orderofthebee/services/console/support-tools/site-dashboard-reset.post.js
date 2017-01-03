@@ -43,7 +43,7 @@ function resetSiteDashboard(site)
         }
         
         oldProperties = {};
-        for (key in oldProperties)
+        for (key in dashboardPage.propertie)
         {
             if (dashboardPage.properties[key] !== null)
             {
@@ -61,7 +61,10 @@ function resetSiteDashboard(site)
             dashboardPage = sitedata.getPage('site/' + site + '/dashboard');
             for (key in oldProperties)
             {
-                dashboardPage.properties[key] = oldProperties[key];
+                if (oldProperties[key] !== null)
+                {
+                    dashboardPage.properties[key] = oldProperties[key];
+                }
             }
             dashboardPage.save();
         }
