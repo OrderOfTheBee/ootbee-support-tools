@@ -45,7 +45,10 @@ function resetSiteDashboard(site)
         oldProperties = {};
         for (key in oldProperties)
         {
-            oldProperties[key] = dashboardPage.properties[key];
+            if (dashboardPage.properties[key] !== null)
+            {
+                oldProperties[key] = dashboardPage.properties[key];
+            }
         }
         dashboardPage.delete();
         
