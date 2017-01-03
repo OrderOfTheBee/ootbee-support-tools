@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Site Dashboard Reset</shortname>
+    <description>Resets a site dashboard to the preset-specific default</description>
+    <url>/data/console/ootbee-support-tools/site/{site}/dashboard/reset</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <family>OOTBee Support Tools</family>
+</webscript>

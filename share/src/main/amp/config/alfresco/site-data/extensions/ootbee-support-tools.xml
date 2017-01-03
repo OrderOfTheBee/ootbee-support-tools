@@ -2,12 +2,18 @@
 <extension>
     <modules>
         <module>
-            <id>${artifactId}</id>
+            <id>${project.artifactId}</id>
             <description>${project.name}</description>
             <version>${noSnapshotVersion}</version>
             <auto-deploy>true</auto-deploy>
             
             <!-- nothing here yet -->
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco.share.pages.admin-console</targetPackageRoot>
+                    <sourcePackageRoot>org.orderofthebee.pages.console.support-tools.customisations</sourcePackageRoot>
+                </customization>
+            </customizations>
         </module>
     </modules>
 </extension>
