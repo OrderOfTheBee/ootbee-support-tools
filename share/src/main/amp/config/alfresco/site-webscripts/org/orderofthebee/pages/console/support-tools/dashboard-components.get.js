@@ -40,18 +40,21 @@ function buildPanel()
                             passive : false,
                             itemKeyProperty : 'id',
                             widgets : [ {
-                                id : 'DELETE_',
-                                name : 'alfresco/menus/AlfSelectedItemsMenuItem',
+                                id : 'DELETE_COMPONENTS',
+                                name : 'ootbee-support-tools/menu/SelectedItemsMenuItem',
                                 config : {
                                     label : 'dashboard-components.action.deleteComponents',
-                                    iconClass : "alf-doclib-action alf-delete",
+                                    iconClass : "alf-doclib-action alf-delete-icon",
+                                    itemKeyProperty : 'id',
                                     // not really a create but ALF_CRUD_CREATE uses POST
                                     publishTopic : 'ALF_CRUD_CREATE',
                                     publishGlobal : true,
+                                    publishPayloadType: 'PROCESS',
+                                    publishPayloadModifiers: ['processCurrentItemTokens'],
                                     publishPayload : {
                                         urlType : 'SHARE',
                                         url : 'data/console/ootbee-support-tools/components/bulk-delete',
-                                        componentIds : '{itemKeys}',
+                                        componentIds : '{selectedItemKeys}',
                                         // just to avoid an unnecessary warning
                                         alfResponseTopic : String(Packages.java.util.UUID
                                                 .randomUUID())
@@ -250,6 +253,7 @@ function buildPanel()
                                                     customActions : [{
                                                         id : 'DELETE_COMPONENT',
                                                         label : 'dashboard-components.action.deleteComponent',
+                                                        iconClass : "alf-doclib-action alf-delete-icon",
                                                         // TODO Report enhancement - customActions should support widget-like renderFilter
                                                         // TODO Filter based on "canBeReset" when possible
                                                         publishTopic : 'ALF_CRUD_DELETE',
