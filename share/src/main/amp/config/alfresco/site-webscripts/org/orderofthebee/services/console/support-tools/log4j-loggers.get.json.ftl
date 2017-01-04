@@ -45,7 +45,9 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
             "effectiveLevel" : "${loggerState.effectiveLevel!'OFF'}"
         }<#if loggerState_has_next>,</#if>
     </#list>
-    ]
+    ],
+    "startIndex" : ${startIndex?c},
+    "totalRecords" : ${totalRecords?c}
 }
 </#escape>
 </#compress>

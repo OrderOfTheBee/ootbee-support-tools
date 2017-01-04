@@ -411,6 +411,15 @@ function buildPanel(repoTier)
                     buildLogFilesButton(repoTier),
                     buildResetLoggerButton(repoTier),
                     {
+                        name : 'alfresco/lists/Paginator',
+                        config : {
+                            documentsPerPage : 20,
+                            pageSizes : [ 20, 50, 100 ],
+                            pubSubScope : (repoTier ? 'REPO_' : 'SHARE_') + 'LOGGER_LIST/',
+                            style : 'text-align:center;'
+                        }
+                    }, 
+                    {
                         name : 'alfresco/lists/AlfFilteredList',
                         config : {
                             pubSubScope : (repoTier ? 'REPO_' : 'SHARE_') + 'LOGGER_LIST/',
@@ -446,8 +455,8 @@ function buildPanel(repoTier)
                                     label : 'log-settings.showUnconfiguredLoggers'
                                 }
                             } ],
-                            // TODO Support pagination and sorting
-                            usePagination : false,
+                            usePagination : true,
+                            currentPageSize : 20,
                             itemsProperty : 'loggers',
                             widgets : [ {
                                 name : 'alfresco/lists/views/AlfListView',

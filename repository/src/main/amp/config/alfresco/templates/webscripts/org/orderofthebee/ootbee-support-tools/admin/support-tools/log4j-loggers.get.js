@@ -26,7 +26,7 @@
  */
 
 model.showUnconfiguredLoggers = args.showUnconfiguredLoggers == 'true';
-buildLoggerStates(model.showUnconfiguredLoggers, args.loggerName);
+buildLoggerStates(model.showUnconfiguredLoggers, args.loggerName, args.startIndex, args.pageSize);
 
 model.tools = Admin.getConsoleTools("log4j-loggers");
 model.metadata = Admin.getServerMetaData();

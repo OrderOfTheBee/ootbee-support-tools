@@ -56,7 +56,7 @@ function buildLoggerState(logger)
 }
 
 /* exported buildLoggerStates */
-function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
+function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern, skipCount, maxItems)
 {
     var loggerRepository, loggerStates, loggerState, currentLoggers, effectiveLoggerNamePattern, logger;
 
@@ -93,6 +93,19 @@ function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern)
     {
         loggerState = buildLoggerState(loggerRepository.rootLogger);
         loggerStates.splice(0, 0, loggerState);
+    }
+    
+    model.totalRecords = loggerStates.length;
+    model.startIndex = 0;
+    if (skipCount)
+    {
+        loggerStates.splice(0, parseInt(skipCount, 10));
+        model.startIndex = parseInt(skipCount, 10);
+    }
+    
+    if (maxItems && parseInt(maxItems, 10) < loggerStates.length)
+    {
+        loggerStates.splice(parseInt(maxItems, 10), loggerStates.length - parseInt(maxItems, 10));
     }
 
     model.loggerStates = loggerStates;
