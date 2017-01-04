@@ -21,104 +21,118 @@
 /*
  * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
  */
-function queryUserDashboardComponents(components, componentFilter)
+function queryUserDashboardComponents(components, componentFilter, maxItems)
 {
-    var response, people, pidx, person, regionFilter, componentResults, cidx;
+    var response, peopleRetrieved, lastPeopleRetrieved, people, pidx, person, regionFilter, componentResults, cidx;
 
     if (args.sourceType === null || String(args.sourceType) === 'all' || String(args.sourceType) === 'user')
     {
-        response = remote.call('/api/people?filter=' + (args.filter !== null && String(args.filter).trim() !== '' ? args.filter : '*'));
-        if (response.status.code === 200)
+        peopleRetrieved = 0;
+        while (lastPeopleRetrieved !== 0 && components.length <= maxItems)
         {
-            people = JSON.parse(response.response).people;
-            for (pidx = 0; pidx < people.length; pidx++)
+            // for some reason people.get uses both skipCount + startIndex, maxItems + maxResults
+            response = remote.call('/api/people?filter=' + (args.filter !== null && String(args.filter).trim() !== '' ? args.filter : '*') + '&pageSize=100&maxResults=100&skipCount=' + peopleRetrieved + '&startIndex=' + peopleRetrieved);
+            if (response.status.code === 200)
             {
-                person = people[pidx];
-                
-                if (regionFilter === undefined)
+                people = JSON.parse(response.response).people;
+                for (pidx = 0; pidx < people.length && components.length <= maxItems; pidx++)
                 {
-                    regionFilter = args.region !== null && String(args.region).trim() !== '' ? args.region : null;
-                    if (typeof regionFilter === 'string' && regionFilter.indexOf('*') !== 0)
+                    person = people[pidx];
+                    
+                    if (regionFilter === undefined)
                     {
-                        regionFilter = '*' + regionFilter;
+                        regionFilter = args.region !== null && String(args.region).trim() !== '' ? args.region : null;
+                        if (typeof regionFilter === 'string' && regionFilter.indexOf('*') !== 0)
+                        {
+                            regionFilter = '*' + regionFilter;
+                        }
+                        
+                        if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
+                        {
+                            regionFilter = regionFilter + '*';
+                        }
                     }
                     
-                    if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
+                    componentResults = sitedata.findComponents('page', regionFilter, 'user/' + person.userName + '/dashboard', null);
+                    // componentResults is not a proper native JS array so concat won't work
+                    for (cidx = 0; cidx < componentResults.length && components.length <= maxItems; cidx++)
                     {
-                        regionFilter = regionFilter + '*';
+                        if (componentFilter(componentResults[cidx].modelObject))
+                        {
+                            components.push({
+                                simpleSource : person.userName,
+                                simpleSourceDisplayName : (person.firstName === null ? '' : person.firstName)
+                                        + (person.lastName === null ? '' : ((person.firstName !== null ? ' ' : '') + person.lastName)) + ' (' + person.userName + ')',
+                                simpleSourceType : 'user',
+                                surfComponent : componentResults[cidx].modelObject
+                            });
+                        }
                     }
                 }
-                
-                componentResults = sitedata.findComponents('page', regionFilter, 'user/' + person.userName + '/dashboard', null);
-                // componentResults is not a proper native JS array so concat won't work
-                for (cidx = 0; cidx < componentResults.length; cidx++)
-                {
-                    if (componentFilter(componentResults[cidx].modelObject))
-                    {
-                        components.push({
-                            simpleSource : person.userName,
-                            simpleSourceDisplayName : (person.firstName === null ? '' : person.firstName)
-                                    + (person.lastName === null ? '' : ((person.firstName !== null ? ' ' : '') + person.lastName)) + ' (' + person.userName + ')',
-                            simpleSourceType : 'user',
-                            surfComponent : componentResults[cidx].modelObject
-                        });
-                    }
-                }
+                peopleRetrieved += people.length;
+                lastPeopleRetrieved = people.length;
             }
         }
     }
 }
 
-function querySiteDashboardComponents(components, componentFilter)
+function querySiteDashboardComponents(components, componentFilter, maxItems)
 {
-    var response, sites, sidx, regionFilter, componentResults, cidx;
+    var response, sitesRetrieved, lastSitesRetrieved, sites, sidx, regionFilter, componentResults, cidx;
 
     if (args.sourceType === null || String(args.sourceType) === 'all' || String(args.sourceType) === 'site')
     {
-        // Repository-tier ADMRemoteStore does not support wildcard queries for site/*/dashboard
-        // so we must query site before looking up dashboard components
-        response = remote.call('/api/sites' + (args.filter !== null && String(args.filter).trim() !== '' ? ('?nf=' + args.filter) : ''));
-        if (response.status.code === 200)
+        sitesRetrieved = 0;
+        while (lastSitesRetrieved !== 0 && components.length <= maxItems)
         {
-            sites = JSON.parse(response.response);
-            for (sidx = 0; sidx < sites.length; sidx++)
+            // Repository-tier ADMRemoteStore does not support wildcard queries for site/*/dashboard
+            // so we must query site before looking up dashboard components
+            // we don't want to load too much too early so incrementally increase result set size (no way to specify startIndex) 
+            response = remote.call('/api/sites?size=' + (sitesRetrieved + 25) + (args.filter !== null && String(args.filter).trim() !== '' ? ('&nf=' + args.filter) : ''));
+            if (response.status.code === 200)
             {
-                if (regionFilter === undefined)
+                sites = JSON.parse(response.response);
+                for (sidx = sitesRetrieved; sidx < sites.length && components.length <= maxItems; sidx++)
                 {
-                    regionFilter = args.region !== null && String(args.region).trim() !== '' ? args.region : null;
-                    if (typeof regionFilter === 'string' && regionFilter.indexOf('*') !== 0)
+                    if (regionFilter === undefined)
                     {
-                        regionFilter = '*' + regionFilter;
+                        regionFilter = args.region !== null && String(args.region).trim() !== '' ? args.region : null;
+                        if (typeof regionFilter === 'string' && regionFilter.indexOf('*') !== 0)
+                        {
+                            regionFilter = '*' + regionFilter;
+                        }
+                        
+                        if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
+                        {
+                            regionFilter = regionFilter + '*';
+                        }
                     }
                     
-                    if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
+                    componentResults = sitedata.findComponents('page', regionFilter, 'site/' + sites[sidx].shortName + '/dashboard', null);
+                    for (cidx = 0; cidx < componentResults.length && components.length <= maxItems; cidx++)
                     {
-                        regionFilter = regionFilter + '*';
+                        if (componentFilter(componentResults[cidx].modelObject))
+                        {
+                            components.push({
+                                simpleSource : sites[sidx].shortName,
+                                simpleSourceDisplayName : sites[sidx].title,
+                                simpleSourceDescription : sites[sidx].description,
+                                simpleSourceType : 'site',
+                                surfComponent : componentResults[cidx].modelObject
+                            });
+                        }
                     }
                 }
-                
-                componentResults = sitedata.findComponents('page', regionFilter, 'site/' + sites[sidx].shortName + '/dashboard', null);
-                for (cidx = 0; cidx < componentResults.length; cidx++)
-                {
-                    if (componentFilter(componentResults[cidx].modelObject))
-                    {
-                        components.push({
-                            simpleSource : sites[sidx].shortName,
-                            simpleSourceDisplayName : sites[sidx].title,
-                            simpleSourceDescription : sites[sidx].description,
-                            simpleSourceType : 'site',
-                            surfComponent : componentResults[cidx].modelObject
-                        });
-                    }
-                }
+                lastSitesRetrieved = sites.length - sitesRetrieved;
+                sitesRetrieved += lastSitesRetrieved;
             }
         }
     }
 }
 
-function buildComponentFilter()
+function buildComponentFilter(startIndex)
 {
-    var suppressedRegionIds, urlPattern;
+    var suppressedRegionIds, urlPattern, skipRemaining;
 
     suppressedRegionIds = [ 'title', 'navigation' ];
 
@@ -126,6 +140,8 @@ function buildComponentFilter()
     {
         urlPattern = new RegExp(String(args.componentUrl), 'g');
     }
+    
+    skipRemaining = startIndex;
 
     return function componentFilter_apply(component)
     {
@@ -133,6 +149,12 @@ function buildComponentFilter()
 
         include = include && suppressedRegionIds.indexOf(String(component.regionId)) === -1;
         include = include && (urlPattern === undefined || urlPattern.test(String(component.getURL())));
+        
+        if (include === true && skipRemaining > 0)
+        {
+            skipRemaining--;
+            include = false;
+        }
 
         return include;
     };
@@ -140,12 +162,27 @@ function buildComponentFilter()
 
 function queryDashboardComponents()
 {
-    var components = [], componentFilter = buildComponentFilter();
+    var components = [], maxItems, skipCount, componentFilter;
+    
+    skipCount = parseInt(args.startIndex || '0', 10);
+    maxItems = parseInt(args.pageSize || '50', 10);
+    
+    componentFilter = buildComponentFilter(skipCount);
 
-    queryUserDashboardComponents(components, componentFilter);
-    querySiteDashboardComponents(components, componentFilter);
+    queryUserDashboardComponents(components, componentFilter, maxItems);
+    querySiteDashboardComponents(components, componentFilter, maxItems);
 
+    if (components.length > maxItems)
+    {
+        components.splice(maxItems, components.length - maxItems);
+        model.totalRecords = skipCount + components.length + maxItems;
+    }
+    else
+    {
+        model.totalRecords = skipCount + components.length;
+    }
     model.components = components;
+    model.startIndex = skipCount;
 }
 
 queryDashboardComponents();

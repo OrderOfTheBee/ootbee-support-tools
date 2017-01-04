@@ -27,256 +27,267 @@ function buildPanel()
         name : 'alfresco/core/ProcessWidgets',
         id : 'DASHBOARD_COMPONENTS_PANEL',
         config : {
-            widgets : [ {
-                name : 'alfresco/menus/AlfMenuBar',
-                config : {
-                    pubSubScope : 'COMPONENT_LIST/',
-                    widgets : [ {
-                        name : 'ootbee-support-tools/menu/SelectedItemsMenuBarPopup',
+            widgets : [
+                    {
+                        name : 'alfresco/lists/Paginator',
                         config : {
-                            // can't believe "selected-items.label" is not a global label
-                            // we prefix it to not mess with any global labels others may have added
-                            label : 'dashboard-components.selected-items.label',
-                            passive : false,
-                            itemKeyProperty : 'id',
-                            widgets : [ {
-                                id : 'DELETE_COMPONENTS',
-                                name : 'ootbee-support-tools/menu/SelectedItemsMenuItem',
+                            documentsPerPage : 20,
+                            pageSizes : [ 20, 50, 100 ],
+                            compactMode : true,
+                            pubSubScope : 'COMPONENT_LIST/',
+                            style : 'text-align:center;',
+                            widgetsBefore : [ {
+                                name : 'ootbee-support-tools/menu/SelectedItemsMenuBarPopup',
                                 config : {
-                                    label : 'dashboard-components.action.deleteComponents',
-                                    iconClass : "alf-doclib-action alf-delete-icon",
+                                    // can't believe "selected-items.label" is not a global label
+                                    // we prefix it to not mess with any global labels others may have added
+                                    label : 'dashboard-components.selected-items.label',
+                                    passive : false,
                                     itemKeyProperty : 'id',
-                                    // not really a create but ALF_CRUD_CREATE uses POST
-                                    publishTopic : 'ALF_CRUD_CREATE',
-                                    publishGlobal : true,
-                                    publishPayloadType: 'PROCESS',
-                                    publishPayloadModifiers: ['processCurrentItemTokens'],
-                                    publishPayload : {
-                                        urlType : 'SHARE',
-                                        url : 'data/console/ootbee-support-tools/components/bulk-delete',
-                                        componentIds : '{selectedItemKeys}',
-                                        // just to avoid an unnecessary warning
-                                        alfResponseTopic : String(Packages.java.util.UUID
-                                                .randomUUID())
-                                    }
+                                    widgets : [ {
+                                        id : 'DELETE_COMPONENTS',
+                                        name : 'ootbee-support-tools/menu/SelectedItemsMenuItem',
+                                        config : {
+                                            label : 'dashboard-components.action.deleteComponents',
+                                            iconClass : "alf-doclib-action alf-delete-icon",
+                                            itemKeyProperty : 'id',
+                                            // not really a create but ALF_CRUD_CREATE uses POST
+                                            publishTopic : 'ALF_CRUD_CREATE',
+                                            publishGlobal : true,
+                                            publishPayloadType : 'PROCESS',
+                                            publishPayloadModifiers : [ 'processCurrentItemTokens' ],
+                                            publishPayload : {
+                                                urlType : 'SHARE',
+                                                url : 'data/console/ootbee-support-tools/components/bulk-delete',
+                                                componentIds : '{selectedItemKeys}',
+                                                // just to avoid an unnecessary warning
+                                                alfResponseTopic : String(Packages.java.util.UUID.randomUUID())
+                                            }
+                                        }
+                                    } ]
                                 }
                             } ]
                         }
-                    } ]
-                }
-            }, {
-                name : 'alfresco/lists/AlfFilteredList',
-                config : {
-                    pubSubScope : 'COMPONENT_LIST/',
-                    // TODO Report bug - CrudService should not hard-code topic
-                    reloadDataTopic : 'ALF_DOCLIST_RELOAD_DATA',
-                    loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
-                    loadDataPublishPayload : {
-                        url : 'data/console/ootbee-support-tools/dashboard-components',
-                        urlType : 'SHARE'
                     },
-                    // TODO Report enhancement - filtering should not require these form topic cludges
-                    filteringTopics : [ '_valueChangeOf_OWNER', '_valueChangeOf_OWNER_TYPE', '_valueChangeOf_REGION', '_valueChangeOf_COMPONENT_URL' ],
-                    widgetsForFilters : [ {
-                        name : 'alfresco/forms/controls/Select',
+                    {
+                        name : 'alfresco/lists/AlfFilteredList',
                         config : {
-                            // TODO Report enhancement - filter widgets should align properly
-                            // TODO Report enhancement - simple width customisation
-                            style : 'vertical-align:top;',
-                            fieldId : 'OWNER_TYPE',
-                            name : 'sourceType',
-                            value : 'all',
-                            optionsConfig : {
-                                fixed : [ {
-                                    value : 'all',
-                                    label : msg.get('dashboard-components.dashboardType.all')
-                                }, {
-                                    value : 'user',
-                                    label : msg.get('dashboard-components.dashboardType.user')
-                                }, {
-                                    value : 'site',
-                                    label : msg.get('dashboard-components.dashboardType.site')
-                                } ]
+                            pubSubScope : 'COMPONENT_LIST/',
+                            // TODO Report bug - CrudService should not hard-code topic
+                            reloadDataTopic : 'ALF_DOCLIST_RELOAD_DATA',
+                            loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
+                            loadDataPublishPayload : {
+                                url : 'data/console/ootbee-support-tools/dashboard-components',
+                                urlType : 'SHARE'
                             },
-                            label : 'dashboard-components.dashboardType'
-                        }
-                    }, {
-                        name : 'alfresco/forms/controls/TextBox',
-                        config : {
-                            // TODO Report enhancement - filter widgets should align properly
-                            // TODO Report enhancement - simple width customisation
-                            style : 'vertical-align:top;',
-                            fieldId : 'OWNER',
-                            name : 'filter',
-                            label : 'dashboard-components.dashboardOwner',
-                            placeHolder : 'dashboard-components.dashboardOwner.filterPlaceHolder'
-                        }
-                    }, {
-                        name : 'alfresco/forms/controls/TextBox',
-                        config : {
-                            // TODO Report enhancement - filter widgets should align properly
-                            // TODO Report enhancement - simple width customisation
-                            style : 'vertical-align:top;',
-                            fieldId : 'REGION',
-                            name : 'region',
-                            label : 'dashboard-components.region',
-                            placeHolder : 'dashboard-components.region.filterPlaceHolder'
-                        }
-                    }, {
-                        name : 'alfresco/forms/controls/TextBox',
-                        config : {
-                            // TODO Report enhancement - filter widgets should align properly
-                            // TODO Report enhancement - simple width customisation
-                            style : 'vertical-align:top;',
-                            fieldId : 'COMPONENT_URL',
-                            name : 'componentUrl',
-                            label : 'dashboard-components.componentUrl',
-                            placeHolder : 'dashboard-components.componentUrl.filterPlaceHolder'
-                        }
-                    } ],
-                    // TODO Support pagination and sorting
-                    usePagination : false,
-                    itemsProperty : 'components',
-                    widgets : [ {
-                        name : 'alfresco/lists/views/AlfListView',
-                        config : {
-                            additionalCssClasses : 'bordered',
-                            widgetsForHeader : [ {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
+                            // TODO Report enhancement - filtering should not require these form topic cludges
+                            filteringTopics : [ '_valueChangeOf_OWNER', '_valueChangeOf_OWNER_TYPE', '_valueChangeOf_REGION',
+                                    '_valueChangeOf_COMPONENT_URL' ],
+                            widgetsForFilters : [ {
+                                name : 'alfresco/forms/controls/Select',
                                 config : {
-                                    label : ''
-                                }
-                            }, {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
-                                config : {
-                                    // TODO Report bug - missing padding style options
+                                    // TODO Report enhancement - filter widgets should align properly
+                                    // TODO Report enhancement - simple width customisation
+                                    style : 'vertical-align:top;',
+                                    fieldId : 'OWNER_TYPE',
+                                    name : 'sourceType',
+                                    value : 'all',
+                                    optionsConfig : {
+                                        fixed : [ {
+                                            value : 'all',
+                                            label : msg.get('dashboard-components.dashboardType.all')
+                                        }, {
+                                            value : 'user',
+                                            label : msg.get('dashboard-components.dashboardType.user')
+                                        }, {
+                                            value : 'site',
+                                            label : msg.get('dashboard-components.dashboardType.site')
+                                        } ]
+                                    },
                                     label : 'dashboard-components.dashboardType'
                                 }
                             }, {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
+                                name : 'alfresco/forms/controls/TextBox',
                                 config : {
-                                    label : 'dashboard-components.dashboardOwner'
+                                    // TODO Report enhancement - filter widgets should align properly
+                                    // TODO Report enhancement - simple width customisation
+                                    style : 'vertical-align:top;',
+                                    fieldId : 'OWNER',
+                                    name : 'filter',
+                                    label : 'dashboard-components.dashboardOwner',
+                                    placeHolder : 'dashboard-components.dashboardOwner.filterPlaceHolder'
                                 }
                             }, {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
+                                name : 'alfresco/forms/controls/TextBox',
                                 config : {
-                                    label : 'dashboard-components.region'
+                                    // TODO Report enhancement - filter widgets should align properly
+                                    // TODO Report enhancement - simple width customisation
+                                    style : 'vertical-align:top;',
+                                    fieldId : 'REGION',
+                                    name : 'region',
+                                    label : 'dashboard-components.region',
+                                    placeHolder : 'dashboard-components.region.filterPlaceHolder'
                                 }
                             }, {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
+                                name : 'alfresco/forms/controls/TextBox',
                                 config : {
-                                    label : 'dashboard-components.componentUrl'
-                                }
-                            }, {
-                                name : 'alfresco/lists/views/layouts/HeaderCell',
-                                config : {
-                                    label : ''
+                                    // TODO Report enhancement - filter widgets should align properly
+                                    // TODO Report enhancement - simple width customisation
+                                    style : 'vertical-align:top;',
+                                    fieldId : 'COMPONENT_URL',
+                                    name : 'componentUrl',
+                                    label : 'dashboard-components.componentUrl',
+                                    placeHolder : 'dashboard-components.componentUrl.filterPlaceHolder'
                                 }
                             } ],
+                            usePagination : true,
+                            currentPageSize : 20,
+                            itemsProperty : 'components',
                             widgets : [ {
-                                name : 'alfresco/lists/views/layouts/Row',
+                                name : 'alfresco/lists/views/AlfListView',
                                 config : {
-                                    // TODO Report bug - property zebraStriping without effect
-                                    additionalCssClasses : 'zebra-striping',
-                                    // TODO Report enhancement - simple CellProperty widget
+                                    additionalCssClasses : 'bordered',
+                                    widgetsForHeader : [ {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            label : ''
+                                        }
+                                    }, {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            // TODO Report bug - missing padding style options
+                                            label : 'dashboard-components.dashboardType'
+                                        }
+                                    }, {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            label : 'dashboard-components.dashboardOwner'
+                                        }
+                                    }, {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            label : 'dashboard-components.region'
+                                        }
+                                    }, {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            label : 'dashboard-components.componentUrl'
+                                        }
+                                    }, {
+                                        name : 'alfresco/lists/views/layouts/HeaderCell',
+                                        config : {
+                                            label : ''
+                                        }
+                                    } ],
                                     widgets : [ {
-                                        name : 'alfresco/lists/views/layouts/Cell',
+                                        name : 'alfresco/lists/views/layouts/Row',
                                         config : {
-                                            additionalCssClasses : 'smallpad',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Selector',
-                                                itemKey : 'id'
-                                            } ]
-                                        }
-                                    }, {
-                                        name : 'alfresco/lists/views/layouts/Cell',
-                                        config : {
-                                            additionalCssClasses : 'smallpad',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Property',
-                                                config : {
-                                                    propertyToRender : 'simpleSourceType',
-                                                    valueDisplayMap : [ {
-                                                        value : 'user',
-                                                        label : msg.get('dashboard-components.dashboardType.user')
-                                                    }, {
-                                                        value : 'site',
-                                                        label : msg.get('dashboard-components.dashboardType.site')
-                                                    } ]
-                                                }
-                                            } ]
-                                        }
-                                    }, {
-                                        name : 'alfresco/lists/views/layouts/Cell',
-                                        config : {
-                                            additionalCssClasses : 'smallpad',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Property',
-                                                config : {
-                                                    propertyToRender : 'simpleSourceDisplayName'
-                                                }
-                                            } ]
-                                        }
-                                    }, {
-                                        name : 'alfresco/lists/views/layouts/Cell',
-                                        config : {
-                                            additionalCssClasses : 'smallpad',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Property',
-                                                config : {
-                                                    propertyToRender : 'region'
-                                                }
-                                            } ]
-                                        }
-                                    }, {
-                                        name : 'alfresco/lists/views/layouts/Cell',
-                                        config : {
-                                            additionalCssClasses : 'smallpad',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Property',
-                                                config : {
-                                                    propertyToRender : 'url'
-                                                }
-                                            } ]
-                                        }
-                                    }, {
-                                        name : 'alfresco/lists/views/layouts/Cell',
-                                        config : {
-                                            // TODO Report enhancement - there should be a nopad option
-                                            additionalCssClasses : 'nopad',
-                                            style : 'padding: 0;',
-                                            widgets : [ {
-                                                name : 'alfresco/renderers/Actions',
-                                                config : {
-                                                    onlyShowOnHover : true,
-                                                    // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
-                                                    customActions : [{
-                                                        id : 'DELETE_COMPONENT',
-                                                        label : 'dashboard-components.action.deleteComponent',
-                                                        iconClass : "alf-doclib-action alf-delete-icon",
-                                                        // TODO Report enhancement - customActions should support widget-like renderFilter
-                                                        // TODO Filter based on "canBeReset" when possible
-                                                        publishTopic : 'ALF_CRUD_DELETE',
-                                                        publishPayloadType : 'PROCESS',
-                                                        publishPayloadModifiers : [ 'processCurrentItemTokens' ],
-                                                        publishPayload : {
-                                                            url : 'data/console/ootbee-support-tools/components/{scope}/{region}/{source}',
-                                                            urlType : 'SHARE',
-                                                            // just to avoid an unnecessary warning
-                                                            alfResponseTopic : String(Packages.java.util.UUID
-                                                                    .randomUUID())
+                                            // TODO Report bug - property zebraStriping without effect
+                                            additionalCssClasses : 'zebra-striping',
+                                            // TODO Report enhancement - simple CellProperty widget
+                                            widgets : [
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            additionalCssClasses : 'smallpad',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Selector',
+                                                                itemKey : 'id'
+                                                            } ]
                                                         }
-                                                    }]
-                                                }
-                                            } ]
+                                                    },
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            additionalCssClasses : 'smallpad',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Property',
+                                                                config : {
+                                                                    propertyToRender : 'simpleSourceType',
+                                                                    valueDisplayMap : [ {
+                                                                        value : 'user',
+                                                                        label : msg.get('dashboard-components.dashboardType.user')
+                                                                    }, {
+                                                                        value : 'site',
+                                                                        label : msg.get('dashboard-components.dashboardType.site')
+                                                                    } ]
+                                                                }
+                                                            } ]
+                                                        }
+                                                    },
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            additionalCssClasses : 'smallpad',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Property',
+                                                                config : {
+                                                                    propertyToRender : 'simpleSourceDisplayName'
+                                                                }
+                                                            } ]
+                                                        }
+                                                    },
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            additionalCssClasses : 'smallpad',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Property',
+                                                                config : {
+                                                                    propertyToRender : 'region'
+                                                                }
+                                                            } ]
+                                                        }
+                                                    },
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            additionalCssClasses : 'smallpad',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Property',
+                                                                config : {
+                                                                    propertyToRender : 'url'
+                                                                }
+                                                            } ]
+                                                        }
+                                                    },
+                                                    {
+                                                        name : 'alfresco/lists/views/layouts/Cell',
+                                                        config : {
+                                                            // TODO Report enhancement - there should be a nopad option
+                                                            additionalCssClasses : 'nopad',
+                                                            style : 'padding: 0;',
+                                                            widgets : [ {
+                                                                name : 'alfresco/renderers/Actions',
+                                                                config : {
+                                                                    onlyShowOnHover : true,
+                                                                    // TODO Report enhancement - make size of Actions configurable (it is frigging huge)
+                                                                    customActions : [ {
+                                                                        id : 'DELETE_COMPONENT',
+                                                                        label : 'dashboard-components.action.deleteComponent',
+                                                                        iconClass : "alf-doclib-action alf-delete-icon",
+                                                                        // TODO Report enhancement - customActions should support widget-like renderFilter
+                                                                        // TODO Filter based on "canBeReset" when possible
+                                                                        publishTopic : 'ALF_CRUD_DELETE',
+                                                                        publishPayloadType : 'PROCESS',
+                                                                        publishPayloadModifiers : [ 'processCurrentItemTokens' ],
+                                                                        publishPayload : {
+                                                                            url : 'data/console/ootbee-support-tools/components/{scope}/{region}/{source}',
+                                                                            urlType : 'SHARE',
+                                                                            // just to avoid an unnecessary warning
+                                                                            alfResponseTopic : String(Packages.java.util.UUID.randomUUID())
+                                                                        }
+                                                                    } ]
+                                                                }
+                                                            } ]
+                                                        }
+                                                    } ]
                                         }
                                     } ]
                                 }
                             } ]
                         }
                     } ]
-                }
-            } ]
         }
     };
 
