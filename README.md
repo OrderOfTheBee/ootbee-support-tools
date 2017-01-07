@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/AFaust/ootbee-support-tools.svg?branch=master)](https://travis-ci.org/AFaust/ootbee-support-tools)
+[![Build Status](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools.svg?branch=master)](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools)
 
 # "Liberated" Alfresco Support Tools
 This addon aims to bring the functionality provided by the [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) addon by Antonio Soler, which is only supported on the Alfresco Enterprise Edition, to the free and open Community Edition of Alfresco.
