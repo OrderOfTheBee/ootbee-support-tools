@@ -72,6 +72,8 @@ Currently this addon is not yet published to an artifact repository, so before y
 ```
 mvn install
 ```
+# Contributing
+We hope to have lots of collaborators on this project. As such, we have outlined our contribution policies and proceedures in the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
 
 # License
 This addon is licensed under the GNU Lesser General Public License (LGPL) similarily to the original work by Antonio Soler. See [LICENSE.md](./LICENSE.md) for the full LGPL license.
