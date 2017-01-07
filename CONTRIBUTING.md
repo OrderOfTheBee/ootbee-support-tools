@@ -69,6 +69,7 @@ make sure you've completed all of the items outlined in the checklist section of
 
 - **@AFaust to reference/summarize any style requirements**
 - **@AFaust do we want to add any kind of linting to the build/tests?**
+- **Maybe just a link to here: https://github.com/OrderOfTheBee/ootbee-support-tools/wiki/Conventions ? ***
 
 Please ensure any pull requests follow the guidelines closely. If you notice existing code which doesn't follow
 these practices, feel free to ping us and we will address this.
