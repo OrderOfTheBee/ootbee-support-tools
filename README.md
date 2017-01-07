@@ -73,6 +73,9 @@ Currently this addon is not yet published to an artifact repository, so before y
 mvn install
 ```
 
+# Code of conduct
+It is a key goal of our project to foster active participation and collaboration with the greater Alfresco community. To that end we expect folks to conform to our [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md).
+
 # License
 This addon is licensed under the GNU Lesser General Public License (LGPL) similarily to the original work by Antonio Soler. See [LICENSE.md](./LICENSE.md) for the full LGPL license.
 
