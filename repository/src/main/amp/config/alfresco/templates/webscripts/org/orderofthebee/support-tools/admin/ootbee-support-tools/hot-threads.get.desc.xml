@@ -4,8 +4,6 @@
     <description>Generate hot threads dumps</description>
     <url>/ootbee/admin/hot-threads</url>
     <family>AdminConsole</family>
-    <!-- would conflict with Alfresco provided Support Tools project -->
-    <family>AdminConsole:Edition:Community</family>
     <family>OOTBee Support Tools</family>
     <format default="html"/>
     <authentication>admin</authentication>
