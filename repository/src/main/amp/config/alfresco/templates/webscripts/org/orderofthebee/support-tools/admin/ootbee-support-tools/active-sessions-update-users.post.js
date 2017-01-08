@@ -1,5 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/applied-patches.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/active-sessions.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -25,7 +24,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-buildAppliedPatches();
+var json = JSON.parse(requestbody.content);
+logoutUser(json.userName);
 
-model.tools = Admin.getConsoleTools("applied-patches");
-model.metadata = Admin.getServerMetaData();
+buildUserSessionsData();

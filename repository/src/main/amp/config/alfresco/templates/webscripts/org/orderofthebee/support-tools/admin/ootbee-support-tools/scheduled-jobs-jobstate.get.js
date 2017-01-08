@@ -1,7 +1,8 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/log4j.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/scheduled-jobs.lib.js">
+
 
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
+ * Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
  * Copyright (C) 2016 Order of the Bee
  *
  * This file is part of Community Support Tools
@@ -23,5 +24,4 @@
  * Linked to Alfresco
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
-
-processLoggerStateChangeFromJSONData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
+buildRunningJobsData();

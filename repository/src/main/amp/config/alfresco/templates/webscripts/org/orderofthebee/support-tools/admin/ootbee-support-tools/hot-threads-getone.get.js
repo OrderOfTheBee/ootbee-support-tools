@@ -1,4 +1,6 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/log4j.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/hot-threads.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/threads-common.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -23,5 +25,5 @@
  * Linked to Alfresco
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
-
-retrieveTailingEvents();
+ 
+buildHotThreadInformation();

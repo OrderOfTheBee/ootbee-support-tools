@@ -1,8 +1,8 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/caches.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/performance.lib.js">
 
 /**
- * Copyright (C) 2016 Axel Faust
+ * Copyright (C) 2016 Axel Faust / Markus Joos
  * Copyright (C) 2016 Order of the Bee
  *
  * This file is part of Community Support Tools
@@ -25,7 +25,7 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-buildCaches();
+buildMetrics();
 
-model.tools = Admin.getConsoleTools("caches");
+model.tools = Admin.getConsoleTools("performance");
 model.metadata = Admin.getServerMetaData();

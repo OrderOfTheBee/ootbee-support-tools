@@ -1,6 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/thread-dump.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/threads-common.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/scheduled-jobs.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -25,5 +23,12 @@
  * Linked to Alfresco
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
- 
-buildThreadDumpInformation();
+
+try {
+    executeJobNow(args.jobName, args.groupName);
+    model.success = true;
+}
+catch(e)
+{
+	model.success = false;
+}

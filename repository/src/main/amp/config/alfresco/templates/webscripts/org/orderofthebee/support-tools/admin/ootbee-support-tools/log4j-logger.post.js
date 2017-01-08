@@ -1,5 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/performance.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/log4j.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -25,7 +24,13 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-buildMetrics();
+var showUnconfiguredLoggers = processLoggerStateChangeFromFormData(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
 
-model.tools = Admin.getConsoleTools("performance");
-model.metadata = Admin.getServerMetaData();
+if (status.redirect !== true)
+{
+    // this is the form-based controller so caller is Repository-tier admin console
+    // simply redirect to our get variant
+    status.code = status.STATUS_MOVED_TEMPORARILY;
+    status.location = url.service.substring(0, url.service.lastIndexOf('/')) + "?showUnconfiguredLoggers=" + (showUnconfiguredLoggers == 'true');
+    status.redirect = true;
+}
