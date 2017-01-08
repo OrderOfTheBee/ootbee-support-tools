@@ -4,8 +4,6 @@
     <description>View and Test Transformation Chains</description>
     <url>/ootbee/admin/test-transform</url>
     <family>AdminConsole</family>
-    <!-- would conflict with Alfresco provided Support Tools project -->
-    <family>AdminConsole:Edition:Community</family>
     <family>OOTBee Support Tools</family>
     <format default="html"/>
     <authentication>admin</authentication>

@@ -4,8 +4,6 @@
     <description>Generate thread dumps</description>
     <url>/ootbee/admin/thread-dump</url>
     <family>AdminConsole</family>
-    <!-- would conflict with Alfresco provided Support Tools project -->
-    <family>AdminConsole:Edition:Community</family>
     <family>OOTBee Support Tools</family>
     <format default="html"/>
     <authentication>admin</authentication>
