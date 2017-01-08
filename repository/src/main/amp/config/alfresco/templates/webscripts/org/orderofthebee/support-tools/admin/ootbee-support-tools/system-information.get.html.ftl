@@ -22,7 +22,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
  
   -->
   
-<#include "admin-template.ftl" />
+<#include "../admin-template.ftl" />
 
 <@page title=msg("systeminformation.title") readonly=true customCSSFiles=["ootbee-support-tools/css/jquery.dataTables.css"]
     customJSFiles=["ootbee-support-tools/js/jquery-2.2.3.js", "ootbee-support-tools/js/jquery.dataTables.js", "ootbee-support-tools/js/system-information.js"]>
