@@ -4,8 +4,6 @@
     <description>View and update Log4J logger settings</description>
     <url>/ootbee/admin/log4j-loggers</url>
     <family>AdminConsole</family>
-    <!-- would conflict with Alfresco provided Support Tools project -->
-    <family>AdminConsole:Edition:Community</family>
     <family>OOTBee Support Tools</family>
     <format default="html" />
     <authentication>admin</authentication>
