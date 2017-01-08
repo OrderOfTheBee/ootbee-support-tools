@@ -1,5 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/scheduled-jobs.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/log4j.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -25,7 +24,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-buildScheduledJobsData();
-
-model.tools = Admin.getConsoleTools("scheduled-jobs");
-model.metadata = Admin.getServerMetaData();
+resetLoggerSetting();

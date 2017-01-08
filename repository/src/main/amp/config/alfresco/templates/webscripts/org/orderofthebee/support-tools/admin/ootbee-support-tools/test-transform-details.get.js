@@ -1,5 +1,5 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/log4j.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/test-transform.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -25,8 +25,13 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-model.showUnconfiguredLoggers = args.showUnconfiguredLoggers == 'true';
-buildLoggerStates(model.showUnconfiguredLoggers, args.loggerName, args.startIndex, args.pageSize);
-
-model.tools = Admin.getConsoleTools("log4j-loggers");
-model.metadata = Admin.getServerMetaData();
+// operation should be reflected
+if (args.operation !== null && args.operation in this)
+{
+    this[args.operation]();
+}
+else
+{
+    model.messageKey = "default.message";
+    model.headerKey = "default.heading";
+}

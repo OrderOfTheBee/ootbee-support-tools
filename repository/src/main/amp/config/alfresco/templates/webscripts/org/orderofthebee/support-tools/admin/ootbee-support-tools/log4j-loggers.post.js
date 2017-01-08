@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/scheduled-jobs.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/log4j.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -24,11 +24,13 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-try {
-    executeJobNow(args.jobName, args.groupName);
-    model.success = true;
-}
-catch(e)
+var showUnconfiguredLoggers = processLoggerStateChangeFromFormData();
+
+if (status.redirect !== true)
 {
-	model.success = false;
+    // this is the form-based controller so caller is Repository-tier admin console
+    // simply redirect to our get variant
+    status.code = status.STATUS_MOVED_TEMPORARILY;
+    status.location = url.full + "?showUnconfiguredLoggers=" + (showUnconfiguredLoggers == 'true');
+    status.redirect = true;
 }

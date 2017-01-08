@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/support-tools/active-sessions.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/log4j.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
@@ -24,7 +24,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-var json = JSON.parse(requestbody.content);
-logoutUser(json.userName);
-
-buildUserSessionsData();
+buildAppenderModel(args.logger);
