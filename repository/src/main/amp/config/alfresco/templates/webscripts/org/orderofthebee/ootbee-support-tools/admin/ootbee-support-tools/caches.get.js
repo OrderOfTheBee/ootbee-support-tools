@@ -1,5 +1,5 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/caches.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/ootbee-support-tools/caches.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust

@@ -1,5 +1,5 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/test-transform.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/ootbee-support-tools/test-transform.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos

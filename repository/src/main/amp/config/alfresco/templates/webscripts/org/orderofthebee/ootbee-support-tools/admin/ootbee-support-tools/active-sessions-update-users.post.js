@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/support-tools/active-sessions.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/ootbee-support-tools/active-sessions.lib.js">
 
 /**
  * Copyright (C) 2016 Axel Faust / Markus Joos
