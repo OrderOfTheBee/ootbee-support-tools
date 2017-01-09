@@ -12,10 +12,14 @@ In order for us to help with any technical requests please check that you've com
 [Submit your issue](https://github.com/OrderOfTheBee/ootbee-support-tools/issues/new)
 
 ## Review Criteria
-We expect all submissions to conform to the [inclusion criteria][inclusion-criteria] outlined by the add-ons comitte
+We expect all submissions to conform to the [inclusion criteria][inclusion-criteria] outlined by the ADDONS comittee
 of the [Order of the Bee][ootbee]. This project requires the following additional criteria be met:
 
-- **@AFaust to add any additional criteria here.**
+- No changes, patches or enhancements to any out-of-the-box Alfresco beans, components or web scripts allowed, except for UI customisations of Share-tier Admin Tools pages via Surf extension modules and addition to the JSON page model
+- No inclusion of 3rd-party dependencies that are not "standalone" or can be safely namespaced/isolated, e.g. JARs with transitive dependencies
+- Use of regular web scripts is prescribed for Repository-tier Admin Console, with preference towards using JavaScript controller and FreeMarker templates unless a strong case can be made for using a Java-backed web script (i.e. state handling or streaming, similar to the Log4J state and log file handling tooling)
+- Use of Aikau for Share-tier Admin Tools is prescribed
+- Additional 3rd-party UI libraries should only be included if absolutely crucial for a feature, not just because "it is easier to use".
 
 ## Git Workflow
 We utilize a combination of the [Forking Workflow][git-forking-wf] and the 
@@ -67,9 +71,12 @@ make sure you've completed all of the items outlined in the checklist section of
 
 ## Style Guide
 
-- **@AFaust to reference/summarize any style requirements**
-- **@AFaust do we want to add any kind of linting to the build/tests?**
-- **Maybe just a link to here: https://github.com/OrderOfTheBee/ootbee-support-tools/wiki/Conventions ? ***
+- 4 spaces indentation
+- braces always on next line (except for array initialiser and lambda), parenthesis on same line
+- new line before control block statements, else if on one line
+- 140 character line width
+- Only EcmaScript 5 JS is allowed
+- JSHint is applied on JavaScript sources on both server- and client-side - check .jshintrc files ([1](https://github.com/OrderOfTheBee/ootbee-support-tools/blob/master/repository/src/main/amp/web/ootbee-support-tools/.jshintrc), [2](https://github.com/OrderOfTheBee/ootbee-support-tools/blob/master/repository/src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin/.jshintrc), [3](https://github.com/OrderOfTheBee/ootbee-support-tools/blob/master/share/src/main/amp/web/ootbee-support-tools/.jshintrc), [4](https://github.com/OrderOfTheBee/ootbee-support-tools/blob/master/share/src/main/amp/config/alfresco/site-webscripts/org/orderofthebee/ootbee-support-tools/.jshintrc) for default settings and predefined globals
 
 Please ensure any pull requests follow the guidelines closely. If you notice existing code which doesn't follow
 these practices, feel free to ping us and we will address this.
@@ -93,7 +100,7 @@ enhancements we are working on. Thanks for understanding!
 
 [git-feature-branching-wf]: https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow
 [git-forking-wf]: https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow
-[gitter-url]: https://gitter.im/OrderOfTheBee/support-tools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitter-url]: https://gitter.im/OrderOfTheBee/support-tools
 [homepage]: https://github.com/OrderOfTheBee/ootbee-support-tools
 [inclusion-criteria]: https://github.com/OrderOfTheBee/addons/wiki/Inclusion-criteria-overview
 [ootbee]: http://orderofthebee.org/
