@@ -79,9 +79,18 @@ It is a key goal of our project to foster active participation and collaboration
 # License
 This addon is licensed under the GNU Lesser General Public License (LGPL) similarily to the original work by Antonio Soler. See [LICENSE.md](./LICENSE.md) for the full LGPL license.
 
-Authors:
-
-- [Axel Faust](mailto:axel.faust@acosix.org), Order of the Bee
-- Markus Joos, AdNovum
-
 Alfresco (base software) - Copyright &copy; Alfresco Software Ltd.
+
+The Contributor Covenant is released under [Creative Commons Attribution 4.0 International Public License](https://github.com/ContributorCovenant/contributor_covenant/blob/master/LICENSE.md).
+
+Original authors:
+
+- [Axel Faust](https://github.com/AFaust), Acosix / Order of the Bee
+- [Markus Joos](https://github.com/mrksjs), AdNovum
+
+Maintainers:
+
+- [Axel Faust](https://github.com/AFaust), Acosix / Order of the Bee
+- [Ahmed Owian](https://github.com/ahmedowian)
+- [Mittal Patolyia](https://github.com/mits2013)
+- [Bindu Wavell](https://github.com/binduwavell), Zia / Order of the Bee
