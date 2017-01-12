@@ -1,20 +1,15 @@
 [![Build Status](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools.svg?branch=master)](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools)
 
-# "Liberated" Alfresco Support Tools
-This addon aims to bring the functionality provided by the [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) addon by Antonio Soler, which is only supported on the Alfresco Enterprise Edition, to the free and open Community Edition of Alfresco.
+# OOTBee Support Tools
+This addon aims to enhance the scope and functionality available to Alfresco administrators via the Repository-tier Admin Console or Share-tier Admin Tools. It contains most of the tools provided with the [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) addon (by Antonio Soler) without requiring to be run on any specific Alfresco edition as well as about half a dozen custom tools.
+
+The project started as a project at the [2016 Global Virtual Hack-a-thon](https://community.alfresco.com/docs/DOC-6364-projects-and-teams-global-virtual-hackathon-2016) and has since been transferred to the Order of the Bee in order to make it a fully community-owned and -maintained project. 
 
 # Compatibility
 
 This project has been built to be compatible with Alfresco Community 5.0.d+ and Alfresco Enterprise 5.1+.
 
 Though it can technically be installed in Alfresco Enterprise 5.0 it will not work properly in that version as the Enterprise Administration Console cannot handle Community Edition tools. The tools will be listed in the navigation but cannot be accessed (result in HTTP 404 errors due to hardcoded URL patterns).
-
-In order to avoid conflicts with tools provided by the official [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) for Alfresco Enterprise Edition most of the tools this module provides have been configured to be "Community-only", that is they will not show up in an Enterprise Edition system. This behaviour can be changed by overriding the web script descriptor XML files via the *&lt;configRoot&gt;/alfresco/extension/templates/webscripts/* method. Specifically all the web script descriptors of [Repository-tier web scripts in this module](https://github.com/AFaust/ootbee-support-tools/tree/master/repository/src/main/amp/config/alfresco/templates/webscripts/org/orderofthebee/ootbee-support-tools/admin) that contain the following fragment need to be overridden and the snippet removed.
-
-```xml
-    <!-- would conflict with Alfresco provided Support Tools project -->
-    <family>AdminConsole:Edition:Community</family>    
-```
 
 # Maven usage
 
@@ -71,7 +66,7 @@ For Alfresco SDK 3 beta users:
 
 ## Share-tier
 
-The Admin Tools added to the Share user interface are built on Aikau. We recommend that one of the most recent releases of Aikau is used the tools for optimal performance, but technically we are compatible and have verified releases as far back as 1.0.67.
+The Admin Tools added to the Share user interface are built on Aikau. We recommend that one of the most recent releases of Aikau is used to run the tools for optimal performance, but technically we are compatible and have verified releases as far back as 1.0.67.
 
 ```xml
 <dependency>
@@ -84,7 +79,6 @@ The Admin Tools added to the Share user interface are built on Aikau. We recomme
     <groupId>org.alfresco</groupId>
     <artifactId>aikau</artifactId>
     <version>1.0.101</version>
-    <type>amp</type>
 </dependency>
 ```
 
