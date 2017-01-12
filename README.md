@@ -72,6 +72,8 @@ Currently this addon is not yet published to an artifact repository, so before y
 ```
 mvn install
 ```
+# Contributing
+We hope to have lots of collaborators on this project. As such, we have outlined our contribution policies and proceedures in the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
 
 # Code of conduct
 It is a key goal of our project to foster active participation and collaboration with the greater Alfresco community. To that end we expect folks to conform to our [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md).
