@@ -8,13 +8,14 @@
         <version>2.2.0</version>
     </parent>
 
-    <groupId>org.orderofthebee.addons</groupId>
-    <artifactId>ootbee-support-tools-parent</artifactId>
+    <groupId>org.orderofthebee.support-tools</groupId>
+    <artifactId>support-tools-parent</artifactId>
     <version>0.0.1.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>Order of the Bee - Community Support Tools - Parent</name>
-    <url>https://github.com/AFaust/ootbee-support-tools</url>
+    <name>OOTBee Support Tools - Parent</name>
+    <description>Addon to enhance the Repository and Share Admin Console/Tools with new tools and make tools previously exclusive to the Enterprise Edition addon Alfresco Support Tools available in Community Edition</description>
+    <url>https://github.com/OrderOfTheBee/ootbee-support-tools</url>
 
     <licenses>
         <license>

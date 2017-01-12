@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/AFaust/ootbee-support-tools.svg?branch=master)](https://travis-ci.org/AFaust/ootbee-support-tools)
+[![Build Status](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools.svg?branch=master)](https://travis-ci.org/OrderOfTheBee/ootbee-support-tools)
 
 # "Liberated" Alfresco Support Tools
 This addon aims to bring the functionality provided by the [Alfresco Support Tools](https://github.com/Alfresco/alfresco-support-tools) addon by Antonio Soler, which is only supported on the Alfresco Enterprise Edition, to the free and open Community Edition of Alfresco.
@@ -75,12 +75,24 @@ mvn install
 # Contributing
 We hope to have lots of collaborators on this project. As such, we have outlined our contribution policies and proceedures in the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
 
+# Code of conduct
+It is a key goal of our project to foster active participation and collaboration with the greater Alfresco community. To that end we expect folks to conform to our [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md).
+
 # License
 This addon is licensed under the GNU Lesser General Public License (LGPL) similarily to the original work by Antonio Soler. See [LICENSE.md](./LICENSE.md) for the full LGPL license.
 
-Authors:
-
-- [Axel Faust](mailto:axel.faust@acosix.org), Order of the Bee
-- Markus Joos, AdNovum
-
 Alfresco (base software) - Copyright &copy; Alfresco Software Ltd.
+
+The Contributor Covenant is released under [Creative Commons Attribution 4.0 International Public License](https://github.com/ContributorCovenant/contributor_covenant/blob/master/LICENSE.md).
+
+Original authors:
+
+- [Axel Faust](https://github.com/AFaust), Acosix / Order of the Bee
+- [Markus Joos](https://github.com/mrksjs), AdNovum
+
+Maintainers:
+
+- [Axel Faust](https://github.com/AFaust), Acosix / Order of the Bee
+- [Ahmed Owian](https://github.com/ahmedowian)
+- [Mittal Patolyia](https://github.com/mits2013)
+- [Bindu Wavell](https://github.com/binduwavell), Zia / Order of the Bee
