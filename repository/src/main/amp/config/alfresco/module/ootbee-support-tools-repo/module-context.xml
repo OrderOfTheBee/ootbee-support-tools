@@ -12,28 +12,28 @@
         </property>
     </bean>
 
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-logger.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-logger.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-logger.put" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-logger.put" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-loggers.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-loggers.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-logger.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-logger.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
         parent="webscript" />
 
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileGet"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileGet"
         parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-file.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileDelete"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-log-file.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileDelete"
         parent="webscript" />
 
-    <bean id="webscript.org.orderofthebee.ootbee-support-tools.admin.support-tools.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFilesZIPPost"
+    <bean id="webscript.org.orderofthebee.support-tools.admin.support-tools.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFilesZIPPost"
         parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
