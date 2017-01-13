@@ -11,8 +11,8 @@
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
     <version>0.0.1.0-SNAPSHOT</version>
-
     <packaging>pom</packaging>
+
     <name>OOTBee Support Tools - Parent</name>
     <description>Addon to enhance the Repository and Share Admin Console/Tools with new tools and make tools previously exclusive to the Enterprise Edition addon Alfresco Support Tools available in Community Edition</description>
     <url>https://github.com/OrderOfTheBee/ootbee-support-tools</url>
@@ -25,9 +25,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:AFaust/ootbee-support-tools.git</connection>
-        <developerConnection>scm:git:git@github.com:AFaust/ootbee-support-tools.git</developerConnection>
-        <url>git@github.com:AFaust/ootbee-support-tools.git</url>
+        <connection>scm:git:git@github.com:OrderOfTheBee/ootbee-support-tools.git</connection>
+        <developerConnection>scm:git:git@github.com:OrderOfTheBee/ootbee-support-tools.git</developerConnection>
+        <url>git@github.com:OrderOfTheBee/ootbee-support-tools.git</url>
     </scm>
 
     <developers>
@@ -37,7 +37,9 @@
             <email>axel.faust@acosix.org</email>
             <organization>Order of the Bee</organization>
             <roles>
+                <role>Founder</role>
                 <role>Developer</role>
+                <role>Maintainer</role>
             </roles>
             <properties>
                 <twitter>twitter.com/ReluctantBird83</twitter>
@@ -49,14 +51,97 @@
             <email>markus.joos@adnovum.ch</email>
             <organization>AdNovum Informatik AG</organization>
             <roles>
+                <role>Founder</role>
                 <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>binduwavell</id>
+            <name>Bindu Wavell</name>
+            <roles>
+                <role>Maintainer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>binduwavell</id>
+            <name>Ahmed Owian</name>
+            <roles>
+                <role>Maintainer</role>
             </roles>
         </developer>
     </developers>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Java 7 is out of support - everything will be built for Java 8 by default even if Alfresco up to 5.0 officially supports Java 7 -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <maven.compiler.version>3.5.1</maven.compiler.version>
+        <maven.source.version>3.0.1</maven.source.version>
+        <maven.jar.version>3.0.2</maven.jar.version>
+        <maven.javadoc.version>2.10.4</maven.javadoc.version>
+        <maven.resources.version>3.0.1</maven.resources.version>
+
         <alfresco.version>5.1.g</alfresco.version>
+        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+
+        <repository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -70,8 +155,103 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                            <configuration>
+                                <!-- strangely the default without the includes also contains JS/CSS files -->
+                                <includes>
+                                    <include>**/*.java</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-jar</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>classes</classifier>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadoc</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <modules>
         <module>repository</module>
         <module>share</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <configuration>
+                            <useAgent>false</useAgent>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
