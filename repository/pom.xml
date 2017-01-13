@@ -64,6 +64,18 @@
             </plugin>
 
             <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+
+            <plugin>
                 <groupId>de.acosix.maven</groupId>
                 <artifactId>jshint-maven-plugin</artifactId>
                 <version>1.0.0</version>

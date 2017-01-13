@@ -27,7 +27,7 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>aikau</artifactId>
-            <version>1.0.92</version>
+            <version>1.0.101</version>
             <!-- we require user to pick the Aikau version they want to use - we just state we build and test against this version -->
             <scope>provided</scope>
             <exclusions>
@@ -56,7 +56,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
@@ -71,6 +71,18 @@
                 <configuration>
                     <escapeString>\</escapeString>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
 
             <plugin>

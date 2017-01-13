@@ -15,6 +15,22 @@ Though it can technically be installed in Alfresco Enterprise 5.0 it will not wo
 
 This addon is being build using Alfresco SDK 2.2.0. This means we produce an AMP artifact that can be added to an Alfresco all-in-one / WAR build with the as a dependency:
 
+## Using SNAPSHOT builds
+
+In order to use a pre-built SNAPSHOT artifact published to the Open Source Sonatype Repository Hosting site, the artifact repository may need to be added to the POM, global settings.xml or an artifact repository proxy server. The following is the XML snippet for inclusion in a POM file.
+
+```xml
+<repositories>
+    <repository>
+        <id>ossrh</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
 ## Repository-tier
 
 ```xml
