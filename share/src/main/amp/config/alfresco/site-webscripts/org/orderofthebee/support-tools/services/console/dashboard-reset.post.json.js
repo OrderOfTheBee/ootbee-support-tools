@@ -73,7 +73,7 @@ function resetSiteDashboard(site)
 
 function resetUserDashboard(user)
 {
-    var componentResults, cidx, dashboardPage, tokens, key;
+    var componentResults, cidx, dashboardPage, tokens;
 
     dashboardPage = sitedata.getPage('user/' + user + '/dashboard');
     if (dashboardPage)
