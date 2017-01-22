@@ -71,4 +71,62 @@ function resetSiteDashboard(site)
     }
 }
 
-resetSiteDashboard(String(url.templateArgs.site));
+function resetUserDashboard(user)
+{
+    var componentResults, cidx, dashboardPage, tokens, key;
+
+    dashboardPage = sitedata.getPage('user/' + user + '/dashboard');
+    if (dashboardPage)
+    {
+        componentResults = sitedata.findComponents('page', null, 'user/' + user + '/dashboard', null);
+        for (cidx = 0; cidx < componentResults.length; cidx++)
+        {
+            sitedata.unbindComponent(componentResults[cidx].modelObject.scope, componentResults[cidx].modelObject.regionId,
+                    componentResults[cidx].modelObject.sourceId);
+        }
+        
+        dashboardPage.delete();
+        
+        tokens = {
+            userid : user
+        };
+        
+        sitedata.newPreset('user-dashboard', tokens);
+    }
+}
+
+function resetDashboards()
+{
+    // default json root object is crappy JSONObject implementation
+    var obj, dashboardIds;
+    
+    obj = JSON.parse(String(json));
+    
+    dashboardIds = obj.dashboardIds || [];
+    dashboardIds.forEach(function (dashboardId){
+        var site, user;
+        if (dashboardId.indexOf('site/') === 0)
+        {
+            site = dashboardId.substring(5, dashboardId.indexOf('/dashboard'));
+            resetSiteDashboard(site);
+        }
+        else if (dashboardId.indexOf('user/') === 0)
+        {
+            user = dashboardId.substring(5, dashboardId.indexOf('/dashboard'));
+            resetUserDashboard(user);
+        }
+    });
+}
+
+if (url.templateArgs.site)
+{
+    resetSiteDashboard(String(url.templateArgs.site));
+}
+else if (url.templateArgs.user)
+{
+    resetUserDashboard(String(url.templateArgs.user));
+}
+else if (this.json !== undefined)
+{
+    resetDashboards();
+}
