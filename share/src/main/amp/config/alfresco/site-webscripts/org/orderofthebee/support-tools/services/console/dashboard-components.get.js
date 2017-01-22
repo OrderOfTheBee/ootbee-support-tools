@@ -28,17 +28,20 @@ function queryUserDashboardComponents(components, componentFilter, maxItems)
     if (args.sourceType === null || String(args.sourceType) === 'all' || String(args.sourceType) === 'user')
     {
         peopleRetrieved = 0;
-        while (lastPeopleRetrieved !== 0 && components.length <= maxItems)
+        // note: use (2 * maxItems) as limit so we can determine if more than maxItems exist for pagination (see queryDashboardComponents)
+        while (lastPeopleRetrieved !== 0 && components.length <= (2 * maxItems))
         {
             // for some reason people.get uses both skipCount + startIndex, maxItems + maxResults
-            response = remote.call('/api/people?filter=' + (args.filter !== null && String(args.filter).trim() !== '' ? args.filter : '*') + '&pageSize=100&maxResults=100&skipCount=' + peopleRetrieved + '&startIndex=' + peopleRetrieved);
+            // use 99 as pageSize since default Repository-tier userToAuthorityTransactionalCache is set to 100
+            response = remote.call('/api/people?filter=' + (args.filter !== null && String(args.filter).trim() !== '' ? args.filter : '*')
+                    + '&pageSize=99&maxResults=99&skipCount=' + peopleRetrieved + '&startIndex=' + peopleRetrieved + '&sortBy=userName&dir=asc');
             if (response.status.code === 200)
             {
                 people = JSON.parse(response.response).people;
-                for (pidx = 0; pidx < people.length && components.length <= maxItems; pidx++)
+                for (pidx = 0; pidx < people.length && components.length <= (2 * maxItems); pidx++)
                 {
                     person = people[pidx];
-                    
+
                     if (regionFilter === undefined)
                     {
                         regionFilter = args.region !== null && String(args.region).trim() !== '' ? args.region : null;
@@ -46,23 +49,24 @@ function queryUserDashboardComponents(components, componentFilter, maxItems)
                         {
                             regionFilter = '*' + regionFilter;
                         }
-                        
+
                         if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
                         {
                             regionFilter = regionFilter + '*';
                         }
                     }
-                    
+
                     componentResults = sitedata.findComponents('page', regionFilter, 'user/' + person.userName + '/dashboard', null);
                     // componentResults is not a proper native JS array so concat won't work
-                    for (cidx = 0; cidx < componentResults.length && components.length <= maxItems; cidx++)
+                    for (cidx = 0; cidx < componentResults.length && components.length <= (2 * maxItems); cidx++)
                     {
                         if (componentFilter(componentResults[cidx].modelObject))
                         {
                             components.push({
                                 simpleSource : person.userName,
                                 simpleSourceDisplayName : (person.firstName === null ? '' : person.firstName)
-                                        + (person.lastName === null ? '' : ((person.firstName !== null ? ' ' : '') + person.lastName)) + ' (' + person.userName + ')',
+                                        + (person.lastName === null ? '' : ((person.firstName !== null ? ' ' : '') + person.lastName))
+                                        + ' (' + person.userName + ')',
                                 simpleSourceType : 'user',
                                 surfComponent : componentResults[cidx].modelObject
                             });
@@ -83,16 +87,18 @@ function querySiteDashboardComponents(components, componentFilter, maxItems)
     if (args.sourceType === null || String(args.sourceType) === 'all' || String(args.sourceType) === 'site')
     {
         sitesRetrieved = 0;
-        while (lastSitesRetrieved !== 0 && components.length <= maxItems)
+        // note: use (2 * maxItems) as limit so we can determine if more than maxItems exist for pagination (see queryDashboardComponents)
+        while (lastSitesRetrieved !== 0 && components.length <= (2 * maxItems))
         {
             // Repository-tier ADMRemoteStore does not support wildcard queries for site/*/dashboard
             // so we must query site before looking up dashboard components
             // we don't want to load too much too early so incrementally increase result set size (no way to specify startIndex) 
-            response = remote.call('/api/sites?size=' + (sitesRetrieved + 25) + (args.filter !== null && String(args.filter).trim() !== '' ? ('&nf=' + args.filter) : ''));
+            response = remote.call('/api/sites?size=' + (sitesRetrieved + 25)
+                    + (args.filter !== null && String(args.filter).trim() !== '' ? ('&nf=' + args.filter) : ''));
             if (response.status.code === 200)
             {
                 sites = JSON.parse(response.response);
-                for (sidx = sitesRetrieved; sidx < sites.length && components.length <= maxItems; sidx++)
+                for (sidx = sitesRetrieved; sidx < sites.length && components.length <= (2 * maxItems); sidx++)
                 {
                     if (regionFilter === undefined)
                     {
@@ -101,15 +107,15 @@ function querySiteDashboardComponents(components, componentFilter, maxItems)
                         {
                             regionFilter = '*' + regionFilter;
                         }
-                        
+
                         if (typeof regionFilter === 'string' && regionFilter.lastIndexOf('*') !== regionFilter.length() - 1)
                         {
                             regionFilter = regionFilter + '*';
                         }
                     }
-                    
+
                     componentResults = sitedata.findComponents('page', regionFilter, 'site/' + sites[sidx].shortName + '/dashboard', null);
-                    for (cidx = 0; cidx < componentResults.length && components.length <= maxItems; cidx++)
+                    for (cidx = 0; cidx < componentResults.length && components.length <= (2 * maxItems); cidx++)
                     {
                         if (componentFilter(componentResults[cidx].modelObject))
                         {
@@ -134,13 +140,13 @@ function buildComponentFilter(startIndex)
 {
     var suppressedRegionIds, urlPattern, skipRemaining;
 
-    suppressedRegionIds = [ 'title', 'navigation' ];
+    suppressedRegionIds = [ 'title', 'navigation', 'full-width-dashlet' ];
 
     if (args.componentUrl !== undefined && args.componentUrl !== null && String(args.componentUrl).trim() !== '')
     {
         urlPattern = new RegExp(String(args.componentUrl), 'g');
     }
-    
+
     skipRemaining = startIndex;
 
     return function componentFilter_apply(component)
@@ -149,7 +155,7 @@ function buildComponentFilter(startIndex)
 
         include = include && suppressedRegionIds.indexOf(String(component.regionId)) === -1;
         include = include && (urlPattern === undefined || urlPattern.test(String(component.getURL())));
-        
+
         if (include === true && skipRemaining > 0)
         {
             skipRemaining--;
@@ -163,23 +169,19 @@ function buildComponentFilter(startIndex)
 function queryDashboardComponents()
 {
     var components = [], maxItems, skipCount, componentFilter;
-    
+
     skipCount = parseInt(args.startIndex || '0', 10);
     maxItems = parseInt(args.pageSize || '50', 10);
-    
+
     componentFilter = buildComponentFilter(skipCount);
 
     queryUserDashboardComponents(components, componentFilter, maxItems);
     querySiteDashboardComponents(components, componentFilter, maxItems);
 
+    model.totalRecords = skipCount + components.length;
     if (components.length > maxItems)
     {
         components.splice(maxItems, components.length - maxItems);
-        model.totalRecords = skipCount + components.length + maxItems;
-    }
-    else
-    {
-        model.totalRecords = skipCount + components.length;
     }
     model.components = components;
     model.startIndex = skipCount;
