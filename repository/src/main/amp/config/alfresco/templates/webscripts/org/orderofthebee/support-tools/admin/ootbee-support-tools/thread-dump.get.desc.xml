@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Thread Dump</shortname>
+    <description>Generate thread dumps</description>
+    <url>/ootbee/admin/thread-dump</url>
+    <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
+    <format default="html"/>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

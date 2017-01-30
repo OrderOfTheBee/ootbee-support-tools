@@ -2,12 +2,19 @@
 <extension>
     <modules>
         <module>
-            <id>${artifactId}</id>
+            <!-- would normally be only \${project.artifactId} but we need the prefix due to lack of namespacing to avoid conflict with Alfresco Support Tools -->
+            <id>ootbee-${project.artifactId}</id>
             <description>${project.name}</description>
             <version>${noSnapshotVersion}</version>
             <auto-deploy>true</auto-deploy>
             
             <!-- nothing here yet -->
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco.share.pages.admin-console</targetPackageRoot>
+                    <sourcePackageRoot>org.orderofthebee.support-tools.pages.customisations</sourcePackageRoot>
+                </customization>
+            </customizations>
         </module>
     </modules>
 </extension>

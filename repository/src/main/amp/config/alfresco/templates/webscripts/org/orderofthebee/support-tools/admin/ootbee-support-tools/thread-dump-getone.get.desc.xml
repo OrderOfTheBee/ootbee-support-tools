@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Thread Dump - GetOne</shortname>
+    <description>Generates a single thread dump</description>
+    <url>/ootbee/admin/thread-dump-getone</url>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

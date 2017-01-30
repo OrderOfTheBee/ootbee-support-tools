@@ -1,0 +1,18 @@
+.alfresco-forms-Form.addLoggerForm {
+	margin: @standard-line-height @standard-column-width;
+
+	> form,
+	> .buttons,
+	.alfresco-forms-controls-BaseFormControl {
+	   display: inline-block;
+	}
+	
+	.alfresco-forms-controls-BaseFormControl {
+	   margin-bottom: 0px;
+	}
+	
+	.alfresco-forms-controls-BaseFormControl > .title-row,
+	.alfresco-forms-controls-BaseFormControl > .alfresco-forms-controls-BaseFormControl__warning-row {
+	   display: none;
+	}
+}

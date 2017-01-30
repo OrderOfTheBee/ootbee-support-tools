@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Log4J Settings - Loggers</shortname>
+    <url>/data/console/ootbee-support-tools/log4j-loggers</url>
+    <format default="json">argument</format>
+    <authentication>admin</authentication>
+    <family>OOTBee Support Tools</family>
+</webscript>

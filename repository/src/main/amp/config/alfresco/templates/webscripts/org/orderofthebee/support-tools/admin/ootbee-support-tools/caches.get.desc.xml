@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Caches</shortname>
+    <description>View cache status and metrics</description>
+    <url>/ootbee/admin/caches</url>
+    <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
+    <format default="html"/>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>System Performance</shortname>
+    <description>View general system performance metrics</description>
+    <url>/ootbee/admin/admin-performance</url>
+    <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
+    <format default="html"/>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

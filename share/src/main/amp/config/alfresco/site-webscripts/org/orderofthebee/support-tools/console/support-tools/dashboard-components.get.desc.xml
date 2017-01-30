@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Dashboard Components</shortname>
+    <url>/components/console/ootbee-support-tools/dashboard-components</url>
+    <format default="html">argument</format>
+    <authentication>admin</authentication>
+    <family>admin-console</family>
+    <family>OOTBee Support Tools</family>
+</webscript>

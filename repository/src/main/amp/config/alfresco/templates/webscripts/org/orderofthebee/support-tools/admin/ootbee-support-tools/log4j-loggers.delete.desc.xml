@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Loggers</shortname>
+    <description>Reset Log4J Loggers</description>
+    <url>/ootbee/admin/log4j-loggers</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

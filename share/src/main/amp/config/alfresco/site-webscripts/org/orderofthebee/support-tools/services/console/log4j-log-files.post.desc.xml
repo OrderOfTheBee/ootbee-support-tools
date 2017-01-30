@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings - Log Files ZIP</shortname>
+    <description>ZIP Log4J log files</description>
+    <url>/data/console/ootbee-support-tools/log4j-log-files</url>
+    <authentication>admin</authentication>
+    <family>OOTBee Support Tools</family>
+</webscript>

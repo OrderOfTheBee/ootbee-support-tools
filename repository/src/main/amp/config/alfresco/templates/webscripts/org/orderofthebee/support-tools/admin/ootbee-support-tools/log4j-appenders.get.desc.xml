@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings - Appenders</shortname>
+    <description>Display Log4J appender details</description>
+    <url>/ootbee/admin/log4j-appenders</url>
+    <format default="html" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

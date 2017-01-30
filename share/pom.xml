@@ -3,14 +3,14 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.orderofthebee.addons</groupId>
-        <artifactId>ootbee-support-tools-parent</artifactId>
+        <groupId>org.orderofthebee.support-tools</groupId>
+        <artifactId>support-tools-parent</artifactId>
         <version>0.0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ootbee-support-tools-share</artifactId>
+    <artifactId>support-tools-share</artifactId>
 
-    <name>Order of the Bee - Community Support Tools - Share Module</name>
+    <name>OOTBee Support Tools - Share Module</name>
     <packaging>amp</packaging>
 
     <properties>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>aikau</artifactId>
-            <version>1.0.92</version>
+            <version>1.0.101</version>
             <!-- we require user to pick the Aikau version they want to use - we just state we build and test against this version -->
             <scope>provided</scope>
             <exclusions>
@@ -56,7 +56,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
@@ -71,6 +71,18 @@
                 <configuration>
                     <escapeString>\</escapeString>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
 
             <plugin>
