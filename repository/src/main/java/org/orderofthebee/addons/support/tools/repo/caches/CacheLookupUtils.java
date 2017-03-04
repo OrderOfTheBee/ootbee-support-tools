@@ -33,7 +33,7 @@ import com.google.common.cache.CacheStats;
 /**
  * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
  */
-public class CacheReflectionUtils
+public class CacheLookupUtils
 {
 
     /**
