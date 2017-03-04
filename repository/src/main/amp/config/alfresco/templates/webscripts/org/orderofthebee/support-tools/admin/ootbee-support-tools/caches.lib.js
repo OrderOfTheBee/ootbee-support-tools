@@ -61,7 +61,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
     {
         if (cacheInfo.type === 'org.alfresco.repo.cache.DefaultSimpleCache')
         {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils.getDefaultSimpleCacheStats(cache);
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getDefaultSimpleCacheStats(cache);
 
             cacheInfo.cacheGets = stats.requestCount();
             cacheInfo.cacheHits = stats.hitCount();
@@ -73,7 +73,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
         else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache' && invHandler
                 && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
         {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils
                     .getHzInvalidatingCacheStats(invHandler.backingObject);
 
             cacheInfo.cacheGets = stats.requestCount();
@@ -86,7 +86,7 @@ function buildCacheInfo(cacheBeanName, cache, globalProperties)
         else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache' && invHandler
                 && invHandler.backingObject !== undefined && invHandler.backingObject !== null)
         {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheReflectionUtils
+            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils
                     .getHzSimpleCacheStats(invHandler.backingObject);
 
             cacheInfo.cacheGets = stats.operationStats.numberOfGets;
