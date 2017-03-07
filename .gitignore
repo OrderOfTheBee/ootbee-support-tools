@@ -3,8 +3,6 @@
 .classpath
 target/
 bin/
-ootbee-support-tools-parent.iml
-repository/ootbee-support-tools-repo.iml
 .idea/
-alf_data_dev
+alf_data_dev/
 *.iml
