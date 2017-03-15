@@ -82,11 +82,11 @@ Admin.addEventListener(window, 'load', function()
             }
         }
 
-        textToWrite = AdminTD.replaceAll("<span id=\"date\" class=\"highlight\">", "", textToWrite);
-        textToWrite = AdminTD.replaceAll("<span class=\"highlight\">", "", textToWrite);
-        textToWrite = AdminTD.replaceAll("</span>", "", textToWrite);
-        textToWrite = AdminTD.replaceAll("&lt;", "<", textToWrite);
-        textToWrite = AdminTD.replaceAll("&gt;", ">", textToWrite);
+        textToWrite = textToWrite.replace(/<span id="date" class="highlight">/g, "");
+        textToWrite = textToWrite.replace(/<span class="highlight">/g, "");
+        textToWrite = textToWrite.replace(/<\/span>/g, "");
+        textToWrite = textToWrite.replace(/&lt;/g, "<");
+        textToWrite = textToWrite.replace(/&gt;/g, ">");
 
         textFileAsBlob = new Blob([ textToWrite ], {
             type : 'text/plain'
@@ -116,7 +116,7 @@ Admin.addEventListener(window, 'load', function()
             // TODO I18n
             downloadLink.innerHTML = "Download File";
 
-            if (window.webkitURL !== null)
+            if (window.webkitURL)
             {
                 // Chrome allows the link to be clicked
                 // without actually adding it to the DOM.
@@ -144,11 +144,11 @@ Admin.addEventListener(window, 'load', function()
         {
             if (allTabs[i].id === tabName)
             {
-                AdminTD.removeClass(allTabs[i], "hidden");
+                Admin.removeClass(allTabs[i], "hidden");
             }
             else
             {
-                AdminTD.addClass(allTabs[i], "hidden");
+                Admin.addClass(allTabs[i], "hidden");
             }
         }
 
@@ -158,12 +158,12 @@ Admin.addEventListener(window, 'load', function()
         {
             if (selectors[i].id === "s" + tabName)
             {
-                AdminTD.addClass(selectors[i], "selected");
+                Admin.addClass(selectors[i], "selected");
                 el("savecurrent").setAttribute("onclick", "AdminTD.saveTextAsFile('" + tabName + "');");
             }
             else
             {
-                AdminTD.removeClass(selectors[i], "selected");
+                Admin.removeClass(selectors[i], "selected");
             }
         }
     };
@@ -196,33 +196,5 @@ Admin.addEventListener(window, 'load', function()
                 }
             }
         });
-    };
-
-    AdminTD.hasClass = function hasClass(element, clas)
-    {
-        return element.className.match(new RegExp("(\\s|^)" + clas + "(\\s|$)"));
-    };
-
-    AdminTD.addClass = function addClass(element, clas)
-    {
-        if (!AdminTD.hasClass(element, clas))
-        {
-            element.className += " " + clas;
-        }
-    };
-
-    AdminTD.removeClass = function removeClass(element, clas)
-    {
-        var reg;
-        if (AdminTD.hasClass(element, clas))
-        {
-            reg = new RegExp("(\\s|^)" + clas + "(\\s|$)");
-            element.className = element.className.replace(reg, " ");
-        }
-    };
-
-    AdminTD.replaceAll = function replaceAll(find, replace, str)
-    {
-        return str.replace(new RegExp(find, 'g'), replace);
     };
 }());
