@@ -39,22 +39,13 @@ function compareCpuTime(o1, o2)
 /* exported buildHotThreadInformation */
 function buildHotThreadInformation() 
 {
-    var hotThreads, runtimeBean, now, myDate, threadInfo, threadBean, info, cpu, tix, threadPackage, tiy, threadDump, threads, n, threadId, ht, thread, thisCpuTime, thisStackTrace, lockedSynchronizers, i, deadLockedThreads;
+    var hotThreads, runtimeBean, threadInfo, threadBean, info, cpu, tix, threadPackage, tiy, threadDump, threads, n, threadId, ht, thread, thisCpuTime, thisStackTrace, lockedSynchronizers, i, deadLockedThreads;
     
 	hotThreads = [];
 
-    function format(thisValue) 
-    {
-        thisValue = "00" + thisValue;
-        return thisValue.substr(-2);
-    }
-
 	runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
     
-    now = new Date();
-    myDate = now.getFullYear() + "-" + format(now.getMonth() + 1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":" + format(now.getMinutes()) + ":" + format(now.getSeconds());
-
-    model.myDate = myDate;    
+    model.myDate = (new Date()).toISOString();    
     model.vmName = runtimeBean.vmName;
 	model.vmVersion = runtimeBean.vmVersion;
 

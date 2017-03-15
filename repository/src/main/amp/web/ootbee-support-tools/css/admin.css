@@ -56,6 +56,11 @@ table.results.dataTable
 	padding: 16px 0 8px;
 }
 
+.main-wrapper .tab-controls.buttons
+{
+    padding: 16px 0 0;
+}
+
 table.data td.numericalCellValue
 {
 	text-align: right;

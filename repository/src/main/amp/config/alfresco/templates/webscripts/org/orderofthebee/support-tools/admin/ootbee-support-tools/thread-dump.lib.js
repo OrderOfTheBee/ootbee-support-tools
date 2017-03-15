@@ -26,23 +26,13 @@
 /* exported buildThreadDumpInformation */
 function buildThreadDumpInformation()
 {
-    var modelThreads, runtimeBean, now, myDate, threadBean, threads, n, thread, lockedSynchronizers, i, deadLockedThreads;
+    var modelThreads, runtimeBean, threadBean, threads, n, thread, lockedSynchronizers, i, deadLockedThreads;
 
     modelThreads = [];
 
-    function format(thisvalue)
-    {
-        thisvalue = "00" + thisvalue;
-        return thisvalue.substr(-2);
-    }
-
     runtimeBean = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean();
 
-    now = new Date();
-    myDate = now.getFullYear() + "-" + format(now.getMonth() + 1) + "-" + format(now.getDate()) + " " + format(now.getHours()) + ":"
-            + format(now.getMinutes()) + ":" + format(now.getSeconds());
-
-    model.myDate = myDate;
+    model.myDate = (new Date()).toISOString();
     model.vmName = runtimeBean.vmName;
     model.vmVersion = runtimeBean.vmVersion;
 

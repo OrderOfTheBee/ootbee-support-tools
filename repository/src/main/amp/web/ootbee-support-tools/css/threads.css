@@ -6,13 +6,6 @@
 	color: #c00;
 }
 
-.selector.selected {
-	background-color: #FFFFFF !important;
-	border: 1px solid #444 !important;
-	border-bottom-color: #FFFFFF !important;
-	z-index: 2;
-}
-
 #viewer {
 	border: 1px solid #444;
 	padding: 0.5em;
@@ -24,22 +17,20 @@ button.save {
 	background-color: #6E9E2D;
 }
 
-.selector {
-	-webkit-border-bottom-right-radius: 0px !important;
-	-moz-border-radius-bottomright: 0px !important;
-	border-bottom-right-radius: 0px !important;
-	-webkit-border-bottom-left-radius: 0px !important;
-	-moz-border-radius-bottomleft: 0px !important;
-	border-bottom-left-radius: 0px !important;
-	-webkit-border-top-right-radius: 8px !important;
-	-moz-border-radius-topright: 8px !important;
-	border-top-right-radius: 8px !important;
-	-webkit-border-top-left-radius: 8px !important;
-	-moz-border-radius-topleft: 8px !important;
-	border-top-left-radius: 8px !important;
-	background-color: #EEEEEE !important;
-	color: #222 !important;
+input[type="button"].selector {
+	-webkit-border-radius: 8px 8px 0 0;
+	-moz-border-radius: 8px 8px 0 0;
+	border-radius: 8px 8px 0 0;
+	background-color: #EEEEEE;
+	color: #222;
 	z-index: -1;
 	font-size: 9px;
 	margin-bottom: -1px;
+}
+
+input[type="button"].selector.selected {
+	background-color: #FFFFFF;
+	border: 1px solid #444;
+	border-bottom-color: #FFFFFF;
+	z-index: 2;
 }
