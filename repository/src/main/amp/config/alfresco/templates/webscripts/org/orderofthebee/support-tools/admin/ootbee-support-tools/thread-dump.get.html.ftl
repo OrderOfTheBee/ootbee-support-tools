@@ -39,7 +39,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
         <@button class="save" label=msg("threaddump.saveall") onclick="AdminTD.saveTextAsFile('all');"/>
 
         <@section label="" />
-        <div id="control" class="buttons"></div>
+        <div id="control" class="tab-controls buttons"></div>
         <div id="viewer"></div>
     </div>
 
