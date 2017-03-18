@@ -34,16 +34,24 @@
  */
 var AdminAS = AdminAS || {};
 
-/* Page load handler */
-Admin.addEventListener(window, 'load', function()
-{
-    AdminAS.createCharts();
-    setInterval(AdminAS.updateUsers, 60000);
-});
-
 (function()
 {
-    var serviceUrl, serviceContext, initialDBData, _messages = {};
+    var serviceUrl, serviceContext, initialDBData, dbGraph, userGraph, _messages = {};
+
+    Admin.addEventListener(window, 'load', function()
+    {
+        AdminAS.createCharts();
+        setInterval(AdminAS.updateUsers, 60000);
+        
+        Admin.addEventListener(el('dbTimescale'), 'change', function()
+        {
+            AdminAS.changeChartTimescale(this, el('database'), dbGraph);
+        });
+        Admin.addEventListener(el('userTimescale'), 'change', function()
+        {
+            AdminAS.changeChartTimescale(this, el('users'), userGraph);
+        });
+    });
 
     AdminAS.setServiceUrl = function setServiceURL(url)
     {
@@ -67,16 +75,18 @@ Admin.addEventListener(window, 'load', function()
 
     AdminAS.createCharts = function createCharts()
     {
-        var dbChartLine = new TimeSeries();
-        var dbChartLineIdle = new TimeSeries();
-        var userChartLine = new TimeSeries();
+        var dbChartLine, dbChartLineIdle, userChartLine, chartResizer;
         
-        var chartResizer = function()
+        dbChartLine = new TimeSeries();
+        dbChartLineIdle = new TimeSeries();
+        userChartLine = new TimeSeries();
+        
+        chartResizer = function()
         {
             var databaseCanvas, userCanvas;
 
-            databaseCanvas = el("database");
-            userCanvas = el("users");
+            databaseCanvas = el('database');
+            userCanvas = el('users');
             databaseCanvas.width = databaseCanvas.parentNode.clientWidth;
             userCanvas.width = userCanvas.parentNode.clientWidth;
         };
@@ -86,18 +96,18 @@ Admin.addEventListener(window, 'load', function()
         setInterval(function()
         {
             Admin.request({
-                url : serviceUrl + "?format=json",
+                url : serviceUrl + '?format=json',
                 fnSuccess : function(res)
                 {
                     if (res.responseJSON)
                     {
                         var json = res.responseJSON, now = new Date().getTime();
 
-                        el("NumActive").innerHTML = json.NumActive;
-                        el("NumIdle").innerHTML = json.NumIdle;
+                        el('NumActive').innerHTML = json.NumActive;
+                        el('NumIdle').innerHTML = json.NumIdle;
                         
-                        el("UserCountNonExpired").innerHTML = json.UserCountNonExpired;
-                        el("TicketCountNonExpired").innerHTML = json.TicketCountNonExpired;
+                        el('UserCountNonExpired').innerHTML = json.UserCountNonExpired;
+                        el('TicketCountNonExpired').innerHTML = json.TicketCountNonExpired;
                         
                         dbChartLine.append(now, json.NumActive);
                         dbChartLineIdle.append(now, json.NumIdle);
@@ -107,7 +117,7 @@ Admin.addEventListener(window, 'load', function()
             });
         }, 2000);
 
-        var dbGraph = new SmoothieChart({
+        dbGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -134,9 +144,9 @@ Admin.addEventListener(window, 'load', function()
             fillStyle : 'rgba(255, 204, 0, 0.3)',
             lineWidth : 2
         });
-        dbGraph.streamTo(document.getElementById("database"), 2000);
+        dbGraph.streamTo(document.getElementById('database'), 2000);
 
-        var userGraph = new SmoothieChart({
+        userGraph = new SmoothieChart({
             labels : {
                 precision : 0,
                 fillStyle : '#333333'
@@ -158,21 +168,53 @@ Admin.addEventListener(window, 'load', function()
             fillStyle : 'rgba(0, 0, 255, 0.3)',
             lineWidth : 2
         });
-        userGraph.streamTo(document.getElementById("users"), 2000);
+        userGraph.streamTo(document.getElementById('users'), 2000);
+    };
+
+    AdminAS.changeChartTimescale = function changeChartTimescale(element, canvas, chart)
+    {
+        var value, intVal, width, height, mspl, mspp, lpc, x;
+        
+        // get width of current canvas
+        value = element.options[element.selectedIndex].value;
+        intVal = parseInt(value);
+        width = canvas.width;
+        height = canvas.height;
+        // get how many divisions there are
+        mspl = chart.options.grid.millisPerLine;
+        mspp = chart.options.millisPerPixel;
+        lpc = (width * mspp) / mspl;
+
+        // figure out time scale
+        x = Math.ceil(intVal * 60);
+        chart.options.millisPerPixel = (x / width) * 1000;
+        chart.options.grid.millisPerLine = (width * chart.options.millisPerPixel) / lpc;
+        if (value > 2900)
+        {
+            chart.options.timestampFormatter = SmoothieChart.dateFormatter;
+        }
+        else
+        {
+            chart.options.timestampFormatter = SmoothieChart.timeFormatter;
+        }
+        if (value < 3)
+        {
+            chart.options.timestampFormatter = SmoothieChart.secondsFormatter;
+        }
     };
 
     AdminAS.updateUsers = function updateUsers(userName)
     {
         var data = {};
         
-        if (typeof userName === "string")
+        if (typeof userName === 'string')
         {
             data.userName = userName;
         }
         
         Admin.request({
-            method : typeof userName === 'string' ? "POST" : "GET",
-            url : serviceUrl + "-updateUsers",
+            method : typeof userName === 'string' ? 'POST' : 'GET',
+            url : serviceUrl + '-updateUsers',
             data : data,
             fnSuccess : function(res)
             {
@@ -181,7 +223,7 @@ Admin.addEventListener(window, 'load', function()
                     var json = res.responseJSON;
 
                     /* Clean and refresh the table */
-                    var table = el("users-table");
+                    var table = el('users-table');
                     while (table.rows.length > 1)
                     {
                         table.deleteRow(table.rows.length - 1);
@@ -193,13 +235,13 @@ Admin.addEventListener(window, 'load', function()
                         for (var i = 0; i < users.length; i++)
                         {
                             var rows = [];
-                            rows.push("<a href=\"" + serviceContext + "/api/people/" + encodeURIComponent(users[i].username) + "\">" + Admin.html(users[i].username)
-                                    + "</a>");
+                            rows.push('<a href="' + serviceContext + '/api/people/' + encodeURIComponent(users[i].username) + '">' + Admin.html(users[i].username)
+                                    + '</a>');
                             rows.push(Admin.html(users[i].firstName));
                             rows.push(Admin.html(users[i].lastName));
-                            rows.push("<a href=\"mailto:" + encodeURIComponent(users[i].email) + "\">" + Admin.html(users[i].email) + "</a>");
-                            rows.push("<a href=\"#\" onclick=\"AdminAS.updateUsers('" + users[i].username + "');\">"
-                                    + Admin.html(_messages.logoff) + "</a>");
+                            rows.push('<a href="mailto:' + encodeURIComponent(users[i].email) + '">' + Admin.html(users[i].email) + '</a>');
+                            rows.push('<a href="#" onclick="AdminAS.updateUsers(\'' + users[i].username + '\');\'>'
+                                    + Admin.html(_messages.logoff) + '</a>');
                             Admin.addTableRow(table, rows);
                         }
                     }
