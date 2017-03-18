@@ -50,14 +50,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
 
     <div class="column-left">
-        <@options id="memTimescale" name="memTimescale" label=msg("performance.chart-timescale") value="11">
+        <@options id="memTimescale" name="memTimescale" label=msg("performance.chart-timescale") value="10">
             <@option label=msg("performance.chart-timescale.1min") value="1" />
-            <@option label=msg("performance.chart-timescale.10mins") value="11" />
-            <@option label=msg("performance.chart-timescale.60mins") value="61" />
-            <@option label=msg("performance.chart-timescale.12hrs") value="721" />
-            <@option label=msg("performance.chart-timescale.24hrs") value="1441" />
-            <@option label=msg("performance.chart-timescale.48hrs") value="2881" />
-            <@option label=msg("performance.chart-timescale.7days") value="10081" />
+            <@option label=msg("performance.chart-timescale.10mins") value="10" />
+            <@option label=msg("performance.chart-timescale.60mins") value="60" />
+            <@option label=msg("performance.chart-timescale.12hrs") value="720" />
+            <@option label=msg("performance.chart-timescale.24hrs") value="1440" />
+            <@option label=msg("performance.chart-timescale.48hrs") value="2880" />
+            <@option label=msg("performance.chart-timescale.7days") value="10080" />
         </@options>
     </div>
     <div class="column-right">
@@ -88,14 +88,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
 
     <div class="column-left">
-        <@options id="cpuTimescale" name="cpuTimescale" label=msg("performance.chart-timescale") value="11">
+        <@options id="cpuTimescale" name="cpuTimescale" label=msg("performance.chart-timescale") value="10">
             <@option label=msg("performance.chart-timescale.1min") value="1" />
-            <@option label=msg("performance.chart-timescale.10mins") value="11" />
-            <@option label=msg("performance.chart-timescale.60mins") value="61" />
-            <@option label=msg("performance.chart-timescale.12hrs") value="721" />
-            <@option label=msg("performance.chart-timescale.24hrs") value="1441" />
-            <@option label=msg("performance.chart-timescale.48hrs") value="2881" />
-            <@option label=msg("performance.chart-timescale.7days") value="10081" />
+            <@option label=msg("performance.chart-timescale.10mins") value="10" />
+            <@option label=msg("performance.chart-timescale.60mins") value="60" />
+            <@option label=msg("performance.chart-timescale.12hrs") value="720" />
+            <@option label=msg("performance.chart-timescale.24hrs") value="1440" />
+            <@option label=msg("performance.chart-timescale.48hrs") value="2880" />
+            <@option label=msg("performance.chart-timescale.7days") value="10080" />
         </@options>
     </div>
     <div class="column-right">
@@ -117,14 +117,14 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
 
     <div class="column-left">
-        <@options id="threadsTimescale" name="threadsTimescale" label=msg("performance.chart-timescale") value="11">
+        <@options id="threadsTimescale" name="threadsTimescale" label=msg("performance.chart-timescale") value="10">
             <@option label=msg("performance.chart-timescale.1min") value="1" />
-            <@option label=msg("performance.chart-timescale.10mins") value="11" />
-            <@option label=msg("performance.chart-timescale.60mins") value="61" />
-            <@option label=msg("performance.chart-timescale.12hrs") value="721" />
-            <@option label=msg("performance.chart-timescale.24hrs") value="1441" />
-            <@option label=msg("performance.chart-timescale.48hrs") value="2881" />
-            <@option label=msg("performance.chart-timescale.7days") value="10081" />
+            <@option label=msg("performance.chart-timescale.10mins") value="10" />
+            <@option label=msg("performance.chart-timescale.60mins") value="60" />
+            <@option label=msg("performance.chart-timescale.12hrs") value="720" />
+            <@option label=msg("performance.chart-timescale.24hrs") value="1440" />
+            <@option label=msg("performance.chart-timescale.48hrs") value="2880" />
+            <@option label=msg("performance.chart-timescale.7days") value="10080" />
         </@options>
     </div>
     <div class="column-right">

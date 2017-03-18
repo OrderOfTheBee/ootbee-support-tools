@@ -40,17 +40,17 @@ var AdminSP = AdminSP || {};
     {
         AdminSP.createCharts();
 
-        Admin.addEventListener(el("memTimescale"), "change", function()
+        Admin.addEventListener(el('memTimescale'), 'change', function()
         {
-            AdminSP.changeChartTimescale(this, el("memory"), memGraph);
+            AdminSP.changeChartTimescale(this, el('memory'), memGraph);
         });
-        Admin.addEventListener(el("cpuTimescale"), "change", function()
+        Admin.addEventListener(el('cpuTimescale'), 'change', function()
         {
-            AdminSP.changeChartTimescale(this, el("CPU"), cpuGraph);
+            AdminSP.changeChartTimescale(this, el('CPU'), cpuGraph);
         });
-        Admin.addEventListener(el("threadsTimescale"), "change", function()
+        Admin.addEventListener(el('threadsTimescale'), 'change', function()
         {
-            AdminSP.changeChartTimescale(this, el("Threads"), threadGraph);
+            AdminSP.changeChartTimescale(this, el('Threads'), threadGraph);
         });
     });
 
@@ -84,9 +84,9 @@ var AdminSP = AdminSP || {};
         {
             var memoryCanvas, cpuCanvas, threadCanvas;
 
-            memoryCanvas = el("memory");
-            cpuCanvas = el("CPU");
-            threadCanvas = el("Threads");
+            memoryCanvas = el('memory');
+            cpuCanvas = el('CPU');
+            threadCanvas = el('Threads');
             memoryCanvas.width = memoryCanvas.parentNode.clientWidth;
             cpuCanvas.width = cpuCanvas.parentNode.clientWidth;
             threadCanvas.width = threadCanvas.parentNode.clientWidth;
@@ -97,7 +97,7 @@ var AdminSP = AdminSP || {};
         setInterval(function()
         {
             Admin.request({
-                url : serviceUrl + "?format=json",
+                url : serviceUrl + '?format=json',
                 fnSuccess : function(res)
                 {
                     var json, now;
@@ -107,15 +107,15 @@ var AdminSP = AdminSP || {};
                         json = res.responseJSON;
                         now = new Date().getTime();
 
-                        el("MaxMemory").innerHTML = json.MaxMemory;
-                        el("TotalMemory").innerHTML = json.TotalMemory;
-                        el("UsedMemory").innerHTML = json.UsedMemory;
-                        el("FreeMemory").innerHTML = json.FreeMemory;
+                        el('MaxMemory').innerHTML = json.MaxMemory;
+                        el('TotalMemory').innerHTML = json.TotalMemory;
+                        el('UsedMemory').innerHTML = json.UsedMemory;
+                        el('FreeMemory').innerHTML = json.FreeMemory;
 
-                        el("ProcessLoad").innerHTML = json.ProcessLoad;
-                        el("SystemLoad").innerHTML = json.SystemLoad;
-                        el("ThreadCount").innerHTML = json.ThreadCount;
-                        el("PeakThreadCount").innerHTML = json.PeakThreadCount;
+                        el('ProcessLoad').innerHTML = json.ProcessLoad;
+                        el('SystemLoad').innerHTML = json.SystemLoad;
+                        el('ThreadCount').innerHTML = json.ThreadCount;
+                        el('PeakThreadCount').innerHTML = json.PeakThreadCount;
 
                         memChartLineComtd.append(now, json.TotalMemory);
                         memChartLineUsed.append(now, json.UsedMemory);
@@ -155,7 +155,7 @@ var AdminSP = AdminSP || {};
             fillStyle : 'rgba(0, 0, 255, 0.3)',
             lineWidth : 2
         });
-        memGraph.streamTo(document.getElementById("memory"), 1000);
+        memGraph.streamTo(document.getElementById('memory'), 1000);
 
         cpuGraph = new SmoothieChart({
             labels : {
@@ -185,7 +185,7 @@ var AdminSP = AdminSP || {};
             fillStyle : 'rgba(255, 100, 100, 0.3)',
             lineWidth : 2
         });
-        cpuGraph.streamTo(document.getElementById("CPU"), 1000);
+        cpuGraph.streamTo(document.getElementById('CPU'), 1000);
 
         threadGraph = new SmoothieChart({
             labels : {
@@ -210,7 +210,7 @@ var AdminSP = AdminSP || {};
             fillStyle : 'rgba(56, 187, 56, 0.3)',
             lineWidth : 2
         });
-        threadGraph.streamTo(document.getElementById("Threads"), 1000);
+        threadGraph.streamTo(document.getElementById('Threads'), 1000);
     };
 
     AdminSP.changeChartTimescale = function changeChartTimescale(element, canvas, chart)

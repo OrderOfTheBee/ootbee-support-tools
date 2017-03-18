@@ -47,6 +47,16 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
     <div class="column-left">
         <canvas id="database" width="350" height="150"></canvas>
+
+        <@options id="dbTimescale" name="dbTimescale" label=msg("activesessions.chart-timescale") value="10">
+            <@option label=msg("activesessions.chart-timescale.1min") value="1" />
+            <@option label=msg("activesessions.chart-timescale.10mins") value="10" />
+            <@option label=msg("activesessions.chart-timescale.60mins") value="60" />
+            <@option label=msg("activesessions.chart-timescale.12hrs") value="720" />
+            <@option label=msg("activesessions.chart-timescale.24hrs") value="1440" />
+            <@option label=msg("activesessions.chart-timescale.48hrs") value="2880" />
+            <@option label=msg("activesessions.chart-timescale.7days") value="10080" />
+        </@options>
     </div>
     <div class="column-right">
         <@field value=connectionPoolData.driverClassName label=msg("activesessions.database.driver")?html />
@@ -73,6 +83,16 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     </div>
     <div class="column-left">
         <canvas id="users" width="350" height="150"></canvas>
+
+        <@options id="userTimescale" name="userTimescale" label=msg("activesessions.chart-timescale") value="10">
+            <@option label=msg("activesessions.chart-timescale.1min") value="1" />
+            <@option label=msg("activesessions.chart-timescale.10mins") value="10" />
+            <@option label=msg("activesessions.chart-timescale.60mins") value="60" />
+            <@option label=msg("activesessions.chart-timescale.12hrs") value="720" />
+            <@option label=msg("activesessions.chart-timescale.24hrs") value="1440" />
+            <@option label=msg("activesessions.chart-timescale.48hrs") value="2880" />
+            <@option label=msg("activesessions.chart-timescale.7days") value="10080" />
+        </@options>
     </div>
     <div class="column-right">
         <div class="control field">
