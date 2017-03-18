@@ -195,7 +195,7 @@ var AdminSP = AdminSP || {};
             sieve : true,
             timestampFormatter : SmoothieChart.timeFormatter,
             millisPerPixel : 1000,
-            maxValue : initialThreadMetrics.PeakThreadCount,
+            maxValueScale : 1.25,
             minValue : 0,
             grid : {
                 strokeStyle : '#cccccc',
