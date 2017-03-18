@@ -26,14 +26,16 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "users": [
+    <#assign first = true />
     <#list userSessionData.unexpiredUsers as user>
-        <#if user??> 
+        <#if user??><#if !first>,</#if>
+            <#assign first = false />
             {
                 "username" : "${user.properties.userName!''}",
                 "firstName" : "${user.properties.firstName!''}",
                 "lastName" : "${user.properties.lastName!''}",
                 "email" : "${user.properties.email!''}"
-            }<#if user_has_next>,</#if>
+            }
         </#if> 
     </#list>
     ]
