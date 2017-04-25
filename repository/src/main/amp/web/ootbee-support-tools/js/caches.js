@@ -38,17 +38,43 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    AdminCA.setupTables = function()
+    var serviceContext;
+
+    AdminCA.setServiceContext = function setServiceContext(context)
+    {
+        serviceContext = context;
+    };
+
+    AdminCA.setupTables = function setupTables()
     {
         var dataTableConfig;
 
         dataTableConfig = {
             paging : false,
             searching : false,
-            autoWidth : false
+            autoWidth : false,
+            columnDefs : [ {
+                orderable : false,
+                targets : [ 11 ]
+            } ]
         };
 
         $('#caches-table').DataTable(dataTableConfig);
+    };
+
+    AdminCA.clearCache = function clearCache(cacheName)
+    {
+        if (cacheName !== undefined && cacheName !== null)
+        {
+            Admin.request({
+                url : serviceContext + '/ootbee/admin/caches/' + encodeURI(String(cacheName).replace(/\./, '%dot%')) + '/clear',
+                method : 'POST',
+                fnSuccess : function clearCache_success()
+                {
+                    location.reload(true);
+                }
+            });
+        }
     };
 
 })();
