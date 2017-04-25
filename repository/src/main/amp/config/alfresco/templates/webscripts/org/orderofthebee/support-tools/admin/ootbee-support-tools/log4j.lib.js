@@ -420,3 +420,36 @@ function buildLogFilesModel(useAllLoggerAppenders)
     model.logFiles = logFiles;
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }
+
+function getLoggersToSnapshot() {
+    var logger, loggers, currentLoggers, loggerRepository;
+    
+    logger = Packages.org.apache.log4j.Logger.getRootLogger();
+    loggers = [logger];
+    
+    loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
+    currentLoggers = loggerRepository.currentLoggers;
+    while (currentLoggers.hasMoreElements())
+    {
+    	logger = currentLoggers.nextElement();
+    	if (!logger.additivity) {
+    		loggers.push(logger);
+    	}
+    }
+    return loggers;
+}
+
+/* exported createSnapshot */
+function createSnapshot() {
+	var snapshotLogFile, logLayout, snapshotAppender, loggers;
+	
+	snapshotLogFile = Packages.org.alfresco.util.TempFileProvider.createTempFile("ootbee-support-tools-snapshot", "log");
+    logLayout = new Packages.org.apache.log4j.PatternLayout('%d{yyyy-MM-dd} %d{ABSOLUTE} %-5p [%c] [%t] %m%n');		
+	snapshotAppender = new Packages.org.apache.log4j.FileAppender(logLayout, snapshotLogFile);   
+	loggers = getLoggersToSnapshot();
+	loggers.forEach(function(logger) {
+		logger.addAppender(snapshotAppender);
+	});
+	
+	return snapshotLogFile;
+}
