@@ -29,7 +29,7 @@ function buildSystemInformation(){
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
     model.globalProperties = globalProperties;
-    model.sensitiveKeys = globalProperties["support-tools.systeminformation.sensitiveKeys"].split(',');
+    model.sensitiveKeys = globalProperties["ootbee-support-tools.systeminformation.sensitiveKeys"].split(',');
 
     model.environmentProperties = Packages.java.lang.System.getenv();
     model.systemProperties = Packages.java.lang.System.getProperties();

@@ -27,6 +27,10 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 <@page title=msg("caches.title") readonly=true customCSSFiles=["ootbee-support-tools/css/jquery.dataTables.css"]
     customJSFiles=["ootbee-support-tools/js/jquery-2.2.3.js", "ootbee-support-tools/js/jquery.dataTables.js", "ootbee-support-tools/js/caches.js"]>
 
+<script type="text/javascript">//<![CDATA[
+    AdminCA.setServiceContext('${url.serviceContext}');
+//]]></script>
+
     <div class="column-full">
         <p class="intro">${msg("caches.intro")?html}</p>      
 
@@ -48,6 +52,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                         <th>${msg("caches.attr.cacheMissPercentage")?html}</th>
 
                         <th>${msg("caches.attr.cacheEvictions")?html}</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,6 +72,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td class="numericalCellValue"><#if cacheInfo.cacheMissRate &gt;= 0>${cacheInfo.cacheMissRate?string["0.0"]}</#if></td>
                             
                             <td class="numericalCellValue"><#if cacheInfo.cacheEvictions &gt;= 0>${cacheInfo.cacheEvictions?c}</#if></td>
+                            <td><#if cacheInfo.clearable><a href="#" onclick="AdminCA.clearCache('${cacheInfo.name}');" title="${msg("caches.clearCache.title")?html}">${msg("caches.clearCache.label")?html}</a></#if></td>
                         </tr>
                     </#list>
                 </tbody>
