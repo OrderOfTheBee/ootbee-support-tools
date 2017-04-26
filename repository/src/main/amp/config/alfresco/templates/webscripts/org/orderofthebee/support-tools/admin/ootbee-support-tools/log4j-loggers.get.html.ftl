@@ -54,16 +54,16 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <input type="submit" value="${msg("log-settings.column.add")}" style="margin-right:1em;" />
             </form>
             <div class="buttons">
-            	<div class="column-left">
+                <div class="column-left">
 	                <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
 	                <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
 	                <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
 	                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-loggers?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
-				</div>
-				<div class="column-right">
-					<@button id="startLogSnapshot" label=msg("log-settings.startLogSnapshot") onclick=("AdminLS.startLogSnapshot();")/>
-					<@button id="stopLogSnapshot" style="display:none" label=msg("log-settings.stopLogSnapshot") onclick=("AdminLS.stopLogSnapshot();")/>
-				</div>
+			    </div>
+			    <div class="column-right">
+				    <@button id="startLogSnapshot" label=msg("log-settings.startLogSnapshot") onclick=("AdminLS.startLogSnapshot();")/>
+				    <@button id="stopLogSnapshot" style="display:none" label=msg("log-settings.stopLogSnapshot") onclick=("AdminLS.stopLogSnapshot();")/>
+			    </div>
             </div>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>

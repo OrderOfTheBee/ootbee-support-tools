@@ -55,27 +55,27 @@ var AdminLS = AdminLS || {};
     
     AdminLS.startLogSnapshot = function startLogSnapshot()
     {
-      Admin.request({
-        url : serviceContext + '/ootbee/admin/log4j-snapshot-create',
-        method : 'GET',
-        fnSuccess : function startLogSnapshot_success(res)
-        {
-            if (res.responseText)
-            {          
-                var json = JSON.parse(res.responseText);
-                json = res.responseJSON;
-                snapshotLogFile = json.snapshotLogFile;
-                document.getElementById("startLogSnapshot").style.display = 'none';
-                document.getElementById("stopLogSnapshot").style.display = 'inline';
-            }
-        }
-      });
+        Admin.request({
+          url : serviceContext + '/ootbee/admin/log4j-snapshot-create',
+          method : 'GET',
+          fnSuccess : function startLogSnapshot_success(res)
+          {
+              if (res.responseText)
+              {
+                  var json = JSON.parse(res.responseText);
+                  json = res.responseJSON;
+                  snapshotLogFile = json.snapshotLogFile;
+                  document.getElementById("startLogSnapshot").style.display = 'none';
+                  document.getElementById("stopLogSnapshot").style.display = 'inline';
+              }
+          }
+        });
     };
     
     AdminLS.stopLogSnapshot = function stopLogSnapshot()
     {
-      window.open(serviceContext + '/ootbee/admin/log4j-snapshot-complete/'+snapshotLogFile,'_blank');
-      document.getElementById("startLogSnapshot").style.display = 'inline';
-      document.getElementById("stopLogSnapshot").style.display = 'none';
+        window.open(serviceContext + '/ootbee/admin/log4j-snapshot-complete/'+snapshotLogFile+'?a=true','_blank');
+        document.getElementById("startLogSnapshot").style.display = 'inline';
+        document.getElementById("stopLogSnapshot").style.display = 'none';
     };
 }());
