@@ -9,13 +9,14 @@ var adminClient = childCtx.getBean('search.solrAdminHTTPCLient', Packages.org.al
 
 
 var args = new Packages.java.util.HashMap();
-args['action'] = 'SUMMARY';
-args['wt'] = 'json';
+args['action']  = 'SUMMARY';
+args['wt']      = 'json';
 
 var json = JSON.parse(adminClient.execute(args));
 
-model.summary = json.Summary;
+model.summary   = json.Summary;
+model.searcher1 = json.Summary.alfresco.Searcher;
+model.searcher2 = json.Summary.archive.Searcher;
 
-
-model.tools = Admin.getConsoleTools("solr-tracking");
-model.metadata = Admin.getServerMetaData();
+model.tools     = Admin.getConsoleTools("solr-tracking");
+model.metadata  = Admin.getServerMetaData();
