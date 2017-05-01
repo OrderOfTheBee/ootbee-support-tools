@@ -18,7 +18,7 @@
       <@field value="${summary.alfresco['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.workspace.aprox.time.title") 
       description=msg("solr-tracking.section.workspace.aprox.time.description") />  
       
-      <@field value="${summary.alfresco['On disk (GB)']}" label=msg("solr-tracking.section.workspace.disk.usage.title") 
+      <@field value="${searcher1['size']}" label=msg("solr-tracking.section.workspace.disk.usage.title") 
       description=msg("solr-tracking.section.workspace.disk.usage.description") />  
    </div>
    
@@ -36,7 +36,7 @@
       <@field value="${summary.alfresco['Approx transactions remaining']?c}"  label=msg("solr-tracking.section.workspace.aprox.transaction.title") 
       description=msg("solr-tracking.section.workspace.aprox.transaction.description")/>  
 
-      <@field value="${summary.archive['Total Searcher Cache (GB)']}" label=msg("solr-tracking.section.workspace.memory.usage.title") description=msg("solr-tracking.section.workspace.memory.usage.description")/>      
+      <@field value="${searcher1['indexHeapUsageBytes']*0.000000001}" label=msg("solr-tracking.section.workspace.memory.usage.title") description=msg("solr-tracking.section.workspace.memory.usage.description")/>      
    </div>
  
    <br/><br/>
@@ -57,7 +57,7 @@
       <@field value="${summary.archive['Approx transaction indexing time remaining']}"  label=msg("solr-tracking.section.archive.aprox.time.title") 
       description=msg("solr-tracking.section.archive.aprox.time.description")/>  
       
-      <@field value="${summary.archive['On disk (GB)']}" label=msg("solr-tracking.section.archive.disk.usage.title") 
+      <@field value="${searcher2['size']}" label=msg("solr-tracking.section.archive.disk.usage.title") 
       description=msg("solr-tracking.section.archive.disk.usage.description")/>  
    </div>
    
@@ -75,7 +75,7 @@
       <@field value="${summary.archive['Approx transactions remaining']?c}" label=msg("solr-tracking.section.archive.aprox.transaction.title") 
       description=msg("solr-tracking.section.archive.aprox.transaction.description")/>  
       
-      <@field value="${summary.archive['Total Searcher Cache (GB)']}" label=msg("solr-tracking.section.archive.memory.usage.title") 
+      <@field value="${searcher2['indexHeapUsageBytes']*0.000000001}" label=msg("solr-tracking.section.archive.memory.usage.title") 
       description=msg("solr-tracking.section.archive.memory.usage.description")/>      
    </div>
 
