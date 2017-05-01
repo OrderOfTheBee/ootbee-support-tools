@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>SOLR Tracking</shortname>
-    <description>Display SOLR Trackinf</description>
+    <description>Display SOLR Tracker Info</description>
     <url>/ootbee/admin/solr-tracking</url>
     <family>AdminConsole</family>
     <family>OOTBee Support Tools</family>
