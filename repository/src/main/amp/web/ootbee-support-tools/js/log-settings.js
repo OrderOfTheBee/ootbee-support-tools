@@ -32,6 +32,9 @@ var AdminLS = AdminLS || {};
 
 (function()
 {
+    var KEYCODE_ENTER = 13;
+    var KEYCODE_ESC = 27;
+
     var serviceContext;
     var snapshotLogFile;
     var snapshotLapNumber;
@@ -105,9 +108,14 @@ var AdminLS = AdminLS || {};
 
     AdminLS.handleLogMessageLogSnapshotKeyUp = function handleLogMessageLogSnapshotKeyUp(event)
     {
-        if (event.keyCode == 13) {
+        if (event.keyCode == KEYCODE_ENTER) {
             event.preventDefault();
             document.getElementById("lapLogSnapshot").click();
+            return false;
+        }
+        if (event.keyCode == KEYCODE_ESC) {
+            event.preventDefault();
+            document.getElementById("stopLogSnapshot").click();
             return false;
         }
         return true;
