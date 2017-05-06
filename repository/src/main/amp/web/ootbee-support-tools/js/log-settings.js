@@ -68,6 +68,7 @@ var AdminLS = AdminLS || {};
                   document.getElementById("stopLogSnapshot").style.display = 'inline';
                   document.getElementById("lapLogSnapshot").style.display = 'inline';
                   document.getElementById("lapMessageLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapMessageLogSnapshot").focus();
                   snapshotLapNumber = 1;
               }
           }
@@ -97,7 +98,18 @@ var AdminLS = AdminLS || {};
             fnSuccess : function lapLogSnapshot_success()
             {
                 inputEl.value = '';
+                inputEl.focus();
             }
         });
     };
+
+    AdminLS.handleLogMessageLogSnapshotKeyUp = function handleLogMessageLogSnapshotKeyUp(event)
+    {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            document.getElementById("lapLogSnapshot").click();
+            return false;
+        }
+        return true;
+    }
 }());
