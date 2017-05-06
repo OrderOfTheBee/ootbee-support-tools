@@ -39,7 +39,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <div class="column-full">
         <div>${msg("log-settings.column.addLogger")}:
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                <input name="logger" size="35" placeholder="logger-name"></input>
+                <input type="text" name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
                 <select name="level">
                     <option                       value="UNSET">${msg("log-settings.level.UNSET")?html}</option>
@@ -64,7 +64,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 				    <@button id="startLogSnapshot" label=msg("log-settings.startLogSnapshot") onclick=("AdminLS.startLogSnapshot();")/>
 				    <@button id="stopLogSnapshot" style="display:none" label=msg("log-settings.stopLogSnapshot") onclick=("AdminLS.stopLogSnapshot();")/>
 				    <@button id="lapLogSnapshot" style="display:none" label=msg("log-settings.lapLogSnapshot") onclick=("AdminLS.lapLogSnapshot();")/>
-				    <input id="lapMessageLogSnapshot" size="35" style="display:none" placeholder="${msg("log-settings.lapMessageLogSnapshot")}" onkeyup="return AdminLS.handleLogMessageLogSnapshotKeyUp(event);"></input>
+				    <input id="lapMessageLogSnapshot" type="text" size="35" style="display:none" placeholder="${msg("log-settings.lapMessageLogSnapshot")}" onkeyup="return AdminLS.handleLogMessageLogSnapshotKeyUp(event);"></input>
 			    </div>
             </div>
         <#if statusMessage?? && statusMessage != "">
