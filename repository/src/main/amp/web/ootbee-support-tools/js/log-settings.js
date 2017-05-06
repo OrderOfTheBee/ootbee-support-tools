@@ -34,6 +34,7 @@ var AdminLS = AdminLS || {};
 {
     var serviceContext;
     var snapshotLogFile;
+    var snapshotLapNumber;
     
     AdminLS.setServiceContext = function setServiceContext(context)
     {
@@ -62,11 +63,12 @@ var AdminLS = AdminLS || {};
           {
               if (res.responseText)
               {
-                  var json = JSON.parse(res.responseText);
-                  json = res.responseJSON;
-                  snapshotLogFile = json.snapshotLogFile;
+                  snapshotLogFile = res.responseJSON.snapshotLogFile;
                   document.getElementById("startLogSnapshot").style.display = 'none';
                   document.getElementById("stopLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapMessageLogSnapshot").style.display = 'inline';
+                  snapshotLapNumber = 1;
               }
           }
         });
@@ -77,5 +79,25 @@ var AdminLS = AdminLS || {};
         window.open(serviceContext + '/ootbee/admin/log4j-snapshot-complete/'+snapshotLogFile+'?a=true','_blank');
         document.getElementById("startLogSnapshot").style.display = 'inline';
         document.getElementById("stopLogSnapshot").style.display = 'none';
+        document.getElementById("lapLogSnapshot").style.display = 'none';
+        document.getElementById("lapMessageLogSnapshot").style.display = 'none';
+    };
+
+    AdminLS.lapLogSnapshot = function lapLogSnapshot()
+    {
+        var inputEl = document.getElementById("lapMessageLogSnapshot");
+        var message = inputEl.value;
+        if (!message)
+        {
+            message = snapshotLapNumber++;
+        }
+        Admin.request({
+            url : serviceContext + '/ootbee/admin/log4j-snapshot-lap?message=' + message,
+            method : 'POST',
+            fnSuccess : function lapLogSnapshot_success()
+            {
+                inputEl.value = '';
+            }
+        });
     };
 }());

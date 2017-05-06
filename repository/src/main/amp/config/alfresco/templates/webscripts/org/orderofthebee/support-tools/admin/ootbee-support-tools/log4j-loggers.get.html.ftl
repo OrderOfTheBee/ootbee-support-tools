@@ -63,6 +63,8 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 			    <div class="column-right">
 				    <@button id="startLogSnapshot" label=msg("log-settings.startLogSnapshot") onclick=("AdminLS.startLogSnapshot();")/>
 				    <@button id="stopLogSnapshot" style="display:none" label=msg("log-settings.stopLogSnapshot") onclick=("AdminLS.stopLogSnapshot();")/>
+				    <@button id="lapLogSnapshot" style="display:none" label=msg("log-settings.lapLogSnapshot") onclick=("AdminLS.lapLogSnapshot();")/>
+				    <input id="lapMessageLogSnapshot" size="35" style="display:none" placeholder="${msg("log-settings.lapMessageLogSnapshot")}"></input>
 			    </div>
             </div>
         <#if statusMessage?? && statusMessage != "">

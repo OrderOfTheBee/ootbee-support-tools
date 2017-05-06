@@ -421,7 +421,8 @@ function buildLogFilesModel(useAllLoggerAppenders)
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }
 
-function getLoggersToSnapshot() {
+function getLoggersToSnapshot()
+{
     var logger, loggers, currentLoggers, loggerRepository;
     
     logger = Packages.org.apache.log4j.Logger.getRootLogger();
@@ -432,7 +433,8 @@ function getLoggersToSnapshot() {
     while (currentLoggers.hasMoreElements())
     {
     	logger = currentLoggers.nextElement();
-    	if (!logger.additivity) {
+    	if (!logger.additivity)
+    	{
     		loggers.push(logger);
     	}
     }
@@ -440,7 +442,8 @@ function getLoggersToSnapshot() {
 }
 
 /* exported createSnapshot */
-function createSnapshot() {
+function createSnapshot()
+{
 	var snapshotLogFile, logLayout, snapshotAppender, loggers;
 	
 	snapshotLogFile = Packages.org.alfresco.util.TempFileProvider.createTempFile("ootbee-support-tools-snapshot", ".log");
@@ -448,8 +451,22 @@ function createSnapshot() {
 	snapshotAppender = new Packages.org.apache.log4j.FileAppender(logLayout, snapshotLogFile);   
 	loggers = getLoggersToSnapshot();
 	loggers.forEach(function(logger) {
-		logger.addAppender(snapshotAppender);
-	});
+	    logger.addAppender(snapshotAppender);
+	} );
 	
 	return snapshotLogFile;
+}
+
+/* exported logSnapshotLapMessage */
+function logSnapshotLapMessage(message) {
+    var root, clazz, level, lapLogger;
+
+    root = Packages.org.apache.log4j.Logger.getRootLogger();
+    level = Packages.org.apache.log4j.Level.INFO;
+    // Fake logger that produces a good log message with the Alfresco default log format
+    clazz = 'org.orderofthebee.addons.supporttools.logsnapshot.Lap';
+    lapLogger = root.getLogger(clazz);
+    lapLogger.setLevel(level);
+
+    lapLogger.log(level, message);
 }
