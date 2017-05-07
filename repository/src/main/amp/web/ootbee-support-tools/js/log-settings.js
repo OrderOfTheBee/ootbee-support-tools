@@ -108,16 +108,16 @@ var AdminLS = AdminLS || {};
 
     AdminLS.handleLogMessageLogSnapshotKeyUp = function handleLogMessageLogSnapshotKeyUp(event)
     {
-        if (event.keyCode == KEYCODE_ENTER) {
+        if (event.keyCode === KEYCODE_ENTER) {
             event.preventDefault();
             document.getElementById("lapLogSnapshot").click();
             return false;
         }
-        if (event.keyCode == KEYCODE_ESC) {
+        if (event.keyCode === KEYCODE_ESC) {
             event.preventDefault();
             document.getElementById("stopLogSnapshot").click();
             return false;
         }
         return true;
-    }
+    };
 }());
