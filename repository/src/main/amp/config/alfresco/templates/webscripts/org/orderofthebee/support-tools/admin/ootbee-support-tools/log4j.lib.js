@@ -448,10 +448,10 @@ function createSnapshot()
 	
 	snapshotLogFile = Packages.org.alfresco.util.TempFileProvider.createTempFile("ootbee-support-tools-snapshot", ".log");
 	logLayout = new Packages.org.apache.log4j.PatternLayout('%d{yyyy-MM-dd} %d{ABSOLUTE} %-5p [%c] [%t] %m%n');		
-	snapshotAppender = new Packages.org.apache.log4j.FileAppender(logLayout, snapshotLogFile);   
+	snapshotAppender = new Packages.org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender(logLayout, snapshotLogFile);
 	loggers = getLoggersToSnapshot();
 	loggers.forEach(function(logger) {
-	    logger.addAppender(snapshotAppender);
+        snapshotAppender.registerAsAppender(logger);
 	} );
 	
 	return snapshotLogFile;

@@ -19,50 +19,51 @@
  */
 package org.orderofthebee.addons.support.tools.repo.web.scripts;
 
+import org.alfresco.repo.web.scripts.content.ContentStreamer;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
+import org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender;
+import org.springframework.extensions.webscripts.*;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.alfresco.repo.web.scripts.content.ContentStreamer;
-import org.apache.log4j.Appender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
-
 /**
+ * Given the path to a temporary log file created with the log4j-snapshot-create webscript, we
+ * attempt to locate an associated {@link TemporaryFileAppender}. If we find it, it is
+ * deregistered from all loggers it was added to and then closed. If the file at the provided
+ * path exists and is a valid log snapshot file, we stream the contents out otherwise we
+ * throw a WebScriptException.
+ *
  * @author Ana Gouveia
+ * @author Bindu Wavell <a href="mailto:bindu@ziaconsulting.com">bindu@ziaconsulting.com</a>
  */
 public class LogSnapshotComplete extends AbstractLogFileWebScript
 {
     protected ContentStreamer delegate;
 
-    /**
-     * @param delegate
-     *            ContentStreamer
-     */
     public void setDelegate(final ContentStreamer delegate)
     {
         this.delegate = delegate;
     }
     
     /**
-    * Gets the appender, removes it from all the loggers and streams the content back.
+    * <p>Gets the appender, removes it from all the loggers and streams the content back.</p>
     * 
     * {@inheritDoc}
     */
     @Override
-    @SuppressWarnings("rawtypes")
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException
     {
         final String servicePath = req.getServicePath();
         final String matchPath = req.getServiceMatch().getPath();
-        final String fileAppenderPath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
+        final String fileAppenderPathStr = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
+        final Path fileAppenderPath = Paths.get(fileAppenderPathStr);
 
         final Map<String, Object> model = new HashMap<String, Object>();
         final Status status = new Status();
@@ -74,41 +75,44 @@ public class LogSnapshotComplete extends AbstractLogFileWebScript
         final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
         Enumeration appenders = Logger.getRootLogger().getAllAppenders();
-        FileAppender snapshotAppender = null;
+        TemporaryFileAppender snapshotAppender = null;
 
+        // Find the TemporaryFileAppender that writes to this file
         while (appenders.hasMoreElements())
         {
             Appender appender = (Appender) appenders.nextElement();
-            if (appender instanceof FileAppender)
+            if (appender instanceof TemporaryFileAppender)
             {
-                FileAppender fileAppender = (FileAppender) appender;
-                if (fileAppender.getFile().equals(fileAppenderPath))
+                TemporaryFileAppender fileAppender = (TemporaryFileAppender) appender;
+                if (fileAppender.getFile().equals(fileAppenderPathStr))
                 {
                     snapshotAppender = fileAppender;
                 }
             }
         }
 
+
+        // If found, remove the appender from all loggers and close it
         if (snapshotAppender != null)
         {
-            final File file = this.validateFilePath(snapshotAppender.getFile());
-            this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
-            
-            Enumeration loggers = LogManager.getCurrentLoggers();
-            while (loggers.hasMoreElements())
-            {
-                Logger logger = (Logger) loggers.nextElement();
-                Enumeration logAppenders = logger.getAllAppenders();
-                while (logAppenders.hasMoreElements())
-                {
-                    Appender appender = (Appender) logAppenders.nextElement();
-                    if (appender instanceof FileAppender && ((FileAppender) appender).getFile().equals(fileAppenderPath))
-                    {
-                        logger.removeAppender(appender);
-                    }
-                }
-            }
-            Logger.getRootLogger().removeAppender(snapshotAppender);
+            snapshotAppender.removeAppenderFromLoggers();
+            snapshotAppender.close();
         }
+
+        // In any event, if the file is valid we can stream it out (if not, a WebScriptException will be thrown.)
+        final String fileName = fileAppenderPath.getFileName().toString();
+        if (!fileName.matches("^ootbee-support-tools-snapshot.*\\.log$"))
+        {
+            throw new WebScriptException(Status.STATUS_BAD_REQUEST,
+                    "The path " + fileAppenderPathStr + " is invalid for a snapshot log file.");
+        }
+        final File file = fileAppenderPath.toFile();
+        if (!file.exists()) {
+            throw new WebScriptException(Status.STATUS_NOT_FOUND,
+                    "There is no file at " + fileAppenderPathStr + ".");
+        }
+        // TODO(bwavell): Consider if we should create a temp file and validate the paths are the same.
+
+        this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
     }
 }
