@@ -112,7 +112,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 }
 
                 cacheInfo.clearable = cacheInfo.clearable
-                        && propertyGetter('ootbee-support-tools.cache.memory.allowClear', '').toLowerCase() === 'true';
+                        && propertyGetter('ootbee-support-tools.cache.memory.clearable', '').toLowerCase() === 'true';
                 break;
             case 'org.alfresco.repo.cache.DefaultSimpleCache':
                 stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getDefaultSimpleCacheStats(cache);
@@ -125,7 +125,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 cacheInfo.cacheMissRate = stats.missRate() * 100;
 
                 cacheInfo.clearable = cacheInfo.clearable
-                        && propertyGetter('ootbee-support-tools.cache.default.allowClear', '').toLowerCase() === 'true';
+                        && propertyGetter('ootbee-support-tools.cache.default.clearable', '').toLowerCase() === 'true';
                 break;
             case 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache':
                 stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getHzInvalidatingCacheStats(cache);
@@ -138,7 +138,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 cacheInfo.cacheMissRate = stats.missRate() * 100;
 
                 cacheInfo.clearable = cacheInfo.clearable
-                        && propertyGetter('ootbee-support-tools.cache.invalidating.allowClear', '').toLowerCase() === 'true';
+                        && propertyGetter('ootbee-support-tools.cache.invalidating.clearable', '').toLowerCase() === 'true';
                 break;
             case 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache':
                 stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getHzSimpleCacheStats(cache);
@@ -161,7 +161,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 }
 
                 cacheInfo.clearable = cacheInfo.clearable
-                        && propertyGetter('ootbee-support-tools.cache.distributed.allowClear', '').toLowerCase() === 'true';
+                        && propertyGetter('ootbee-support-tools.cache.distributed.clearable', '').toLowerCase() === 'true';
                 break;
             default:
                 // check support of CacheWithMetrics without requiring explicit interface inheritance
@@ -169,22 +169,22 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 {
                     mapCacheMetrics(cache.metrics, cacheInfo);
                     cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.allowClear',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.allowClear', '')).toLowerCase() === 'true';
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
                 }
                 else if (alfCacheStats !== undefined && alfCacheStats !== null)
                 {
                     // fallback to Alfresco cache statistics
                     mapCacheMetrics(alfCacheStats, cacheInfo);
                     cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.allowClear',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.allowClear', '')).toLowerCase() === 'true';
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
                 }
                 else
                 {
                     cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.allowClear',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.allowClear', '')).toLowerCase() === 'true';
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
                 }
         }
     }
@@ -241,7 +241,7 @@ function buildCaches()
     cacheInfos = [];
     cacheBeanNames = ctxt.getBeanNamesForType(Packages.org.alfresco.repo.cache.SimpleCache, false, false);
     
-    allowClearGlobal = propertyGetter('ootbee-support-tools.cache.allowClear', '').toLowerCase() === 'true';
+    allowClearGlobal = propertyGetter('ootbee-support-tools.cache.clearable', '').toLowerCase() === 'true';
 
     for (idx = 0; idx < cacheBeanNames.length; idx++)
     {
