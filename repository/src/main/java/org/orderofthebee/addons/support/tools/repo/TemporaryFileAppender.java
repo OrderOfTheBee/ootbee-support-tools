@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2017 Bindu Wavell
+ * Copyright (C) 2017 Order of the Bee
+ *
+ * This file is part of Community Support Tools
+ *
+ * Community Support Tools is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * Community Support Tools is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Community Support Tools. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.orderofthebee.addons.support.tools.repo;
 
 import org.apache.log4j.FileAppender;
@@ -29,7 +49,8 @@ public class TemporaryFileAppender extends FileAppender
     protected final long creationTimestamp;
 
     public
-    TemporaryFileAppender(Layout layout, String filename) throws IOException {
+    TemporaryFileAppender(Layout layout, String filename) throws IOException
+    {
         super(layout, filename);
         this.creationTimestamp = System.currentTimeMillis();
     }
@@ -49,7 +70,8 @@ public class TemporaryFileAppender extends FileAppender
         {
             super.append(event);
         } else {
-            if (!this.closed) {
+            if (!this.closed)
+            {
                 if (closingLock.tryLock())
                 {
                     try

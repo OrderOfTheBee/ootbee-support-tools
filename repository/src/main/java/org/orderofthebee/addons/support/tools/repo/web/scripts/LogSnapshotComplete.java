@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2017 Ana Gouveia / Bindu Wavell
+ * Copyright (C) 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -107,7 +108,8 @@ public class LogSnapshotComplete extends AbstractLogFileWebScript
                     "The path " + fileAppenderPathStr + " is invalid for a snapshot log file.");
         }
         final File file = fileAppenderPath.toFile();
-        if (!file.exists()) {
+        if (!file.exists())
+        {
             throw new WebScriptException(Status.STATUS_NOT_FOUND,
                     "There is no file at " + fileAppenderPathStr + ".");
         }

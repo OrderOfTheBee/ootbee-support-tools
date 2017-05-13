@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2017 Axel Faust / Markus Joos / Michael Bui / Bindu Wavell
+ * Copyright (C) 2017 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -20,7 +20,7 @@
  */
 /*
  * Linked to Alfresco Copyright
- * (C) 2005-2016 Alfresco Software Limited.
+ * (C) 2005-2017 Alfresco Software Limited.
  */
 
 /* global Admin: false */
@@ -35,9 +35,7 @@ var AdminLS = AdminLS || {};
     var KEYCODE_ENTER = 13;
     var KEYCODE_ESC = 27;
 
-    var serviceContext;
-    var snapshotLogFile;
-    var snapshotLapNumber;
+    var serviceContext, snapshotLogFile, snapshotLapNumber;
     
     AdminLS.setServiceContext = function setServiceContext(context)
     {
@@ -64,7 +62,7 @@ var AdminLS = AdminLS || {};
           method : 'GET',
           fnSuccess : function startLogSnapshot_success(res)
           {
-              if (res.responseText)
+              if (res.responseJSON)
               {
                   snapshotLogFile = res.responseJSON.snapshotLogFile;
                   document.getElementById("startLogSnapshot").style.display = 'none';
