@@ -2,8 +2,8 @@
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/caches.lib.js">
 
 /**
- * Copyright (C) 2016, 2017 Axel Faust
- * Copyright (C) 2016, 2017 Order of the Bee
+ * Copyright (C) 2017 Axel Faust
+ * Copyright (C) 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -25,7 +25,4 @@
  * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
-buildCaches();
-
-model.tools = Admin.getConsoleTools("caches");
-model.metadata = Admin.getServerMetaData();
+resetCache(String(url.templateArgs.cache).replace(/%dot%/g, '.'));

@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Axel Faust
+ * Copyright (C) 2016, 2017 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -20,7 +20,7 @@
  */
 /*
  * Linked to Alfresco Copyright
- * (C) 2005-2016 Alfresco Software Limited.
+ * (C) 2005-2017 Alfresco Software Limited.
  */
 
 /* global Admin: false, $: false*/
@@ -38,17 +38,43 @@ Admin.addEventListener(window, 'load', function()
 
 (function()
 {
-    AdminCA.setupTables = function()
+    var serviceContext;
+
+    AdminCA.setServiceContext = function setServiceContext(context)
+    {
+        serviceContext = context;
+    };
+
+    AdminCA.setupTables = function setupTables()
     {
         var dataTableConfig;
 
         dataTableConfig = {
             paging : false,
             searching : false,
-            autoWidth : false
+            autoWidth : false,
+            columnDefs : [ {
+                orderable : false,
+                targets : [ 11 ]
+            } ]
         };
 
         $('#caches-table').DataTable(dataTableConfig);
+    };
+
+    AdminCA.clearCache = function clearCache(cacheName)
+    {
+        if (cacheName !== undefined && cacheName !== null)
+        {
+            Admin.request({
+                url : serviceContext + '/ootbee/admin/caches/' + encodeURI(String(cacheName).replace(/\./, '%dot%')) + '/clear',
+                method : 'POST',
+                fnSuccess : function clearCache_success()
+                {
+                    location.reload(true);
+                }
+            });
+        }
     };
 
 })();

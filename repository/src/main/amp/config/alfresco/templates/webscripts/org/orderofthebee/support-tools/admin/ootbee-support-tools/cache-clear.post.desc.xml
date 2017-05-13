@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Clear Cache</shortname>
+    <description>Clear contents of a cache</description>
+    <url>/ootbee/admin/caches/{cache}/clear</url>
+    <family>OOTBee Support Tools</family>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

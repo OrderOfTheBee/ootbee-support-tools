@@ -49,15 +49,16 @@ function mapCacheMetrics(metrics, cacheInfo)
     }
 }
 
-function buildCacheInfo(cacheName, cache, propertyGetter)
+function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
 {
     var maxItems, cacheInfo, invHandler, alfCacheStatsEnabled, alfCacheStats, stats;
 
-    maxItems = propertyGetter('cache.' + cacheName + '.maxItems') || '-1';
+    maxItems = propertyGetter('cache.' + cacheName + '.maxItems', '-1');
 
     cacheInfo = {
         name : cacheName,
-        definedType : propertyGetter('cache.' + cacheName + '.cluster.type') || '',
+        definedType : propertyGetter('cache.' + cacheName + '.cluster.type', ''),
+        clearable : allowClearGlobal && propertyGetter('cache.' + cacheName + '.clearable', '').toLowerCase() === 'true',
         type : '',
         size : cache.keys.size(),
         maxSize : parseInt(maxItems, 10),
@@ -85,71 +86,106 @@ function buildCacheInfo(cacheName, cache, propertyGetter)
         cacheInfo.type = String(cache.class.name);
     }
 
-    alfCacheStatsEnabled = String(propertyGetter('cache.' + cacheName + '.tx.statsEnabled') || 'false') === 'true';
+    alfCacheStatsEnabled = propertyGetter('cache.' + cacheName + '.tx.statsEnabled', '').toLowerCase() === 'true';
 
     if (alfCacheStatsEnabled)
     {
         // in this case the TransactionalCache facade should manage statistics via a global utility on Alfresco-tier
         // note: this will report incorrect numbers if some code does not use the facade
-        alfCacheStats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.resolveStatisticsViaTransactional(cacheName);
+        alfCacheStats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils
+                .resolveStatisticsViaTransactional(cacheName);
     }
 
     try
     {
-        if (cacheInfo.type === 'org.alfresco.repo.cache.DefaultSimpleCache')
+        switch (cacheInfo.type)
         {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getDefaultSimpleCacheStats(cache);
+            case 'org.alfresco.repo.cache.NullCache':
+                // no use for statistics and clearance
+                cacheInfo.clearable = false;
+                break;
+            case 'org.alfresco.repo.cache.MemoryCache':
+                if (alfCacheStats !== undefined && alfCacheStats !== null)
+                {
+                    // fallback to Alfresco cache statistics
+                    mapCacheMetrics(alfCacheStats, cacheInfo);
+                }
 
-            cacheInfo.cacheGets = stats.requestCount();
-            cacheInfo.cacheHits = stats.hitCount();
-            cacheInfo.cacheMisses = stats.missCount();
-            cacheInfo.cacheEvictions = stats.evictionCount();
-            cacheInfo.cacheHitRate = stats.hitRate() * 100;
-            cacheInfo.cacheMissRate = stats.missRate() * 100;
-        }
-        else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache')
-        {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils
-                    .getHzInvalidatingCacheStats(cache);
+                cacheInfo.clearable = cacheInfo.clearable
+                        && propertyGetter('ootbee-support-tools.cache.memory.clearable', '').toLowerCase() === 'true';
+                break;
+            case 'org.alfresco.repo.cache.DefaultSimpleCache':
+                stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getDefaultSimpleCacheStats(cache);
 
-            cacheInfo.cacheGets = stats.requestCount();
-            cacheInfo.cacheHits = stats.hitCount();
-            cacheInfo.cacheMisses = stats.missCount();
-            cacheInfo.cacheEvictions = stats.evictionCount();
-            cacheInfo.cacheHitRate = stats.hitRate() * 100;
-            cacheInfo.cacheMissRate = stats.missRate() * 100;
-        }
-        else if (cacheInfo.type === 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache')
-        {
-            stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils
-                    .getHzSimpleCacheStats(cache);
+                cacheInfo.cacheGets = stats.requestCount();
+                cacheInfo.cacheHits = stats.hitCount();
+                cacheInfo.cacheMisses = stats.missCount();
+                cacheInfo.cacheEvictions = stats.evictionCount();
+                cacheInfo.cacheHitRate = stats.hitRate() * 100;
+                cacheInfo.cacheMissRate = stats.missRate() * 100;
 
-            /* The values that Hazelcast provides are complete bogus. Hits are only tracked on locally owned entries. The numberOfGets are tracked on a separate layer than hits, and these values appear to be out of sync quite often (hits larger
-            than gets). */
-            if (alfCacheStats !== undefined && alfCacheStats !== null)
-            {
-                // fallback to Alfresco cache statistics
-                mapCacheMetrics(alfCacheStats, cacheInfo);
-            }
-            else
-            {
-                cacheInfo.cacheGets = stats.operationStats.numberOfGets;
-                // cacheInfo.cacheHits = stats.hits;
-                // cacheInfo.cacheMisses = cacheInfo.cacheGets - cacheInfo.cacheHits;
-                // cacheInfo.cacheHitRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheHits / cacheInfo.cacheGets * 100) : 1;
-                // cacheInfo.cacheMissRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheMisses / cacheInfo.cacheGets * 100) : 0;
-                // can't find anything about evictions in either LocalMapStats or LocalMapOperationStats
-            }
-        }
-        // check support of CacheWithMetrics without requiring explicit interface inheritance
-        else if (cache.metrics !== undefined && cache.metrics !== null)
-        {
-            mapCacheMetrics(cache.metrics, cacheInfo);
-        }
-        else  if (alfCacheStats !== undefined && alfCacheStats !== null)
-        {
-            // fallback to Alfresco cache statistics
-            mapCacheMetrics(alfCacheStats, cacheInfo);
+                cacheInfo.clearable = cacheInfo.clearable
+                        && propertyGetter('ootbee-support-tools.cache.default.clearable', '').toLowerCase() === 'true';
+                break;
+            case 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache':
+                stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getHzInvalidatingCacheStats(cache);
+
+                cacheInfo.cacheGets = stats.requestCount();
+                cacheInfo.cacheHits = stats.hitCount();
+                cacheInfo.cacheMisses = stats.missCount();
+                cacheInfo.cacheEvictions = stats.evictionCount();
+                cacheInfo.cacheHitRate = stats.hitRate() * 100;
+                cacheInfo.cacheMissRate = stats.missRate() * 100;
+
+                cacheInfo.clearable = cacheInfo.clearable
+                        && propertyGetter('ootbee-support-tools.cache.invalidating.clearable', '').toLowerCase() === 'true';
+                break;
+            case 'org.alfresco.enterprise.repo.cluster.cache.HazelcastSimpleCache':
+                stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getHzSimpleCacheStats(cache);
+
+                /* The values that Hazelcast provides are complete bogus. Hits are only tracked on locally owned entries. The numberOfGets are tracked on a separate layer than hits, and these values appear to be out of sync quite often (hits larger
+                than gets). */
+                if (alfCacheStats !== undefined && alfCacheStats !== null)
+                {
+                    // fallback to Alfresco cache statistics
+                    mapCacheMetrics(alfCacheStats, cacheInfo);
+                }
+                else
+                {
+                    cacheInfo.cacheGets = stats.operationStats.numberOfGets;
+                    // cacheInfo.cacheHits = stats.hits;
+                    // cacheInfo.cacheMisses = cacheInfo.cacheGets - cacheInfo.cacheHits;
+                    // cacheInfo.cacheHitRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheHits / cacheInfo.cacheGets * 100) : 1;
+                    // cacheInfo.cacheMissRate = cacheInfo.cacheGets > 0 ? (cacheInfo.cacheMisses / cacheInfo.cacheGets * 100) : 0;
+                    // can't find anything about evictions in either LocalMapStats or LocalMapOperationStats
+                }
+
+                cacheInfo.clearable = cacheInfo.clearable
+                        && propertyGetter('ootbee-support-tools.cache.distributed.clearable', '').toLowerCase() === 'true';
+                break;
+            default:
+                // check support of CacheWithMetrics without requiring explicit interface inheritance
+                if (cache.metrics !== undefined && cache.metrics !== null)
+                {
+                    mapCacheMetrics(cache.metrics, cacheInfo);
+                    cacheInfo.clearable = cacheInfo.clearable
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
+                }
+                else if (alfCacheStats !== undefined && alfCacheStats !== null)
+                {
+                    // fallback to Alfresco cache statistics
+                    mapCacheMetrics(alfCacheStats, cacheInfo);
+                    cacheInfo.clearable = cacheInfo.clearable
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
+                }
+                else
+                {
+                    cacheInfo.clearable = cacheInfo.clearable
+                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
+                }
         }
     }
     catch (e)
@@ -167,7 +203,7 @@ function buildPropertyGetter(ctxt)
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
     placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
 
-    propertyGetter = function(propertyName)
+    propertyGetter = function(propertyName, defaultValue)
     {
         var propertyValue;
 
@@ -175,6 +211,16 @@ function buildPropertyGetter(ctxt)
         if (propertyValue)
         {
             propertyValue = placeholderHelper.replacePlaceholders(propertyValue, globalProperties);
+        }
+
+        // native JS strings are always preferrable
+        if (propertyValue !== undefined && propertyValue !== null)
+        {
+            propertyValue = String(propertyValue);
+        }
+        else if (defaultValue !== undefined)
+        {
+            propertyValue = defaultValue;
         }
         
         return propertyValue;
@@ -186,7 +232,7 @@ function buildPropertyGetter(ctxt)
 /* exported buildCaches */
 function buildCaches()
 {
-    var TransactionalCache, ctxt, propertyGetter, cacheBeanNames, cacheInfos, idx, cacheBeanName, cache, cacheInfo;
+    var TransactionalCache, ctxt, propertyGetter, cacheBeanNames, allowClearGlobal, cacheInfos, idx, cacheBeanName, cache, cacheInfo;
 
     TransactionalCache = Packages.org.alfresco.repo.cache.TransactionalCache;
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
@@ -194,6 +240,8 @@ function buildCaches()
 
     cacheInfos = [];
     cacheBeanNames = ctxt.getBeanNamesForType(Packages.org.alfresco.repo.cache.SimpleCache, false, false);
+    
+    allowClearGlobal = propertyGetter('ootbee-support-tools.cache.clearable', '').toLowerCase() === 'true';
 
     for (idx = 0; idx < cacheBeanNames.length; idx++)
     {
@@ -203,7 +251,7 @@ function buildCaches()
         cache = ctxt.getBean(cacheBeanName, Packages.org.alfresco.repo.cache.SimpleCache);
         if (!(cache instanceof TransactionalCache))
         {
-            cacheInfo = buildCacheInfo(cache.cacheName || cacheBeanName, cache, propertyGetter);
+            cacheInfo = buildCacheInfo(cache.cacheName || cacheBeanName, cache, allowClearGlobal, propertyGetter);
             cacheInfos.push(cacheInfo);
         }
     }
@@ -214,4 +262,47 @@ function buildCaches()
     });
 
     model.cacheInfos = cacheInfos;
+}
+
+/* exported resetCache */
+function resetCache(cacheName)
+{
+    var TransactionalCache, ctxt, propertyGetter, cacheBeanNames, cache, cacheInfo, idx, cacheBeanName;
+
+    TransactionalCache = Packages.org.alfresco.repo.cache.TransactionalCache;
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    propertyGetter = buildPropertyGetter(ctxt);
+
+    cacheBeanNames = ctxt.getBeanNamesForType(Packages.org.alfresco.repo.cache.SimpleCache, false, false);
+
+    for (idx = 0; idx < cacheBeanNames.length; idx++)
+    {
+        cacheBeanName = String(cacheBeanNames[idx]);
+
+        // only want non-transactional caches
+        cache = ctxt.getBean(cacheBeanName, Packages.org.alfresco.repo.cache.SimpleCache);
+        if (!(cache instanceof TransactionalCache) && ((cache.cacheName !== undefined && String(cache.cacheName) === cacheName) || cacheBeanName === cacheName))
+        {
+            cacheInfo = buildCacheInfo(cache.cacheName || cacheBeanName, cache, propertyGetter);
+            break;
+        }
+    }
+
+    if (cacheInfo !== undefined && cacheInfo !== null)
+    {
+        if (cacheInfo.clearable)
+        {
+            cache.clear();
+        }
+        else
+        {
+            status.setCode(status.STATUS_FORBIDDEN, 'Clearing cache ' + cacheName + ' is not permitted');
+            status.redirect = true;
+        }
+    }
+    else
+    {
+        status.setCode(status.STATUS_NOT_FOUND, 'Cache ' + cacheName + ' does not exist');
+        status.redirect = true;
+    }
 }
