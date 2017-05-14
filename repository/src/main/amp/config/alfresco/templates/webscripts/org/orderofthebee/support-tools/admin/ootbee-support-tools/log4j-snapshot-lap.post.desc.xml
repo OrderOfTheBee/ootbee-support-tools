@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Snapshot Lap</shortname>
+    <description>Log4J Snapshot Log Lap Message</description>
+    <url>/ootbee/admin/log4j-snapshot-lap?message={message}</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

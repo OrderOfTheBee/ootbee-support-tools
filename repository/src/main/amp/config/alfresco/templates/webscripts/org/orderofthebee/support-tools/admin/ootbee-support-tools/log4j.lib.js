@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2017 Axel Faust / Markus Joos / Bindu Wavell
+ * Copyright (C) 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
 /* global formdata: false, logSettingTracker: false */
@@ -419,4 +419,57 @@ function buildLogFilesModel(useAllLoggerAppenders)
 
     model.logFiles = logFiles;
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
+}
+
+function getLoggersToSnapshot()
+{
+    var logger, loggers, currentLoggers, loggerRepository;
+    
+    logger = Packages.org.apache.log4j.Logger.getRootLogger();
+    loggers = [logger];
+    
+    loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
+    currentLoggers = loggerRepository.currentLoggers;
+    while (currentLoggers.hasMoreElements())
+    {
+    	logger = currentLoggers.nextElement();
+    	if (!logger.additivity)
+    	{
+    		loggers.push(logger);
+    	}
+    }
+    return loggers;
+}
+
+/* exported createSnapshot */
+function createSnapshot()
+{
+	var snapshotLogFile, logLayout, snapshotAppender, loggers;
+	
+	snapshotLogFile = Packages.org.alfresco.util.TempFileProvider.createTempFile("ootbee-support-tools-snapshot", ".log");
+	logLayout = new Packages.org.apache.log4j.PatternLayout('%d{yyyy-MM-dd} %d{ABSOLUTE} %-5p [%c] [%t] %m%n');		
+	snapshotAppender = new Packages.org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender(logLayout, snapshotLogFile);
+	loggers = getLoggersToSnapshot();
+	loggers.forEach(
+	    function createSnapshot_connectLoggerAndAppender(logger)
+        {
+            snapshotAppender.registerAsAppender(logger);
+	    }
+    );
+	
+	return snapshotLogFile;
+}
+
+/* exported logSnapshotLapMessage */
+function logSnapshotLapMessage(message) {
+    var root, clazz, level, lapLogger;
+
+    root = Packages.org.apache.log4j.Logger.getRootLogger();
+    level = Packages.org.apache.log4j.Level.INFO;
+    // Fake logger that produces a good log message with the Alfresco default log format
+    clazz = 'org.orderofthebee.addons.support.tools.repo.logSnapshotLap';
+    lapLogger = root.getLogger(clazz);
+    lapLogger.setLevel(level);
+
+    lapLogger.log(level, message);
 }

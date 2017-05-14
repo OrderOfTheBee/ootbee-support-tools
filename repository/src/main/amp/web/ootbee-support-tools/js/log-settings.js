@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2017 Axel Faust / Markus Joos / Michael Bui / Bindu Wavell
+ * Copyright (C) 2017 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -20,7 +20,7 @@
  */
 /*
  * Linked to Alfresco Copyright
- * (C) 2005-2016 Alfresco Software Limited.
+ * (C) 2005-2017 Alfresco Software Limited.
  */
 
 /* global Admin: false */
@@ -32,8 +32,11 @@ var AdminLS = AdminLS || {};
 
 (function()
 {
-    var serviceContext;
+    var KEYCODE_ENTER = 13;
+    var KEYCODE_ESC = 27;
 
+    var serviceContext, snapshotLogFile, snapshotLapNumber;
+    
     AdminLS.setServiceContext = function setServiceContext(context)
     {
         serviceContext = context;
@@ -51,5 +54,68 @@ var AdminLS = AdminLS || {};
             }
         });
     };
+    
+    AdminLS.startLogSnapshot = function startLogSnapshot()
+    {
+        Admin.request({
+          url : serviceContext + '/ootbee/admin/log4j-snapshot-create',
+          method : 'GET',
+          fnSuccess : function startLogSnapshot_success(res)
+          {
+              if (res.responseJSON)
+              {
+                  snapshotLogFile = res.responseJSON.snapshotLogFile;
+                  document.getElementById("startLogSnapshot").style.display = 'none';
+                  document.getElementById("stopLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapMessageLogSnapshot").style.display = 'inline';
+                  document.getElementById("lapMessageLogSnapshot").focus();
+                  snapshotLapNumber = 1;
+              }
+          }
+        });
+    };
+    
+    AdminLS.stopLogSnapshot = function stopLogSnapshot()
+    {
+        window.open(serviceContext + '/ootbee/admin/log4j-snapshot-complete/'+snapshotLogFile+'?a=true','_blank');
+        document.getElementById("startLogSnapshot").style.display = 'inline';
+        document.getElementById("stopLogSnapshot").style.display = 'none';
+        document.getElementById("lapLogSnapshot").style.display = 'none';
+        document.getElementById("lapMessageLogSnapshot").style.display = 'none';
+    };
 
+    AdminLS.lapLogSnapshot = function lapLogSnapshot()
+    {
+        var inputEl = document.getElementById("lapMessageLogSnapshot");
+        var message = inputEl.value;
+        if (!message)
+        {
+            message = snapshotLapNumber++;
+        }
+        Admin.request({
+            url : serviceContext + '/ootbee/admin/log4j-snapshot-lap?message=' + message,
+            method : 'POST',
+            fnSuccess : function lapLogSnapshot_success()
+            {
+                inputEl.value = '';
+                inputEl.focus();
+            }
+        });
+    };
+
+    AdminLS.handleLogMessageLogSnapshotKeyUp = function handleLogMessageLogSnapshotKeyUp(event)
+    {
+        if (event.keyCode === KEYCODE_ENTER) {
+            event.preventDefault();
+            document.getElementById("lapLogSnapshot").click();
+            return false;
+        }
+        if (event.keyCode === KEYCODE_ESC) {
+            event.preventDefault();
+            document.getElementById("stopLogSnapshot").click();
+            return false;
+        }
+        return true;
+    };
 }());

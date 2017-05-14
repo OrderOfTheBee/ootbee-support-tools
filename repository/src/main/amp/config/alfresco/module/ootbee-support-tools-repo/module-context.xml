@@ -38,4 +38,9 @@
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-snapshot-complete.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogSnapshotComplete"
+        parent="webscript" >
+        <property name="delegate" ref="webscript.content.streamer" />
+    </bean>
+
 </beans>

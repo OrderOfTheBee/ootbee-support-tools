@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+	<shortname>Log4J Snapshot</shortname>
+	<description>Finish log snapshot and shows it</description>
+	<url>/ootbee/admin/log4j-snapshot-complete/{path}</url>
+	<authentication>admin</authentication>
+	<lifecycle>internal</lifecycle>
+	<transaction>none</transaction>
+	<family>OOTBee Support Tools</family>
+</webscript>

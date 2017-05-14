@@ -1,6 +1,6 @@
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos
-Copyright (C) 2016 Order of the Bee
+Copyright (C) 2017 Axel Faust / Markus Joos / Michael Bui / Bindu Wavell
+Copyright (C) 2017 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005-2016 Alfresco Software Limited.
+Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
 
@@ -39,7 +39,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
     <div class="column-full">
         <div>${msg("log-settings.column.addLogger")}:
             <form id="addPackageForm" action="${url.service}" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                <input name="logger" size="35" placeholder="logger-name"></input>
+                <input type="text" name="logger" size="35" placeholder="logger-name"></input>
                 <input type="hidden" name="showUnconfiguredLoggers" value="${(showUnconfiguredLoggers!false)?string}" />
                 <select name="level">
                     <option                       value="UNSET">${msg("log-settings.level.UNSET")?html}</option>
@@ -54,10 +54,18 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <input type="submit" value="${msg("log-settings.column.add")}" style="margin-right:1em;" />
             </form>
             <div class="buttons">
-                <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
-                <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
-                <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
-                <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-loggers?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+                <div class="column-left">
+                    <@button id="tailRepoLog" label=msg("log-settings.tail") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-tail');")/>
+                    <@button id="showLogFiles" label=msg("log-settings.logFiles") onclick=("Admin.showDialog('" + url.serviceContext + "/ootbee/admin/log4j-log-files');")/>
+                    <@button id="resetLogSettings" label=msg("log-settings.resetAll") onclick=("AdminLS.resetLogLevel();")/>
+                    <@button id="toggleView" label=msg(showUnconfiguredLoggers?string('log-settings.hideUnconfigured', 'log-settings.showUnconfigured')) onclick=("window.location.href = '" + url.serviceContext + "/ootbee/admin/log4j-loggers?showUnconfiguredLoggers="+ (showUnconfiguredLoggers!false)?string('false','true') + "';")/>
+                </div>
+                <div class="column-right">
+                    <@button id="startLogSnapshot" label=msg("log-settings.startLogSnapshot") onclick=("AdminLS.startLogSnapshot();")/>
+                    <@button id="stopLogSnapshot" style="display:none" label=msg("log-settings.stopLogSnapshot") onclick=("AdminLS.stopLogSnapshot();")/>
+                    <@button id="lapLogSnapshot" style="display:none" label=msg("log-settings.lapLogSnapshot") onclick=("AdminLS.lapLogSnapshot();")/>
+                    <input id="lapMessageLogSnapshot" type="text" size="35" style="display:none" placeholder="${msg("log-settings.lapMessageLogSnapshot")}" onkeyup="return AdminLS.handleLogMessageLogSnapshotKeyUp(event);"></input>
+                </div>
             </div>
         <#if statusMessage?? && statusMessage != "">
             <div id="statusmessage" class="message ${messageStatus!""}">${.now?string("HH:mm:ss")} - ${statusMessage?html!""} <a href="#" onclick="this.parentElement.style.display='none';" title="${msg("admin-console.close")}">[X]</a></div>
