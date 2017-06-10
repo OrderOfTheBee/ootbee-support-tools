@@ -22,16 +22,18 @@ Linked to Alfresco
 Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
+  
+<#escape x as jsonUtils.encodeJSONString(x)>
 {
-    "AlfrescoNumDocs" : ${status1['numDocs']?c},
-    "AlfrescoMaxDocs" : ${status1['maxDoc']?c},
-    "AlfrescoDeletedDocs" : ${status1['deletedDocs']?c},
-    "AlfrescoOnDiskBytes" : ${status1['sizeInBytes']?c},
-    "AlfrescoHeapBytes" : ${status1['indexHeapUsageBytes']?c},
-    "ArchiveNumDocs" : ${status2['numDocs']?c},
-    "ArchiveMaxDocs" : ${status2['maxDoc']?c},
-    "ArchiveDeletedDocs" : ${status2['deletedDocs']?c},
-    "ArchiveOnDiskBytes" : ${status2['sizeInBytes']?c},
-    "ArchiveHeapBytes" : ${status2['indexHeapUsageBytes']?c}  
+    <#list coreNames as coreName>
+    "${coreName}": {
+        "numDocs" : ${trackingStatus[coreName]['index']['numDocs']?c},
+        "maxDocs" : ${trackingStatus[coreName]['index']['maxDoc']?c},
+        "deletedDocs" : ${trackingStatus[coreName]['index']['deletedDocs']?c},
+        "diskUsage" : ${trackingStatus[coreName]['index']['sizeInBytes']?c},
+        "memoryUsage" : ${trackingStatus[coreName]['index']['indexHeapUsageBytes']?c}
+    }<#if coreName_has_next>,</#if>
+    </#list>
 }
+</#escape>
 </#compress>
