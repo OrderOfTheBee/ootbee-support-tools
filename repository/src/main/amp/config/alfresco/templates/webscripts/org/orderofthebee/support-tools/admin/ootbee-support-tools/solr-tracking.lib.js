@@ -57,7 +57,7 @@ function buildPropertyGetter(ctxt)
 /* exported loadSolrSummaryAndStatus */
 function loadSolrSummaryAndStatus()
 {
-    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus;
+    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus, coreNames;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     propertyGetter = buildPropertyGetter(ctxt);
@@ -84,11 +84,14 @@ function loadSolrSummaryAndStatus()
         trackingSummary = JSON.parse(trackingSummaryResponse).Summary;
         trackingStatus = JSON.parse(trackingStatusResponse).status;
 
-        model.summary1 = trackingSummary.alfresco;
-        model.summary2 = trackingSummary.archive;
-
-        model.status1 = trackingStatus.alfresco.index;
-        model.status2 = trackingStatus.archive.index;
+        model.trackingSummary = trackingSummary;
+        model.trackingStatus = trackingStatus;
+        
+        coreNames = Object.keys(trackingSummary);
+        coreNames.sort(function(a, b){
+            return a.localeCompare(b);
+        });
+        model.coreNames = coreNames;
     }
     else
     {

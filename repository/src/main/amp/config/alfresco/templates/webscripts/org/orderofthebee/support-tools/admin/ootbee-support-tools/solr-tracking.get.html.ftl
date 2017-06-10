@@ -39,79 +39,32 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
 
 <@page title=msg("solr-tracking.title") readonly=true>
 
-   <@section label=msg("solr-tracking.section.workspace.title") />
-
-   <div class="column-left">
-
-      <@field value="${status1['numDocs']?c}"  label=msg("solr-tracking.section.workspace.numdocs.title") 
-      description=msg("solr-tracking.section.workspace.numdocs.description") />  
-
-      <@field value="${summary1['Active']?string('Yes', 'No')}" label=msg("solr-tracking.section.workspace.indexing.title") 
-      description=msg("solr-tracking.section.workspace.indexing.description") />  
-      
-      <@field value="${summary1['Id for last TX in index']?c}" label=msg("solr-tracking.section.workspace.last.transaction.title") 
-      description=msg("solr-tracking.section.workspace.last.transaction.description") />  
-      
-      <@field value="${summary1['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.workspace.aprox.time.title") 
-      description=msg("solr-tracking.section.workspace.aprox.time.description") />  
-      
-      <@field value="${iecBinaryUnitSize(status1['sizeInBytes'])}" label=msg("solr-tracking.section.workspace.disk.usage.title") 
-      description=msg("solr-tracking.section.workspace.disk.usage.description") />  
-   </div>
-   
-   <div class="column-right">   
-
-      <@field value="${status1['maxDoc']?c}"  label=msg("solr-tracking.section.workspace.maxdocs.title") 
-      description=msg("solr-tracking.section.workspace.maxdocs.description") />  
-
-      <@field value="${status1['deletedDocs']?c}" label=msg("solr-tracking.section.workspace.deleted.title") 
-      description=msg("solr-tracking.section.workspace.deleted.description") />  
-
-      <@field value="${summary1['TX Lag']}" label=msg("solr-tracking.section.workspace.index.lag.title") 
-      description=msg("solr-tracking.section.workspace.index.lag.description")/> 
-
-      <@field value="${summary1['Approx transactions remaining']?c}"  label=msg("solr-tracking.section.workspace.aprox.transaction.title") 
-      description=msg("solr-tracking.section.workspace.aprox.transaction.description")/>  
-
-      <@field value="${iecBinaryUnitSize(status1['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.workspace.memory.usage.title") description=msg("solr-tracking.section.workspace.memory.usage.description")/>      
-   </div>
-
-   <@section label=msg("solr-tracking.section.archive.title") />
-
-   <div class="column-left">
-
-      <@field value="${status2['numDocs']?c}"  label=msg("solr-tracking.section.archive.numdocs.title") 
-      description=msg("solr-tracking.section.archive.numdocs.description") />  
-      
-      <@field value="${summary2['Active']?string('Yes', 'No')}" label=msg("solr-tracking.section.archive.indexing.title") 
-      description=msg("solr-tracking.section.archive.indexing.description")/>  
-
-      <@field value="${summary2['Id for last TX in index']?c}" label=msg("solr-tracking.section.archive.last.transaction.title") 
-      description=msg("solr-tracking.section.archive.last.transaction.description")/>  
-      
-      <@field value="${summary2['Approx transaction indexing time remaining']}"  label=msg("solr-tracking.section.archive.aprox.time.title") 
-      description=msg("solr-tracking.section.archive.aprox.time.description")/>  
-      
-      <@field value="${iecBinaryUnitSize(status2['sizeInBytes'])}" label=msg("solr-tracking.section.archive.disk.usage.title") 
-      description=msg("solr-tracking.section.archive.disk.usage.description")/>  
-   </div>
-   
-   <div class="column-right">
-
-      <@field value="${status2['maxDoc']?c}"  label=msg("solr-tracking.section.archive.maxdocs.title") 
-      description=msg("solr-tracking.section.archive.maxdocs.description") />  
-
-      <@field value="${status2['deletedDocs']?c}"  label=msg("solr-tracking.section.archive.deleted.title") 
-      description=msg("solr-tracking.section.archive.deleted.description") />  
-
-      <@field value="${summary2['TX Lag']}" label=msg("solr-tracking.section.archive.index.lag.title") 
-      description=msg("solr-tracking.section.archive.index.lag.description")/>  
-      
-      <@field value="${summary2['Approx transactions remaining']?c}" label=msg("solr-tracking.section.archive.aprox.transaction.title") 
-      description=msg("solr-tracking.section.archive.aprox.transaction.description")/>  
-      
-      <@field value="${iecBinaryUnitSize(status2['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.archive.memory.usage.title") 
-      description=msg("solr-tracking.section.archive.memory.usage.description")/>      
-   </div>
-
+    <#list coreNames as coreName>
+        <div class="column-full">
+            <#assign coreLabel= msg("solr-tracking.section." + coreName + ".title") />
+            <#if coreLabel == "solr-tracking.section." + coreName + ".title">
+                <#assign coreLabel= msg("solr-tracking.section.genericCore.title", coreName) />
+            </#if>
+    
+            <@section label=coreLabel />
+            <div class="column-left">
+                <@field value="${trackingStatus[coreName]['index']['numDocs']?c}"  label=msg("solr-tracking.section.numdocs.title") description=msg("solr-tracking.section.numdocs.description") />  
+                <@field value="${trackingSummary[coreName]['Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.indexing.title") description=msg("solr-tracking.section.indexing.description") />  
+                <@field value="${trackingSummary[coreName]['Id for last TX in index']?c}" label=msg("solr-tracking.section.last.transaction.title") description=msg("solr-tracking.section.last.transaction.description") />  
+                <@field value="${trackingSummary[coreName]['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.approx.time.title") description=msg("solr-tracking.section.approx.time.description") />  
+                <@field value="${iecBinaryUnitSize(trackingStatus[coreName]['index']['sizeInBytes'])}" label=msg("solr-tracking.section.disk.usage.title") description=msg("solr-tracking.section.disk.usage.description") />  
+            </div>
+           
+            <div class="column-right">   
+                <@field value="${trackingStatus[coreName]['index']['maxDoc']?c}"  label=msg("solr-tracking.section.maxdocs.title") description=msg("solr-tracking.section.maxdocs.description") />  
+                <@field value="${trackingStatus[coreName]['index']['deletedDocs']?c}" label=msg("solr-tracking.section.deleted.title") description=msg("solr-tracking.section.deleted.description") />  
+                <@field value="${trackingSummary[coreName]['TX Lag']}" label=msg("solr-tracking.section.index.lag.title") description=msg("solr-tracking.section.index.lag.description")/> 
+                <@field value="${trackingSummary[coreName]['Approx transactions remaining']?c}" label=msg("solr-tracking.section.approx.transaction.title") description=msg("solr-tracking.section.approx.transaction.description")/>  
+        
+                <#if trackingStatus[coreName]['index']['indexHeapUsageBytes'] != -1>
+                    <@field value="${iecBinaryUnitSize(trackingStatus[coreName]['index']['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.memory.usage.title") description=msg("solr-tracking.section.memory.usage.description")/>
+                </#if>
+            </div>
+        </div>
+    </#list>
 </@page>
