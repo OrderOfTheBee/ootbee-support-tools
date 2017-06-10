@@ -21,11 +21,21 @@ Linked to Alfresco
 Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
-
 <#include "../admin-template.ftl" />
 
-<#assign status1_heap_usage = status1['indexHeapUsageBytes']*0.000000001>
-<#assign status2_heap_usage = status2['indexHeapUsageBytes']*0.000000001>
+<#function iecBinaryUnitSize value>
+    <#local result = '' />
+    <#if value &gt;= (1024 * 1024 * 1024)>
+        <#local result = msg('solr-tracking.gibibytes', (value/1024/1024/1024)?string('0.00')) />
+    <#elseif value &gt;= (1024 * 1024)>
+        <#local result = msg('solr-tracking.mebibytes', (value/1024/1024)?string('0.00')) />
+    <#elseif value &gt;= 1024>
+        <#local result = msg('solr-tracking.kibibytes', (value/1024)?string('0.00')) />
+    <#else>
+        <#local result = msg('solr-tracking.bytes', value?string('0.00')) />
+    </#if>
+    <#return result />
+</#function>
 
 <@page title=msg("solr-tracking.title") readonly=true>
 
@@ -45,7 +55,7 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
       <@field value="${summary1['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.workspace.aprox.time.title") 
       description=msg("solr-tracking.section.workspace.aprox.time.description") />  
       
-      <@field value="${status1['size']}" label=msg("solr-tracking.section.workspace.disk.usage.title") 
+      <@field value="${iecBinaryUnitSize(status1['sizeInBytes'])}" label=msg("solr-tracking.section.workspace.disk.usage.title") 
       description=msg("solr-tracking.section.workspace.disk.usage.description") />  
    </div>
    
@@ -63,7 +73,7 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
       <@field value="${summary1['Approx transactions remaining']?c}"  label=msg("solr-tracking.section.workspace.aprox.transaction.title") 
       description=msg("solr-tracking.section.workspace.aprox.transaction.description")/>  
 
-      <@field value="${status1_heap_usage?string('##0.000')}" label=msg("solr-tracking.section.workspace.memory.usage.title") description=msg("solr-tracking.section.workspace.memory.usage.description")/>      
+      <@field value="${iecBinaryUnitSize(status1['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.workspace.memory.usage.title") description=msg("solr-tracking.section.workspace.memory.usage.description")/>      
    </div>
 
    <@section label=msg("solr-tracking.section.archive.title") />
@@ -82,7 +92,7 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
       <@field value="${summary2['Approx transaction indexing time remaining']}"  label=msg("solr-tracking.section.archive.aprox.time.title") 
       description=msg("solr-tracking.section.archive.aprox.time.description")/>  
       
-      <@field value="${status2['size']}" label=msg("solr-tracking.section.archive.disk.usage.title") 
+      <@field value="${iecBinaryUnitSize(status2['sizeInBytes'])}" label=msg("solr-tracking.section.archive.disk.usage.title") 
       description=msg("solr-tracking.section.archive.disk.usage.description")/>  
    </div>
    
@@ -100,7 +110,7 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
       <@field value="${summary2['Approx transactions remaining']?c}" label=msg("solr-tracking.section.archive.aprox.transaction.title") 
       description=msg("solr-tracking.section.archive.aprox.transaction.description")/>  
       
-      <@field value="${status2_heap_usage?string('##0.000')}" label=msg("solr-tracking.section.archive.memory.usage.title") 
+      <@field value="${iecBinaryUnitSize(status2['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.archive.memory.usage.title") 
       description=msg("solr-tracking.section.archive.memory.usage.description")/>      
    </div>
 
