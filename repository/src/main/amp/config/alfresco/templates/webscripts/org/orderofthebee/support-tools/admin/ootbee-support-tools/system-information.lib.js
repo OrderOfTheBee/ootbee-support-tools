@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Jens Goldhammer
+ * Copyright (C) 2016, 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -19,11 +19,12 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
 /* exported buildSystemInformation */
-function buildSystemInformation(){
+function buildSystemInformation()
+{
     var ctxt, managementFactory, runtime, globalProperties, duration, prettyUptime;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
@@ -37,8 +38,13 @@ function buildSystemInformation(){
     managementFactory = Packages.java.lang.management.ManagementFactory;
     runtime = managementFactory.getRuntimeMXBean();
 
-    if (runtime.isBootClassPathSupported()){
+    if (runtime.isBootClassPathSupported())
+    {
         model.bootClassPath = runtime.getBootClassPath().split(Packages.java.io.File.pathSeparator);
+    }
+    else
+    {
+        model.bootClassPath = [];
     }
 
     model.javaArguments = runtime.getInputArguments();
