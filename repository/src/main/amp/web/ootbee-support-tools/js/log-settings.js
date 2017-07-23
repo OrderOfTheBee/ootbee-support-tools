@@ -35,7 +35,7 @@ var AdminLS = AdminLS || {};
     var KEYCODE_ENTER = 13;
     var KEYCODE_ESC = 27;
 
-    var serviceContext, snapshotLogFile, snapshotLapNumber;
+    var serviceContext, snapshotUUID, snapshotLapNumber;
     
     AdminLS.setServiceContext = function setServiceContext(context)
     {
@@ -58,13 +58,13 @@ var AdminLS = AdminLS || {};
     AdminLS.startLogSnapshot = function startLogSnapshot()
     {
         Admin.request({
-          url : serviceContext + '/ootbee/admin/log4j-snapshot-create',
-          method : 'GET',
+          url : serviceContext + '/ootbee/admin/log4j-snapshots',
+          method : 'POST',
           fnSuccess : function startLogSnapshot_success(res)
           {
               if (res.responseJSON)
               {
-                  snapshotLogFile = res.responseJSON.snapshotLogFile;
+                  snapshotUUID = res.responseJSON.snapshotUUID;
                   document.getElementById("startLogSnapshot").style.display = 'none';
                   document.getElementById("stopLogSnapshot").style.display = 'inline';
                   document.getElementById("lapLogSnapshot").style.display = 'inline';
@@ -78,11 +78,12 @@ var AdminLS = AdminLS || {};
     
     AdminLS.stopLogSnapshot = function stopLogSnapshot()
     {
-        window.open(serviceContext + '/ootbee/admin/log4j-snapshot-complete/'+snapshotLogFile+'?a=true','_blank');
+        window.open(serviceContext + '/ootbee/admin/log4j-snapshots/' + encodeURIComponent(snapshotUUID) + '?a=true', '_blank');
         document.getElementById("startLogSnapshot").style.display = 'inline';
         document.getElementById("stopLogSnapshot").style.display = 'none';
         document.getElementById("lapLogSnapshot").style.display = 'none';
         document.getElementById("lapMessageLogSnapshot").style.display = 'none';
+        snapshotUUID = null;
     };
 
     AdminLS.lapLogSnapshot = function lapLogSnapshot()

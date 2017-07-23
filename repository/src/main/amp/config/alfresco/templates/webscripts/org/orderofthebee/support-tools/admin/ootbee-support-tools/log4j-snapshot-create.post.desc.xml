@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>Log4J Settings - Log File - Create Snapshot</shortname>
-    <description>Accesses a specific Log4J log file</description>
-    <url>/ootbee/admin/log4j-snapshot-create</url>
+    <description>Creates a snapshot Log4J appender and log file</description>
+    <url>/ootbee/admin/log4j-snapshots</url>
     <authentication>admin</authentication>
     <format default="json"/>
     <lifecycle>internal</lifecycle>

@@ -444,11 +444,9 @@ function getLoggersToSnapshot()
 /* exported createSnapshot */
 function createSnapshot()
 {
-	var snapshotLogFile, logLayout, snapshotAppender, loggers;
+	var snapshotAppender, loggers;
 	
-	snapshotLogFile = Packages.org.alfresco.util.TempFileProvider.createTempFile("ootbee-support-tools-snapshot", ".log");
-	logLayout = new Packages.org.apache.log4j.PatternLayout('%d{yyyy-MM-dd} %d{ABSOLUTE} %-5p [%c] [%t] %m%n');		
-	snapshotAppender = new Packages.org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender(logLayout, snapshotLogFile);
+	snapshotAppender = new Packages.org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender('ootbee-support-tools-snapshot-');
 	loggers = getLoggersToSnapshot();
 	loggers.forEach(
 	    function createSnapshot_connectLoggerAndAppender(logger)
@@ -457,19 +455,18 @@ function createSnapshot()
 	    }
     );
 	
-	return snapshotLogFile;
+	return snapshotAppender.appenderUUID;
 }
 
 /* exported logSnapshotLapMessage */
 function logSnapshotLapMessage(message) {
-    var root, clazz, level, lapLogger;
+    var lapLogger, level;
 
-    root = Packages.org.apache.log4j.Logger.getRootLogger();
+    // Fake logger that does not correspond to any class-based logger
+    lapLogger = Packages.org.apache.log4j.Logger.getLogger('org.orderofthebee.addons.support.tools.repo.logSnapshotLap');
+
+    // ensure level is enabled (in case someone reconfigured logger) and log
     level = Packages.org.apache.log4j.Level.INFO;
-    // Fake logger that produces a good log message with the Alfresco default log format
-    clazz = 'org.orderofthebee.addons.support.tools.repo.logSnapshotLap';
-    lapLogger = root.getLogger(clazz);
     lapLogger.setLevel(level);
-
     lapLogger.log(level, message);
 }
