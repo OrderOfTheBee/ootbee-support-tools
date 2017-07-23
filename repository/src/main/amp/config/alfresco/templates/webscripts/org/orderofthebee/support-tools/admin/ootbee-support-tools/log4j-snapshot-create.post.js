@@ -24,4 +24,4 @@
  * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
-model.snapshotLogFile = createSnapshot();
+model.snapshotUUID = createSnapshot();
