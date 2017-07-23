@@ -1,6 +1,6 @@
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos
-Copyright (C) 2016 Order of the Bee
+Copyright (C) 2016. 2017 Axel Faust / Markus Joos
+Copyright (C) 2016. 2017 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005-2016 Alfresco Software Limited.
+Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
 
@@ -26,8 +26,11 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
    ADMIN TEMPLATE MACROS
    
    This file is mostly a 1:1 copy of the Alfresco original admin-template.ftl
-   The main change is the externalization of inline JavaScript and the ability
-   to load custom JSS and CSS files
+   The main changes are
+   - externalization of inline JavaScript
+   - the ability to load custom JSS and CSS files
+   - optionality of maxlength on form fields instead of hard default of 255 characters
+   - option to specify rows/cols for textarea
 -->
 <#--
    Template outer "page" macro.
@@ -284,27 +287,27 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 </#macro>
 
 <#-- Label and text input field -->
-<#macro text name label="" description="" value="" maxlength=255 id="" style="" controlStyle="" valueStyle="" placeholder="" escape=true>
+<#macro text name label="" description="" value="" maxlength="" id="" style="" controlStyle="" valueStyle="" placeholder="" escape=true>
    <div class="control text"<#if style?has_content> style="${style?html}"</#if>>
       <#if label?has_content><span class="label">${label?html}:</span></#if>
-      <span class="value"<#if valueStyle?has_content> style="${valueStyle?html}"</#if>><input <#if id?has_content>id="${id?html}"</#if> name="${name?html}" value="${value?html}" maxlength="${maxlength?c}" tabindex="0" <#if placeholder?has_content>placeholder="${placeholder?html}"</#if> <#if controlStyle?has_content>style="${controlStyle?html}"</#if>/></span>
+      <span class="value"<#if valueStyle?has_content> style="${valueStyle?html}"</#if>><input <#if id?has_content>id="${id?html}"</#if> name="${name?html}" value="${value?html}" <#if maxlength?is_number>maxlength="${maxlength?c}"</#if> tabindex="0" <#if placeholder?has_content>placeholder="${placeholder?html}"</#if> <#if controlStyle?has_content>style="${controlStyle?html}"</#if>/></span>
       <#if description?has_content><span class="description"><#if escape>${description?html}<#else>${description}</#if></span></#if>
    </div>
 </#macro>
-<#macro attrtext attribute label=attribute.name description="" maxlength=255 id="" style="" controlStyle="" valueStyle="" placeholder="" escape=true>
+<#macro attrtext attribute label=attribute.name description="" maxlength="" id="" style="" controlStyle="" valueStyle="" placeholder="" escape=true>
    <@text name=attribute.qname label=label description=description value=cvalue(attribute.type, attribute.value) maxlength=maxlength id=id style=style controlStyle=controlStyle valueStyle=valueStyle placeholder=placeholder escape=escape />
 </#macro>
 
 <#-- Label and password input field -->
-<#macro password id name label="" description="" value="" maxlength=255 style="" controlStyle="" visibilitytoggle=false>
+<#macro password id name label="" description="" value="" maxlength="" style="" controlStyle="" visibilitytoggle=false>
    <div class="control text password"<#if style?has_content> style="${style?html}"</#if>>
       <#if label?has_content><span class="label">${label?html}:</span></#if>
-      <span class="value"><input id="${id?html}" name="${name?html}" value="${value?html}" maxlength="${maxlength?c}" type="password" tabindex="0" <#if controlStyle?has_content>style="${controlStyle?html}"</#if>/></span>
+      <span class="value"><input id="${id?html}" name="${name?html}" value="${value?html}" <#if maxlength?is_number>maxlength="${maxlength?c}"</#if> type="password" tabindex="0" <#if controlStyle?has_content>style="${controlStyle?html}"</#if>/></span>
       <#if visibilitytoggle><@button label=msg("admin-console.password.show")?html onclick="Admin.togglePassword('${id?html}', this);" /></#if>
       <#if description?has_content><span class="description">${description?html}</span></#if>
    </div>
 </#macro>
-<#macro attrpassword attribute label=attribute.name id=attribute.qname description="" maxlength=255 style="" controlStyle="" visibilitytoggle=false populatevalue=false>
+<#macro attrpassword attribute label=attribute.name id=attribute.qname description="" maxlength="" style="" controlStyle="" visibilitytoggle=false populatevalue=false>
    <#if populatevalue>
    <@password name=attribute.qname label=label id=id description=description value=cvalue(attribute.type, attribute.value) maxlength=maxlength style=style controlStyle=controlStyle visibilitytoggle=visibilitytoggle />
    <#else>
@@ -313,15 +316,15 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 </#macro>
 
 <#-- Label and text area field -->
-<#macro textarea name label="" description="" value="" maxlength=255 id="" style="" controlStyle="">
+<#macro textarea name label="" description="" value="" maxlength="" id="" style="" controlStyle="" rows="" cols="">
    <div class="control textarea"<#if style?has_content> style="${style?html}"</#if>>
       <#if label?has_content><span class="label">${label?html}:</span></#if>
-      <span class="value"><textarea <#if id?has_content>id="${id?html}"</#if> name="${name?html}" maxlength="${maxlength?c}" tabindex="0" <#if controlStyle?has_content>style="${controlStyle?html}"</#if>>${value?html}</textarea></span>
+      <span class="value"><textarea <#if id?has_content>id="${id?html}"</#if> name="${name?html}" <#if rows?is_number>rows="${rows?c}"</#if> <#if rows?is_number>cols="${cols?c}"</#if> <#if maxlength?is_number>maxlength="${maxlength?c}"</#if> tabindex="0" <#if controlStyle?has_content>style="${controlStyle?html}"</#if>>${value?html}</textarea></span>
       <#if description?has_content><span class="description">${description?html}</span></#if>
    </div>
 </#macro>
-<#macro attrtextarea attribute label=attribute.name description="" maxlength=255 id="" style="" controlStyle="">
-   <@textarea name=attribute.qname label=label description=description value=cvalue(attribute.type, attribute.value) maxlength=maxlength id=id style=style controlStyle=controlStyle />
+<#macro attrtextarea attribute label=attribute.name description="" maxlength="" id="" style="" controlStyle="" rows="" cols="">
+   <@textarea name=attribute.qname label=label description=description value=cvalue(attribute.type, attribute.value) maxlength=maxlength id=id style=style controlStyle=controlStyle rows=rows cols=cols />
 </#macro>
 
 <#-- Label and checkbox boolean field -->
