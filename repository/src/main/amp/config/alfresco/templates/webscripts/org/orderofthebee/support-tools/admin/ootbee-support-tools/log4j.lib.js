@@ -22,7 +22,7 @@
  * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
-/* global formdata: false, logSettingTracker: false */
+/* global logSettingTracker: false */
 
 function buildLoggerState(logger)
 {
@@ -135,47 +135,6 @@ function changeLoggerState(loggerName, level)
     
     logSettingTracker.recordChange(logger, logger.level, newLevel);
     logger.level = newLevel;
-}
-
-/* exported processLoggerStateChangeFromFormData */
-function processLoggerStateChangeFromFormData(urlLoggerName)
-{
-    var fields, field, i, loggerName, level, showUnconfiguredLoggers;
-
-    fields = formdata.fields;
-    for (i = 0; i < fields.length; i++)
-    {
-        field = fields[i];
-        switch (String(field.name))
-        {
-            case 'logger':
-                if (urlLoggerName !== undefined && urlLoggerName !== null)
-                {
-                    status.setCode(status.STATUS_BAD_REQUEST, 'Form data for logger update must not contain the logger name - that is to be part of the URL');
-                    status.redirect = true;
-                    return;
-                }
-                loggerName = String(field.value);
-                break;
-            case 'level':
-                level = String(field.value);
-                break;
-            case 'showUnconfiguredLoggers':
-                showUnconfiguredLoggers = String(field.value);
-                break;
-            default:
-                logger.debug('Unknown field: ' + field.name);
-        }
-    }
-    
-    if (loggerName === undefined && urlLoggerName !== undefined && urlLoggerName !== null)
-    {
-        loggerName = urlLoggerName;
-    }
-
-    changeLoggerState(loggerName, level);
-
-    return showUnconfiguredLoggers;
 }
 
 /* exported processLoggerStateChangeFromJSONData */

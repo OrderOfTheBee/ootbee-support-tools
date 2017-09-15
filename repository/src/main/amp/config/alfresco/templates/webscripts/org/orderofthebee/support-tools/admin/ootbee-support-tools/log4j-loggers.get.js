@@ -25,8 +25,13 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-model.showUnconfiguredLoggers = args.showUnconfiguredLoggers == 'true';
-buildLoggerStates(model.showUnconfiguredLoggers, args.loggerName, args.startIndex, args.pageSize);
-
-model.tools = Admin.getConsoleTools("log4j-loggers");
-model.metadata = Admin.getServerMetaData();
+var showUnconfiguredLoggers = String(args.showUnconfiguredLoggers) === 'true';
+if (String(format.type) !== 'text/html')
+{
+    buildLoggerStates(showUnconfiguredLoggers, args.loggerName, args.startIndex, args.pageSize);
+}
+else
+{
+    model.tools = Admin.getConsoleTools("log4j-loggers");
+    model.metadata = Admin.getServerMetaData();
+}

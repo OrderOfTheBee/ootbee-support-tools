@@ -3,7 +3,7 @@
     <shortname>Log4J Logger</shortname>
     <description>Update Log4J logger settings</description>
     <url>/ootbee/admin/log4j-loggers/{logger}</url>
-    <format default="html"/>
+    <format default="json" />
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
