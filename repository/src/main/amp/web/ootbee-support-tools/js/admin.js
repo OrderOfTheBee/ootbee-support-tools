@@ -319,7 +319,8 @@ var Admin = Admin || {};
             req.overrideMimeType((config.responseContentType ? config.responseContentType : "application/json") + "; charset=utf-8");
         }
         req.open(config.method ? config.method : "GET", config.url);
-        req.setRequestHeader("Accept", config.requestContentType ? config.requestContentType : "application/json");
+        req.setRequestHeader("Content-Type", (config.requestContentType ? config.requestContentType : "application/json") + ";charset=UTF-8");
+        req.setRequestHeader("Accept", config.responseContentType ? config.responseContentType : "application/json");
         req.onreadystatechange = function()
         {
             if (req.readyState === 4)
