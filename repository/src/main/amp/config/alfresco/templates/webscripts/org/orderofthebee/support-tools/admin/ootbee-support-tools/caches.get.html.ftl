@@ -29,10 +29,21 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
 
 <script type="text/javascript">//<![CDATA[
     AdminCA.setServiceContext('${url.serviceContext}');
+
+    AdminCA.addMessages({
+        'caches.clearCache.title' : '${msg("caches.clearCache.title")?js_string}',
+        'caches.clearCache.label' : '${msg("caches.clearCache.label")?js_string}'
+    });
 //]]></script>
 
     <div class="column-full">
         <p class="intro">${msg("caches.intro")?html}</p>      
+
+        <div class="buttons">
+            <div class="column-left">
+                <@button id="refreshCaches" label=msg("caches.refresh") onclick=("AdminCA.refreshCaches();") />
+            </div>
+        </div>
 
         <div class="control">
             <table id="caches-table" class="data results" width="100%">
@@ -55,26 +66,26 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
                         <th></th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr>
+                        <th>${msg("caches.attr.name")?html}</th>
+                        <th>${msg("caches.attr.type.alfresco")?html}</th>
+                        <th>${msg("caches.attr.type.class")?html}</th>
+
+                        <th>${msg("caches.attr.size")?html}</th>
+                        <th>${msg("caches.attr.maxSize")?html}</th>
+
+                        <th>${msg("caches.attr.cacheGets")?html}</th>
+                        <th>${msg("caches.attr.cacheHits")?html}</th>
+                        <th>${msg("caches.attr.cacheHitPercentage")?html}</th>
+                        <th>${msg("caches.attr.cacheMisses")?html}</th>
+                        <th>${msg("caches.attr.cacheMissPercentage")?html}</th>
+
+                        <th>${msg("caches.attr.cacheEvictions")?html}</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
                 <tbody>
-                    <#list cacheInfos as cacheInfo>
-                        <tr>
-                            <td>${cacheInfo.name?html}</td>
-                            <td>${(cacheInfo.definedType!msg('caches.typeNotSet'))?html}</td>
-                            <td>${cacheInfo.type?html}</td>
-
-                            <td class="numericalCellValue">${cacheInfo.size?c}</td>
-                            <td class="numericalCellValue"><#if cacheInfo.maxSize &gt; 0>${cacheInfo.maxSize?c}</#if></td>
-
-                            <td class="numericalCellValue"><#if cacheInfo.cacheGets &gt;= 0>${cacheInfo.cacheGets?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheHits &gt;= 0>${cacheInfo.cacheHits?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheHitRate &gt;= 0>${cacheInfo.cacheHitRate?string["0.0"]}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheMisses &gt;= 0>${cacheInfo.cacheMisses?c}</#if></td>
-                            <td class="numericalCellValue"><#if cacheInfo.cacheMissRate &gt;= 0>${cacheInfo.cacheMissRate?string["0.0"]}</#if></td>
-                            
-                            <td class="numericalCellValue"><#if cacheInfo.cacheEvictions &gt;= 0>${cacheInfo.cacheEvictions?c}</#if></td>
-                            <td><#if cacheInfo.clearable><a href="#" onclick="AdminCA.clearCache('${cacheInfo.name}');" title="${msg("caches.clearCache.title")?html}">${msg("caches.clearCache.label")?html}</a></#if></td>
-                        </tr>
-                    </#list>
                 </tbody>
             </table>
         </div>

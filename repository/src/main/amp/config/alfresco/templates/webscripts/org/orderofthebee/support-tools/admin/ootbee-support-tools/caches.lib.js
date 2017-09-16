@@ -267,13 +267,15 @@ function buildCaches()
 /* exported resetCache */
 function resetCache(cacheName)
 {
-    var TransactionalCache, ctxt, propertyGetter, cacheBeanNames, cache, cacheInfo, idx, cacheBeanName;
+    var TransactionalCache, ctxt, propertyGetter, cacheBeanNames, allowClearGlobal, cache, cacheInfo, idx, cacheBeanName;
 
     TransactionalCache = Packages.org.alfresco.repo.cache.TransactionalCache;
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     propertyGetter = buildPropertyGetter(ctxt);
 
     cacheBeanNames = ctxt.getBeanNamesForType(Packages.org.alfresco.repo.cache.SimpleCache, false, false);
+
+    allowClearGlobal = propertyGetter('ootbee-support-tools.cache.clearable', '').toLowerCase() === 'true';
 
     for (idx = 0; idx < cacheBeanNames.length; idx++)
     {
@@ -283,7 +285,7 @@ function resetCache(cacheName)
         cache = ctxt.getBean(cacheBeanName, Packages.org.alfresco.repo.cache.SimpleCache);
         if (!(cache instanceof TransactionalCache) && ((cache.cacheName !== undefined && String(cache.cacheName) === cacheName) || cacheBeanName === cacheName))
         {
-            cacheInfo = buildCacheInfo(cache.cacheName || cacheBeanName, cache, propertyGetter);
+            cacheInfo = buildCacheInfo(cache.cacheName || cacheBeanName, cache, allowClearGlobal, propertyGetter);
             break;
         }
     }
