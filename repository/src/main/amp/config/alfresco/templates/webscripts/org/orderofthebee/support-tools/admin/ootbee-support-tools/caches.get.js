@@ -25,7 +25,13 @@
  * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
-buildCaches();
 
-model.tools = Admin.getConsoleTools("caches");
-model.metadata = Admin.getServerMetaData();
+if (String(format.type) === 'text/html')
+{
+    model.tools = Admin.getConsoleTools("caches");
+    model.metadata = Admin.getServerMetaData();
+}
+else
+{
+    buildCaches();
+}

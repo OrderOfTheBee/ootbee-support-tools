@@ -5,7 +5,9 @@
     <url>/ootbee/admin/caches</url>
     <family>AdminConsole</family>
     <family>OOTBee Support Tools</family>
-    <format default="html"/>
+    <format default="html">any</format>
+    <negotiate accept="text/html">html</negotiate>
+    <negotiate accept="application/json">json</negotiate>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
