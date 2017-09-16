@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Axel Faust / Markus Joos
+ * Copyright (C) 2016, 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
 function buildConnectionPoolData()
@@ -46,52 +46,57 @@ function buildConnectionPoolData()
     model.connectionPoolData = connectionPoolData;
 }
 
-function buildUserSessionsData()
+function buildUserSessionsData(resolveUsers)
 {
-    var ctxt, authenticationService, ArrayList, userNames, userNamesArr, userSessionData, idx;
+    var ctxt, authenticationService, usersWithTickets, ArrayList, userNames, userNamesArr, userSessionData, idx;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     // must be private bean because operations are not part of public API
     authenticationService = ctxt.getBean('authenticationService', Packages.org.alfresco.service.cmr.security.AuthenticationService);
 
-    ArrayList = Packages.java.util.ArrayList;
-    userNames = new ArrayList(authenticationService.getUsersWithTickets(true));
-    userNamesArr = [];
-    
-    for (idx = 0; idx < userNames.size(); idx++)
-    {
-        userNamesArr.push(userNames.get(idx));
-    }
-    
+    usersWithTickets = authenticationService.getUsersWithTickets(true);
     userSessionData = {
-        userCountNonExpired : authenticationService.getUsersWithTickets(true).size(),
-        ticketCountNonExpired : authenticationService.countTickets(true),
-        unexpiredUserNames : userNamesArr,
-        unexpiredUsers : []
+        userCountNonExpired : usersWithTickets.size(),
+        ticketCountNonExpired : authenticationService.countTickets(true)
     };
 
-    for (idx = 0; idx < userNamesArr.length; idx++)
+    if (resolveUsers === true)
     {
-        userSessionData.unexpiredUsers.push(people.getPerson(userNamesArr[idx]));
+        ArrayList = Packages.java.util.ArrayList;
+        userNames = new ArrayList(usersWithTickets);
+        userNamesArr = [];
+
+        userSessionData.unexpiredUserNames = userNamesArr;
+        userSessionData.unexpiredUsers = [];
+
+        for (idx = 0; idx < userNames.size(); idx++)
+        {
+            userNamesArr.push(userNames.get(idx));
+        }
+
+        for (idx = 0; idx < userNamesArr.length; idx++)
+        {
+            userSessionData.unexpiredUsers.push(people.getPerson(userNamesArr[idx]));
+        }
     }
 
     model.userSessionData = userSessionData;
 }
 
 /* exported buildActiveSessionsData */
-function buildActiveSessionsData()
+function buildActiveSessionsData(resolveUsers)
 {
     buildConnectionPoolData();
-    buildUserSessionsData();
+    buildUserSessionsData(resolveUsers);
 }
 
 /* exported logoutUser */
 function logoutUser(userName)
 {
     var ctxt, authenticationService;
-    
+
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     authenticationService = ctxt.getBean('AuthenticationService', Packages.org.alfresco.service.cmr.security.AuthenticationService);
-    
+
     authenticationService.invalidateUserSession(userName);
 }
