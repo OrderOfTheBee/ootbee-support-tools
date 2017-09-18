@@ -65,6 +65,22 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src\main\amp</directory>
+                <targetPath>${project.build.directory}/amp</targetPath>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/.jshintrc</exclude>
+                    <exclude>**/.jshintignore</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
