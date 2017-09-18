@@ -2,8 +2,8 @@
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/test-transform.lib.js">
 
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Axel Faust / Markus Joos
+ * Copyright (C) 2016, 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -22,7 +22,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
 // operation should be reflected
