@@ -20,53 +20,62 @@
  */
 package org.orderofthebee.addons.support.tools.repo.web.scripts;
 
-import org.alfresco.repo.web.scripts.content.ContentStreamer;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender;
-import org.springframework.extensions.webscripts.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.alfresco.repo.web.scripts.content.ContentStreamer;
+import org.alfresco.util.EqualsHelper;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
+import org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender;
+import org.springframework.extensions.webscripts.Cache;
+import org.springframework.extensions.webscripts.Status;
+import org.springframework.extensions.webscripts.WebScriptException;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
+
 /**
- * Given the path to a temporary log file created with the log4j-snapshot-create webscript, we
- * attempt to locate an associated {@link TemporaryFileAppender}. If we find it, it is
- * deregistered from all loggers it was added to and then closed. If the file at the provided
- * path exists and is a valid log snapshot file, we stream the contents out otherwise we
- * throw a WebScriptException.
+ * This web script uses the UUID of a {@link TemporaryFileAppender} created with the log4j-snapshot-create webscript to locate said
+ * instance, deregisters it from all loggers it was registered with, and closes it. The contents of the associated log file will be streamed
+ * as the response to the caller. If the UUID does not match any of the appenders, this web script will fail accordingly with a
+ * {@link WebScriptException}.
  *
  * @author Ana Gouveia
  * @author Bindu Wavell <a href="mailto:bindu@ziaconsulting.com">bindu@ziaconsulting.com</a>
  */
 public class LogSnapshotComplete extends AbstractLogFileWebScript
 {
+
     protected ContentStreamer delegate;
 
     public void setDelegate(final ContentStreamer delegate)
     {
         this.delegate = delegate;
     }
-    
-    /**
-    * <p>Gets the appender, removes it from all the loggers and streams the content back.</p>
-    * 
-    * {@inheritDoc}
-    */
-    @Override
-    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException
-    {
-        final String servicePath = req.getServicePath();
-        final String matchPath = req.getServiceMatch().getPath();
-        final String fileAppenderPathStr = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
-        final Path fileAppenderPath = Paths.get(fileAppenderPathStr);
 
-        final Map<String, Object> model = new HashMap<String, Object>();
+    /**
+     * <p>
+     * Gets the appender, removes it from all the loggers and streams the content back.
+     * </p>
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void execute(final WebScriptRequest req, final WebScriptResponse res) throws IOException
+    {
+        final Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
+        final String snapshotUUID = templateVars.get("snapshotUUID");
+
+        if (snapshotUUID == null || snapshotUUID.trim().isEmpty())
+        {
+            throw new WebScriptException(Status.STATUS_BAD_REQUEST, "UUID for log snapshot missing in request");
+        }
+
+        final Map<String, Object> model = new HashMap<>();
         final Status status = new Status();
         final Cache cache = new Cache(this.getDescription().getRequiredCache());
         model.put("status", status);
@@ -75,46 +84,41 @@ public class LogSnapshotComplete extends AbstractLogFileWebScript
         final String attachParam = req.getParameter("a");
         final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
-        Enumeration appenders = Logger.getRootLogger().getAllAppenders();
+        @SuppressWarnings("unchecked") // Log4J API is old and unaware of generics
+        final Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
         TemporaryFileAppender snapshotAppender = null;
 
         // Find the TemporaryFileAppender that writes to this file
         while (appenders.hasMoreElements())
         {
-            Appender appender = (Appender) appenders.nextElement();
+            final Appender appender = appenders.nextElement();
             if (appender instanceof TemporaryFileAppender)
             {
-                TemporaryFileAppender fileAppender = (TemporaryFileAppender) appender;
-                if (fileAppender.getFile().equals(fileAppenderPathStr))
+                final TemporaryFileAppender fileAppender = (TemporaryFileAppender) appender;
+                if (EqualsHelper.nullSafeEquals(snapshotUUID, fileAppender.getAppenderUUID()))
                 {
                     snapshotAppender = fileAppender;
+                    break;
                 }
             }
         }
 
-
-        // If found, remove the appender from all loggers and close it
-        if (snapshotAppender != null)
+        if (snapshotAppender == null)
         {
-            snapshotAppender.removeAppenderFromLoggers();
-            snapshotAppender.close();
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "No snapshot Log4J appender found for UUID " + snapshotUUID);
         }
 
-        // In any event, if the file is valid we can stream it out (if not, a WebScriptException will be thrown.)
-        final String fileName = fileAppenderPath.getFileName().toString();
-        if (!fileName.matches("^ootbee-support-tools-snapshot.*\\.log$"))
-        {
-            throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                    "The path " + fileAppenderPathStr + " is invalid for a snapshot log file.");
-        }
-        final File file = fileAppenderPath.toFile();
+        final File file = Paths.get(snapshotAppender.getFile()).toFile();
         if (!file.exists())
         {
-            throw new WebScriptException(Status.STATUS_NOT_FOUND,
-                    "There is no file at " + fileAppenderPathStr + ".");
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Log file missing for snapshot Log4J appender with UUID " + snapshotUUID);
         }
-        // TODO(bwavell): Consider if we should create a temp file and validate the paths are the same.
 
+        // Remove the appender from all loggers and close it
+        snapshotAppender.removeAppenderFromLoggers();
+        snapshotAppender.close();
+
+        // stream the contents - log file will be automatically deleted by Alfresco's temporary file mechanisms
         this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
     }
 }

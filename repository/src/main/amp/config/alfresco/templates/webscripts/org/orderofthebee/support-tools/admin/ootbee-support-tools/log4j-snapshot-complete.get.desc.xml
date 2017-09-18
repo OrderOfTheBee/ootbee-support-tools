@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- This web script really should be a POST/DELETE, but needs to be GET to work with browser UI -->
 <webscript>
-	<shortname>Log4J Snapshot</shortname>
-	<description>Finish log snapshot and shows it</description>
-	<url>/ootbee/admin/log4j-snapshot-complete/{path}</url>
+	<shortname>Log4J Settings - Log File - Close Snapshot</shortname>
+	<description>Closes (deregisters) a snapshot Log4J appender and retrieves the contents of the associated log file</description>
+	<url>/ootbee/admin/log4j-snapshots/{snapshotUUID}</url>
 	<authentication>admin</authentication>
 	<lifecycle>internal</lifecycle>
 	<transaction>none</transaction>
