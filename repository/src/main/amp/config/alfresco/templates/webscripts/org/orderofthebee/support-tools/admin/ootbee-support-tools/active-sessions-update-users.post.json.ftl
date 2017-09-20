@@ -1,1 +1,0 @@
-<#include "./active-sessions-update-users.lib.ftl" />

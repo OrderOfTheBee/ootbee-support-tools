@@ -22,8 +22,8 @@ Linked to Alfresco
 Copyright (C) 2005-2017 Alfresco Software Limited.
  
 -->
-
+<#escape x as jsonUtils.encodeJSONString(x)>
 {
-    "snapshotLogFile": "${snapshotLogFile}"
+    "snapshotUUID": "${snapshotUUID}"
 }
-</#compress>
+</#escape></#compress>

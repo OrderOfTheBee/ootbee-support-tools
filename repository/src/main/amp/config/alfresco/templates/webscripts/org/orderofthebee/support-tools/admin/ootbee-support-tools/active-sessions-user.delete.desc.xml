@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log Off Active Users</shortname>
+    <description>Logs off an active user by invalidating its authentication ticket(s)</description>
+    <url>/ootbee/admin/active-sessions/users/{userName}</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <!-- no real change in persistence thus a readonly transaction will do -->
+    <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

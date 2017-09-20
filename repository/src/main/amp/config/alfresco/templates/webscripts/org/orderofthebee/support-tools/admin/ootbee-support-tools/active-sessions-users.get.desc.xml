@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
-    <shortname>Active Sessions Update Users</shortname>
-    <description>Update active user list</description>
-    <url>/ootbee/admin/active-sessions-updateUsers</url>
-    <format default="json"/>
+    <shortname>Active Sessions Users</shortname>
+    <description>Load active user list</description>
+    <url>/ootbee/admin/active-sessions/users</url>
+    <format default="json" />
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction allow="readonly">required</transaction>

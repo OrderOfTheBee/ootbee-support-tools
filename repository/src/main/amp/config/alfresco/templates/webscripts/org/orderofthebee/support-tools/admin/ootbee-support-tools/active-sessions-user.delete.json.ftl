@@ -1,4 +1,5 @@
 <#compress>
+<#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
 Copyright (C) 2016, 2017 Axel Faust / Markus Joos
 Copyright (C) 2016, 2017 Order of the Bee
@@ -23,11 +24,6 @@ Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
 
-{
-    "NumActive": ${connectionPoolData.numActive?c},
-    "MaxActive": ${connectionPoolData.maxActive?c},
-    "NumIdle": ${connectionPoolData.numIdle?c},
-    "UserCountNonExpired": ${userSessionData.userCountNonExpired?c},
-    "TicketCountNonExpired": ${userSessionData.ticketCountNonExpired?c}
-}
+{}
+</#escape>
 </#compress>

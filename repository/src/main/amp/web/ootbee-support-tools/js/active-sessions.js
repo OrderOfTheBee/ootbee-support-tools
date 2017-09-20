@@ -1,34 +1,32 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
- * 
+ * Copyright (C) 2016, 2017 Axel Faust / Markus Joos
+ * Copyright (C) 2016, 2017 Order of the Bee
+ *
  * This file is part of Community Support Tools
- * 
- * Community Support Tools is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- * 
+ *
+ * Community Support Tools is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
  * Community Support Tools is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
- * General Public License for more details.
- * 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Community Support Tools. If not, see
- * <http://www.gnu.org/licenses/>.
+ * along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright
- * (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
-/* global Admin: false, el: false, TimeSeries: false, SmoothieChart: false */
+/* global Admin: false, el: false, TimeSeries: false, SmoothieChart: false, $: false */
 
 // The AdminAS root object has been extracted from the Alfresco Support Tools
 // admin-activesessions.get.html.ftl trim down page HTML sizes and promote clean
 // separation of concerns
-
 /**
  * Active Sessions Component
  */
@@ -36,13 +34,13 @@ var AdminAS = AdminAS || {};
 
 (function()
 {
-    var serviceUrl, serviceContext, initialDBData, dbGraph, userGraph, _messages = {};
+    var serviceContext, initialDBData, dbGraph, userGraph, userTable, messages = {};
 
     Admin.addEventListener(window, 'load', function()
     {
         AdminAS.createCharts();
-        setInterval(AdminAS.updateUsers, 60000);
-        
+        AdminAS.createUserTable();
+
         Admin.addEventListener(el('dbTimescale'), 'change', function()
         {
             AdminAS.changeChartTimescale(this, el('database'), dbGraph);
@@ -53,11 +51,6 @@ var AdminAS = AdminAS || {};
         });
     });
 
-    AdminAS.setServiceUrl = function setServiceURL(url)
-    {
-        serviceUrl = url;
-    };
-    
     AdminAS.setServiceContext = function setServiceContext(context)
     {
         serviceContext = context;
@@ -70,17 +63,17 @@ var AdminAS = AdminAS || {};
 
     AdminAS.addMessage = function addMessage(key, message)
     {
-        _messages[key] = message;
+        messages[key] = message;
     };
 
     AdminAS.createCharts = function createCharts()
     {
         var dbChartLine, dbChartLineIdle, userChartLine, chartResizer;
-        
+
         dbChartLine = new TimeSeries();
         dbChartLineIdle = new TimeSeries();
         userChartLine = new TimeSeries();
-        
+
         chartResizer = function()
         {
             var databaseCanvas, userCanvas;
@@ -96,7 +89,7 @@ var AdminAS = AdminAS || {};
         setInterval(function()
         {
             Admin.request({
-                url : serviceUrl + '?format=json',
+                url : serviceContext + '/ootbee/admin/active-sessions',
                 fnSuccess : function(res)
                 {
                     if (res.responseJSON)
@@ -105,10 +98,10 @@ var AdminAS = AdminAS || {};
 
                         el('NumActive').innerHTML = json.NumActive;
                         el('NumIdle').innerHTML = json.NumIdle;
-                        
+
                         el('UserCountNonExpired').innerHTML = json.UserCountNonExpired;
                         el('TicketCountNonExpired').innerHTML = json.TicketCountNonExpired;
-                        
+
                         dbChartLine.append(now, json.NumActive);
                         dbChartLineIdle.append(now, json.NumIdle);
                         userChartLine.append(now, json.UserCountNonExpired);
@@ -174,7 +167,7 @@ var AdminAS = AdminAS || {};
     AdminAS.changeChartTimescale = function changeChartTimescale(element, canvas, chart)
     {
         var value, intVal, width, height, mspl, mspp, lpc, x;
-        
+
         // get width of current canvas
         value = element.options[element.selectedIndex].value;
         intVal = parseInt(value);
@@ -203,51 +196,83 @@ var AdminAS = AdminAS || {};
         }
     };
 
-    AdminAS.updateUsers = function updateUsers(userName)
+    AdminAS.createUserTable = function createUserTable()
     {
-        var data = {};
-        
-        if (typeof userName === 'string')
-        {
-            data.userName = userName;
-        }
-        
-        Admin.request({
-            method : typeof userName === 'string' ? 'POST' : 'GET',
-            url : serviceUrl + '-updateUsers',
-            data : data,
-            fnSuccess : function(res)
-            {
-                if (res.responseJSON)
-                {
-                    var json = res.responseJSON;
+        var dataTableConfig;
 
-                    /* Clean and refresh the table */
-                    var table = el('users-table');
-                    while (table.rows.length > 1)
+        dataTableConfig = {
+            ajax : {
+                url : serviceContext + '/ootbee/admin/active-sessions/users',
+                dataSrc : 'users',
+                dataType : 'json'
+            },
+            paging : true,
+            pagingType : 'simple_numbers',
+            pageLength: 10,
+            lengthChange: false,
+            autoWidth : false,
+            columnDefs : [
                     {
-                        table.deleteRow(table.rows.length - 1);
-                    }
-
-                    var users = json.users;
-                    if (users.length > 0)
-                    {
-                        for (var i = 0; i < users.length; i++)
+                        render : function renderUserProfileLink(data)
                         {
-                            var rows = [];
-                            rows.push('<a href="' + serviceContext + '/api/people/' + encodeURIComponent(users[i].username) + '">' + Admin.html(users[i].username)
-                                    + '</a>');
-                            rows.push(Admin.html(users[i].firstName));
-                            rows.push(Admin.html(users[i].lastName));
-                            rows.push('<a href="mailto:' + encodeURIComponent(users[i].email) + '">' + Admin.html(users[i].email) + '</a>');
-                            rows.push('<a href="#" onclick="AdminAS.updateUsers(\'' + users[i].username + '\');\'>'
-                                    + Admin.html(_messages.logoff) + '</a>');
-                            Admin.addTableRow(table, rows);
-                        }
-                    }
-                }
+                            return '<a href="' + serviceContext + '/api/people/' + encodeURIComponent(data) + '">' + data + '</a>';
+                        },
+                        targets : [ 0 ]
+                    },
+                    {
+                        render : function renderUserEmailLink(data)
+                        {
+                            var rendered = '';
+                            if (data !== '')
+                            {
+                                rendered = '<a href="mailto:' + Admin.html(data) + '">' + data + '</a>';
+                            }
+                            return rendered;
+                        },
+                        targets : [ 3 ]
+                    },
+                    {
+                        orderable : false,
+                        render : function renderUserInvalidateLink(data)
+                        {
+                            return '<a href="#" onclick="AdminAS.logOffUser(\'' + data + '\');">'
+                                    + Admin.html(messages['activesessions.users.logoff']) + '</a>';
+                        },
+                        targets : [ 4 ]
+                    } ],
+            columns : [ {
+                data : 'userName'
+            }, {
+                data : 'firstName',
+                defaultContent : ''
+            }, {
+                data : 'lastName',
+                defaultContent : ''
+            }, {
+                data : 'email',
+                defaultContent : ''
+            }, {
+                data : 'userName'
+            } ]
+        };
+
+        userTable = $('#users-table').DataTable(dataTableConfig);
+    };
+
+    AdminAS.refreshUserTable = function refereshUserTable()
+    {
+        userTable.ajax.reload();
+    };
+
+    AdminAS.logOffUser = function logOffUser(userName)
+    {
+        Admin.request({
+            url : serviceContext + '/ootbee/admin/active-sessions/users/' + encodeURIComponent(userName),
+            method : 'DELETE',
+            fnSuccess : function logOffUser_success()
+            {
+                AdminAS.refreshUserTable();
             }
         });
     };
-
 })();
