@@ -59,6 +59,8 @@ public class LogFileHandler
 
     private static final Logger LOGGER = Logger.getLogger(LogFileHandler.class);
 
+    protected ContentStreamer contentStreamer;
+
     /**
      * Validates a single log file path and resolves it to a file handle.
      *
@@ -222,8 +224,6 @@ public class LogFileHandler
         }
         return mimetype;
     }
-
-    protected ContentStreamer contentStreamer;
 
     /**
      * @param contentStreamer
