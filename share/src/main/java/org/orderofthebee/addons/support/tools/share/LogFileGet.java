@@ -20,7 +20,6 @@
  */
 package org.orderofthebee.addons.support.tools.share;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,11 +55,7 @@ public class LogFileGet extends AbstractLogFileWebScript
         final String attachParam = req.getParameter("a");
         final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
-        final File file = this.validateFilePath(filePath);
-
-        // chances are log file is text/plain but might also be a compressed file (i.e. via logrotate)
-        final String mimetype = "application/octet-stream";
-        this.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model, mimetype);
+        this.logFileHandler.handleLogFileRequest(filePath, attach, req, res, model);
     }
 
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Axel Faust / Markus Joos
+ * Copyright (C) 2016, 2017 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -20,8 +20,6 @@
  */
 package org.orderofthebee.addons.support.tools.share;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.util.TempFileProvider;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
@@ -69,58 +64,7 @@ public class LogFilesZIPPost extends AbstractLogFileWebScript
         final String[] paths = rqData.getParameters().get("paths");
         filePaths.addAll(Arrays.asList(paths));
 
-        final List<File> files = this.validateFilePaths(filePaths);
-
-        final File logFileZip = TempFileProvider.createTempFile("ootbee-support-tools-logFiles", "zip");
-        try
-        {
-            try
-            {
-                final ZipArchiveOutputStream zipOS = new ZipArchiveOutputStream(logFileZip);
-                try
-                {
-                    for (final File logFile : files)
-                    {
-                        final ArchiveEntry archiveEntry = zipOS.createArchiveEntry(logFile, logFile.getName());
-                        zipOS.putArchiveEntry(archiveEntry);
-
-                        final FileInputStream fis = new FileInputStream(logFile);
-                        try
-                        {
-                            final byte[] buf = new byte[10240];
-                            while (fis.read(buf) != -1)
-                            {
-                                zipOS.write(buf);
-                            }
-                        }
-                        finally
-                        {
-                            fis.close();
-                        }
-
-                        zipOS.closeArchiveEntry();
-                    }
-                }
-                finally
-                {
-                    zipOS.close();
-                }
-            }
-            catch (final IOException ioEx)
-            {
-                throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error creating ZIP file", ioEx);
-            }
-
-            this.streamContent(req, res, logFileZip, logFileZip.lastModified(), false, "log-files.zip", model, "application/zip");
-        }
-        finally
-        {
-            // eager cleanup
-            if (!logFileZip.delete())
-            {
-                logFileZip.deleteOnExit();
-            }
-        }
+        this.logFileHandler.handleLogZipRequest(filePaths, req, res, model);
     }
 
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016, 2017 Axel Faust
+ * Copyright (C) 2016, 2017 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
@@ -19,7 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 /*
- * Linked to Alfresco Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Linked to Alfresco
+ * Copyright (C) 2005-2017 Alfresco Software Limited.
  */
 
 function buildAddLoggerForm(repoTier)
@@ -167,9 +168,9 @@ function buildLogFilesButton(repoTier)
                                                 publishTopic : 'OOTBEE_SUPPORT_TOOLS_DOWNLOAD_LOG_FILES_ZIP',
                                                 publishGlobal : true,
                                                 publishPayload : {
-                                                    urlType : repoTier ? 'PROXY' : 'SHARE',
+                                                    urlType : repoTier ? 'PROXY' : 'CONTEXT',
                                                     baseUrl : repoTier ? 'ootbee/admin/log4j-log-files.zip'
-                                                            : 'data/console/ootbee-support-tools/log4j-log-files.zip'
+                                                            : 'ootbee-support-tools/log4j-log-files.zip'
                                                 }
                                             }
                                         }
@@ -324,9 +325,9 @@ function buildLogFilesButton(repoTier)
                                                                                     publishPayloadType : 'CONFIGURED',
                                                                                     publishPayloadItemMixin : true,
                                                                                     publishPayload : {
-                                                                                        urlType : repoTier ? 'PROXY' : 'SHARE',
+                                                                                        urlType : repoTier ? 'PROXY' : 'CONTEXT',
                                                                                         baseUrl : repoTier ? 'ootbee/admin/log4j-log-file'
-                                                                                                : 'data/console/ootbee-support-tools/log4j-log-file'
+                                                                                                : 'ootbee-support-tools/log4j-log-file'
                                                                                     }
                                                                                 },
                                                                                 {

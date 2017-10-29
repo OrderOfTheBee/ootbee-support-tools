@@ -46,7 +46,7 @@ public class LogFileDelete extends AbstractLogFileWebScript
         final String matchPath = req.getServiceMatch().getPath();
         final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
 
-        final File file = this.validateFilePath(filePath);
+        final File file = LogFileHandler.validateFilePath(filePath);
         if (file.delete())
         {
             res.setStatus(Status.STATUS_OK);

@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
            http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
@@ -10,7 +11,17 @@
             </list>
         </property>
     </bean>
-    
+
+    <bean id="ootbee-support-tools.contentStreamer" class="org.orderofthebee.addons.support.tools.share.ContentStreamer" />
+
+    <bean id="ootbee-support-tools.logFileHandler" class="org.orderofthebee.addons.support.tools.share.LogFileHandler">
+        <property name="contentStreamer" ref="ootbee-support-tools.contentStreamer" />
+    </bean>
+
+    <bean id="ootbee-support-tools.abstractLogFileWebScript" abstract="true" parent="webscript">
+        <property name="logFileHandler" ref="ootbee-support-tools.logFileHandler" />
+    </bean>
+
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
         parent="webscript" />
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
@@ -21,12 +32,12 @@
         parent="webscript" />
 
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.share.LogFileGet"
-        parent="webscript" />
+        parent="ootbee-support-tools.abstractLogFileWebScript" />
 
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-log-file.delete" class="org.orderofthebee.addons.support.tools.share.LogFileDelete"
-        parent="webscript" />
+        parent="ootbee-support-tools.abstractLogFileWebScript" />
 
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.share.LogFilesZIPPost"
-        parent="webscript" />
+        parent="ootbee-support-tools.abstractLogFileWebScript" />
 
 </beans>
