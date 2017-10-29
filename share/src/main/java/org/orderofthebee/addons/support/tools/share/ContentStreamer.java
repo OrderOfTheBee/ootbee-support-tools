@@ -50,6 +50,31 @@ public class ContentStreamer
 
     private static final Logger LOGGER = Logger.getLogger(ContentStreamer.class);
 
+    // copied from Repository-tier contentStreamer
+    private static final String HEADER_CONTENT_RANGE = "Content-Range";
+
+    private static final String HEADER_CONTENT_LENGTH = "Content-Length";
+
+    private static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
+
+    private static final String HEADER_RANGE = "Range";
+
+    private static final String HEADER_USER_AGENT = "User-Agent";
+
+    // copied from Repository-tier HttpRangeProcessor
+    private static final String HEADER_CONTENT_TYPE = "Content-Type";
+
+    private static final String MULTIPART_BYTERANGES_BOUNDRY = "<ALF4558907921887235966L>";
+
+    private static final String MULTIPART_BYTERANGES_BOUNDRY_SEP = "--" + MULTIPART_BYTERANGES_BOUNDRY;
+
+    private static final int CHUNKSIZE = 64 * 1024;
+
+    // copied from WebScriptServletResponseImpl
+    protected static final String NO_CACHE = "no-cache";
+
+    protected static ThreadLocal<SimpleDateFormat> s_dateFormat = new ThreadLocal<>();
+
     // Request/Response abstractions to simplify our code
     protected static interface Request
     {
@@ -328,36 +353,49 @@ public class ContentStreamer
         @Override
         public void setCache(final Cache cache)
         {
-            // copied from WebScriptServletResponseImpl
+            // copied from WebScriptServletResponseImpl and adapted to avoid +-concatenation
             // set Cache-Control
-            String cacheControl = "";
+            final StringBuilder cacheControl = new StringBuilder(64);
             String pragma = "";
             if (cache.getIsPublic())
             {
-                cacheControl += "public";
+                cacheControl.append("public");
             }
             if (cache.getNeverCache())
             {
-                cacheControl += (cacheControl.length() > 0 ? ", " : "") + NO_CACHE;
-                pragma += (pragma.length() > 0) ? ", " : "" + NO_CACHE;
+                if (cacheControl.length() > 0)
+                {
+                    cacheControl.append(", ");
+                }
+                cacheControl.append(NO_CACHE);
+                pragma = NO_CACHE;
             }
             if (cache.getMaxAge() != null && cache.getNeverCache() == false)
             {
-                cacheControl += (cacheControl.length() > 0 ? ", " : "") + " max-age=" + cache.getMaxAge();
+                if (cacheControl.length() > 0)
+                {
+                    cacheControl.append(", ");
+                }
+                cacheControl.append("max-age=").append(cache.getMaxAge());
             }
             if (cache.getMustRevalidate() && cache.getNeverCache() == false)
             {
-                cacheControl += (cacheControl.length() > 0 ? ", " : "") + " must-revalidate";
+                if (cacheControl.length() > 0)
+                {
+                    cacheControl.append(", ");
+                }
+                cacheControl.append("must-revalidate");
             }
             if (cacheControl.length() > 0)
             {
-                this.res.setHeader("Cache-Control", cacheControl);
+                final String cacheControlValue = cacheControl.toString();
+                this.res.setHeader("Cache-Control", cacheControlValue);
                 if (LOGGER.isDebugEnabled())
                 {
                     LOGGER.debug("Cache - set response header Cache-Control: " + cacheControl);
                 }
                 // special case for IE Ajax request handling
-                if (NO_CACHE.equals(cacheControl))
+                if (NO_CACHE.equals(cacheControlValue))
                 {
                     this.res.setHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT");
                 }
@@ -407,26 +445,7 @@ public class ContentStreamer
 
     }
 
-    // copied from Repository-tier contentStreamer
-    private static final String HEADER_CONTENT_RANGE = "Content-Range";
-
-    private static final String HEADER_CONTENT_LENGTH = "Content-Length";
-
-    private static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
-
-    private static final String HEADER_RANGE = "Range";
-
-    private static final String HEADER_USER_AGENT = "User-Agent";
-
-    // copied from Repository-tier HttpRangeProcessor
-    private static final String HEADER_CONTENT_TYPE = "Content-Type";
-
-    private static final String MULTIPART_BYTERANGES_BOUNDRY = "<ALF4558907921887235966L>";
-
-    private static final String MULTIPART_BYTERANGES_BOUNDRY_SEP = "--" + MULTIPART_BYTERANGES_BOUNDRY;
-
-    private static final int CHUNKSIZE = 64 * 1024;
-
+    // provide method variants for specific request / response types
     protected void streamContent(final WebScriptRequest req, final WebScriptResponse res, final File file, final Long modifiedTime,
             final boolean attach, final String attachFileName, final Map<String, Object> model, final String mimetype) throws IOException
     {
@@ -897,10 +916,6 @@ public class ContentStreamer
     }
 
     // copied from WebScriptServletResponseImpl
-    private static final String NO_CACHE = "no-cache";
-
-    protected static ThreadLocal<SimpleDateFormat> s_dateFormat = new ThreadLocal<>();
-
     protected static SimpleDateFormat getHTTPDateFormat()
     {
         if (s_dateFormat.get() != null)
