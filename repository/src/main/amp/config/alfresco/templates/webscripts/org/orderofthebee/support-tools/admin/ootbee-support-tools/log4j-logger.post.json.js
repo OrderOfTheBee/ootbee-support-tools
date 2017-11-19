@@ -24,13 +24,4 @@
  * Copyright (C) 2005-2016 Alfresco Software Limited.
  */
 
-var showUnconfiguredLoggers = processLoggerStateChangeFromFormData();
-
-if (status.redirect !== true)
-{
-    // this is the form-based controller so caller is Repository-tier admin console
-    // simply redirect to our get variant
-    status.code = status.STATUS_MOVED_TEMPORARILY;
-    status.location = url.full + "?showUnconfiguredLoggers=" + (showUnconfiguredLoggers == 'true');
-    status.redirect = true;
-}
+processLoggerStateChangeFromJSONData();
