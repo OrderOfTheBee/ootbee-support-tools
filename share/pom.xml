@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.orderofthebee.support-tools</groupId>
         <artifactId>support-tools-parent</artifactId>
-        <version>1.0.0.0-SNAPSHOT</version>
+        <version>1.0.0.0</version>
     </parent>
 
     <artifactId>support-tools-share</artifactId>
@@ -127,26 +127,36 @@
             <plugin>
                 <groupId>de.acosix.maven</groupId>
                 <artifactId>jshint-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <configuration>
-                    <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
-                    <includes>
-                        <include>amp/**/*.js</include>
-                    </includes>
-                    <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jshint</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compress-js</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/site-webscripts/**</exclude>
+                                <exclude>**/*.lib.js</exclude>
+                                <exclude>**/*.css</exclude>
+                                <!-- exclude Aikau resources (minified at runtime) -->
+                                <exclude>web/ootbee-support-tools/**/*.js</exclude>
+                                <exclude>web/ootbee-support-tools/**/*.css</exclude>
+                            </excludes>
+                            <sourceDirectory>src/main/amp</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/amp</outputDirectory>
+                            <excludeResources>true</excludeResources>
+                            <jswarn>false</jswarn>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 

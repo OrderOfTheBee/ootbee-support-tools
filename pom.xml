@@ -10,7 +10,7 @@
 
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
-    <version>1.0.0.0-SNAPSHOT</version>
+    <version>1.0.0.0</version>
     <packaging>pom</packaging>
 
     <name>OOTBee Support Tools - Parent</name>
@@ -208,6 +208,26 @@
                 </plugin>
 
                 <plugin>
+                    <groupId>de.acosix.maven</groupId>
+                    <artifactId>jshint-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
+                        <includes>
+                            <include>amp/**/*.js</include>
+                        </includes>
+                        <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jshint</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <version>1.6.7</version>
@@ -216,6 +236,68 @@
                         <serverId>ossrh</serverId>
                         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.alfresco.maven.plugin</groupId>
+                                        <artifactId>alfresco-maven-plugin</artifactId>
+                                        <versionRange>[0.0,)</versionRange>
+                                        <goals>
+                                            <goal>set-version</goal>
+                                            <goal>refresh-share</goal>
+                                            <goal>refresh-repo</goal>
+                                            <goal>refresh</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>true</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>build-helper-maven-plugin</artifactId>
+                                        <versionRange>[1.10,)</versionRange>
+                                        <goals>
+                                            <goal>add-test-resource</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>true</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>de.acosix.maven</groupId>
+                                        <artifactId>jshint-maven-plugin</artifactId>
+                                        <versionRange>[1.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>jshint</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>true</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
             </plugins>
