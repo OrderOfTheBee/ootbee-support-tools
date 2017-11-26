@@ -176,6 +176,11 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                         this.pendingLoadRequest = false;
                         this.loadData();
                     }
+                    else if (payload.response.events.length === 0)
+                    {
+                        this.hideLoadingMessage();
+                        this.alfPublish(this.requestFinishedTopic, {});
+                    }
                     else
                     {
                         this.currentData = {};
