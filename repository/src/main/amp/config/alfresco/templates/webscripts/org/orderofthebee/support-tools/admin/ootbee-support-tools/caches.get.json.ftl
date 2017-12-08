@@ -22,7 +22,11 @@ Linked to Alfresco
 Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
-
+<#setting locale="en">
+<#--
+ Hacky, so ?string["0.0"] gives machine readable, rounded and sortable numbers.
+ Should actually be ?c.
+  -->
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "caches": [
