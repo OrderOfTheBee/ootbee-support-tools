@@ -66,6 +66,13 @@ table.data td.numericalCellValue
 	text-align: right;
 }
 
+table.data td.wrapAnywhere,
+table.data th.wrapAnywhere
+{
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
 input[type="text"]
 {
 	height: 24px;
