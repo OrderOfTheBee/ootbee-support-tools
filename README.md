@@ -37,7 +37,7 @@ In order to use a pre-built SNAPSHOT artifact published to the Open Source Sonat
 <dependency>
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-repo</artifactId>
-    <version>0.0.1.0-SNAPSHOT</version>
+    <version>1.0.0.0</version>
     <type>amp</type>
 </dependency>
 ```
@@ -74,7 +74,7 @@ For Alfresco SDK 3 beta users:
     <moduleDependency>
         <groupId>org.orderofthebee.support-tools</groupId>
         <artifactId>support-tools-repo</artifactId>
-        <version>0.0.1.0-SNAPSHOT</version>
+        <version>1.0.0.0</version>
         <type>amp</type>
     </moduleDependency>
 </platformModules>
@@ -88,7 +88,7 @@ The Admin Tools added to the Share user interface are built on Aikau. We recomme
 <dependency>
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-share</artifactId>
-    <version>0.0.1.0-SNAPSHOT</version>
+    <version>1.0.0.0</version>
     <type>amp</type>
 </dependency>
 <dependency>
@@ -130,7 +130,7 @@ For Alfresco SDK 3 beta users:
     <moduleDependency>
         <groupId>org.orderofthebee.support-tools</groupId>
         <artifactId>support-tools-share</artifactId>
-        <version>0.0.1.0-SNAPSHOT</version>
+        <version>1.0.0.0</version>
         <type>amp</type>
     </moduleDependency>
 </shareModules>
