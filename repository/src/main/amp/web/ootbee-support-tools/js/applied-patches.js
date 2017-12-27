@@ -26,9 +26,9 @@
 /* global Admin: false, $: false, moment:false*/
 
 /**
- * System information Component
+ * Applied Patches Component
  */
-var AdminAP = AdminAP || {};
+var AdminAP = {};
 
 /* Page load handler */
 Admin.addEventListener(window, 'load', function()
@@ -85,4 +85,4 @@ Admin.addEventListener(window, 'load', function()
         $('#appliedPatches').DataTable(dataTableConfig);
     };
 
-})();
+}());
