@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>aikau</artifactId>
-                <version>1.0.101</version>
+                <version>1.0.103</version>
                 <!-- we require user to pick the Aikau version they want to use - we just state we build and test against this version -->
                 <scope>provided</scope>
                 <exclusions>
