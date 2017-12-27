@@ -1,6 +1,6 @@
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos
-Copyright (C) 2016 Order of the Bee
+Copyright (C) 2016, 2017 Axel Faust / Markus Joos
+Copyright (C) 2016, 2017 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -18,24 +18,26 @@ You should have received a copy of the GNU Lesser General Public License
 along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005-2016 Alfresco Software Limited.
+Copyright (C) 2005-2017 Alfresco Software Limited.
  
   -->
   
 <#include "../admin-template.ftl" />
 
-<@page title=msg("appliedPatches.title") readonly=true>
+<@page title=msg("appliedPatches.title") readonly=true customCSSFiles=["ootbee-support-tools/css/jquery.dataTables.css"]
+    customJSFiles=["ootbee-support-tools/js/jquery-2.2.3.js", "ootbee-support-tools/js/jquery.dataTables.js", "ootbee-support-tools/js/moment-with-locales.min.js", "ootbee-support-tools/js/applied-patches.js"]>
 
     <div class="column-full">
         <p class="intro">${msg("appliedPatches.intro")?html}</p>      
   
-        <div class="control">
-            <table class="data results patchesapplied" width="100%">
+        <div class="section">
+            <table id="appliedPatches" class="data results" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>${msg("appliedPatches.id")?html}</th>
                         <th>${msg("appliedPatches.description")?html}</th>
                         <th>${msg("appliedPatches.appliedOnDate")?html}</th>
+                        <th style="display:none;"></th>
                         <th>${msg("appliedPatches.appliedToSchema")?html}</th>
                         <th>${msg("appliedPatches.appliedToServer")?html}</th>
                         <th>${msg("appliedPatches.fixesFromSchema")?html}</th>
@@ -51,6 +53,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td>${appliedPatch.id}</td>
                             <td>${appliedPatch.description!""}</td>
                             <td>${xmldate(appliedPatch.appliedOnDate)}</td>
+                            <td style="display:none;">${xmldate(appliedPatch.appliedOnDate)}</td>
                             <td>${appliedPatch.appliedToSchema?c}</td>
                             <td>${appliedPatch.appliedToServer!""}</td>
                             <td>${appliedPatch.fixesFromSchema?c}</td>
