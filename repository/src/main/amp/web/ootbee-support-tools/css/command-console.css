@@ -1,0 +1,22 @@
+#command-console-command {
+    width: calc(100% - 15em);
+    margin-right: 1em;
+}
+
+#command-console-info,
+#command-console-result {
+    margin-top: 2ex;
+}
+
+#command-console-activePlugin,
+#command-console-previousCommand {
+    margin-left: 1em;
+}
+
+#command-console-lastError {
+    border: 2px solid red;
+    border-radius: 5px;
+    padding: 2.5px;
+    color: white;
+    background-color: red;
+}

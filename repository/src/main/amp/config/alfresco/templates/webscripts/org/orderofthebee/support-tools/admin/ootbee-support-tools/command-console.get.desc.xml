@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Command Console</shortname>
+    <description>Interact with pluggable command interpreters to perform specific admin actions</description>
+    <url>/ootbee/admin/command-console</url>
+    <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
+    <format default="html">any</format>
+    <negotiate accept="text/html">html</negotiate>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>
