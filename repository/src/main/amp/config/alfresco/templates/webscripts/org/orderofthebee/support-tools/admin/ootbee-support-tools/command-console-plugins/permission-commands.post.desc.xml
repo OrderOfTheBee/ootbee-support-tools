@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Command Console - Permission Commands</shortname>
+    <description>Executes supported commands of the permissions command console plugin</description>
+    <url>/ootbee/admin/command-console/permissions/help</url>
+    <url>/ootbee/admin/command-console/permissions/effectivePermission</url>
+    <url>/ootbee/admin/command-console/permissions/effectivePermissions</url>
+    <family>OOTBee Support Tools</family>
+    <format default="json">any</format>
+    <negotiate accept="application/json">json</negotiate>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction bufferSize="8192" allow="readonly">required</transaction>
+</webscript>
