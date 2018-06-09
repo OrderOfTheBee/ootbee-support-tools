@@ -168,7 +168,7 @@ var AdminCC = AdminCC || {};
             },
             fnFailure : function submitConsoleCommand__failure(response)
             {
-                var output;
+                var output, jsonResponse;
                 if (response.responseStatus === 404)
                 {
                     if (command !== 'help')
@@ -193,8 +193,19 @@ var AdminCC = AdminCC || {};
                 else
                 {
                     el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.generic']);
-                    // TODO Deal with JSON error response
                     output = response.responseText;
+                    try
+                    {
+                        jsonResponse = JSON.parse(response.responseText);
+                        if (jsonResponse.message)
+                        {
+                            output = jsonResponse.message;
+                        }
+                    }
+                    catch(ignore)
+                    {
+                        // no-op
+                    }
                 }
 
                 Admin.removeClass(el('command-console-lastError'), 'hidden');
