@@ -23,6 +23,54 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-remote-api</artifactId>
+            <exclusions>
+               <!-- exclude transitive dependencies not relevant to this addon's purpose (some are even not available any more) -->
+               <!-- the following addresses either completely irrelevant groups (e.g. openoffice) or ones we don't require (yet) with substantial transitive dependency tails -->
+               <exclusion>
+                  <groupId>org.springframework.social</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.apache.chemistry.opencmis</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>com.google.gdata</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.apache.poi</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.apache.pdfbox</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.apache.tika</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.openoffice</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>com.artofsolving</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>com.drewnoakes</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>org.codehaus.groovy</groupId>
+                  <artifactId>*</artifactId>
+               </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

@@ -46,7 +46,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -71,6 +70,11 @@
                 <exclusion>
                     <groupId>org.alfresco.surf</groupId>
                     <artifactId>spring-surf-api</artifactId>
+                </exclusion>
+                <!-- exclude transitive dependencies not relevant to this addon's purpose -->
+                <exclusion>
+                    <groupId>org.apache.chemistry.opencmis</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
