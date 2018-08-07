@@ -25,12 +25,12 @@
 /* exported buildScheduledJobsData */
 function buildScheduledJobsData()
 {
-    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count, executingJobs, quartz, cronDefinition, parser, descriptor, cronExpressionDescription, cronExpression, execContext, jobName;
+    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count, executingJobs, quartz, cronDefinition, parser, descriptor, cronExpressionDescription, cronExpression, execContext;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
 
-    jobsList = scheduler.jobGroupNames;
+    jobsList = scheduler.jobGroupNames.toArray();
     scheduledJobsData = [];
     scheduledJobsName = [];
     runningJobs = [];
@@ -50,12 +50,14 @@ function buildScheduledJobsData()
 
     for (i = 0; i < jobsList.length; i++)
     {
-        jobName = scheduler.getJobNames(jobsList[i]);
-        Packages.java.util.Arrays.sort(jobName);
 
-        for (j = 0; j < jobName.length; j++)
+        var jobGroup = jobsList[i];
+        var groupMatcher = Packages.org.quartz.impl.matchers.GroupMatcher.jobGroupEquals(jobGroup);
+        var jobKeys = scheduler.getJobKeys(groupMatcher).toArray();
+
+        for (j = 0; j < jobKeys.length; j++)
         {
-            jobTriggerDetail = scheduler.getTriggersOfJob(jobName[j], jobsList[i]);
+            jobTriggerDetail = scheduler.getTriggersOfJob(jobKeys[j]).toArray();
 
             cronExpression = jobTriggerDetail[0].cronExpression;
             if (cronExpression)
@@ -64,7 +66,8 @@ function buildScheduledJobsData()
             }
 
             scheduledJobsData.push({
-                jobsName : jobName[j],
+                jobsName : jobKeys[j].name,
+                screenJobsName : jobTriggerDetail[0].name,
                 // trigger may not be cron-based
                 cronExpression : jobTriggerDetail[0].cronExpression || null,
                 cronExpressionDescription : cronExpressionDescription || null,
@@ -73,7 +76,7 @@ function buildScheduledJobsData()
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
                 timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
                 jobGroup : jobsList[i],
-                running : (runningJobs.indexOf(jobName[j] + "-" + jobsList[i]) !== -1)
+                running : (runningJobs.indexOf(jobKeys[j].name + "-" + jobsList[i]) !== -1)
             });
         }
     }
@@ -112,9 +115,10 @@ function buildRunningJobsData()
 /* exported executeJobNow */
 function executeJobNow(jobName, groupName)
 {
-    var ctxt, scheduler;
+    var ctxt, scheduler, jobKey;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-    scheduler.triggerJob(jobName, groupName);
+    jobKey = new Packages.org.quartz.JobKey(jobName, groupName);
+    scheduler.triggerJob(jobKey);
 }
