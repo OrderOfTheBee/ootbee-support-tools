@@ -1,6 +1,6 @@
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
-Copyright (C) 2016 Order of the Bee
+Copyright (C) 2016 - 2018 Axel Faust / Markus Joos / Jens Goldhammer
+Copyright (C) 2016 - 2018 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005-2016 Alfresco Software Limited.
+Copyright (C) 2005-2018 Alfresco Software Limited.
  
   -->
   
@@ -44,6 +44,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <thead>
                     <tr>
                         <th>${msg("scheduled-jobs.table-header.job-name")?html}</th>
+                        <th>${msg("scheduled-jobs.table-header.trigger-name")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.cron-expression")?html}</th>				
                         <th>${msg("scheduled-jobs.table-header.start-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.previous-fire-time")?html}</th>
@@ -55,9 +56,10 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 </thead>
                 <tbody>
                     <#list scheduledjobs as jobs>
-                        <tr id="${jobs.jobsName}">
-                            <td>${jobs.screenJobsName}</td>
-                            <td title="${jobs.cronExpressionDescription!""}">${jobs.cronExpression!""}</td>
+                        <tr id="${jobs.jobName?html}">
+                            <td>${(jobs.jobDisplayName!"")?html}</td>
+                            <td>${jobs.triggerName?html}</td>
+                            <td title="${(jobs.cronExpressionDescription!"")?html}">${(jobs.cronExpression!"")?html}</td>
                             <td id="jobStartTime"><#if jobs.startTime??>${xmldate(jobs.startTime)?js_string}</#if></td>
                             <td id="jobPreviousFire"><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
                             <td id="jobNextFire"><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
@@ -65,7 +67,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                             <td id="jobState">
                                  ${msg(jobs.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}
                             </td>
-                            <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobsName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></td>
+                            <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></td>
                         </tr>
                     </#list>
                 </tbody>
