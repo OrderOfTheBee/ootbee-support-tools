@@ -56,7 +56,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
                 <tbody>
                     <#list scheduledjobs as jobs>
                         <tr id="${jobs.jobsName}">
-                            <td>${jobs.jobsName}</td>
+                            <td>${jobs.screenJobsName}</td>
                             <td title="${jobs.cronExpressionDescription!""}">${jobs.cronExpression!""}</td>
                             <td id="jobStartTime"><#if jobs.startTime??>${xmldate(jobs.startTime)?js_string}</#if></td>
                             <td id="jobPreviousFire"><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
