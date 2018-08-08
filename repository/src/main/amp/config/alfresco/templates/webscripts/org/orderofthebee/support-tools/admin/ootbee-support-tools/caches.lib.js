@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016, 2017 Axel Faust
- * Copyright (C) 2016, 2017 Order of the Bee
+ * Copyright (C) 2016 - 2018 Axel Faust
+ * Copyright (C) 2016 - 2018 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2017 Alfresco Software Limited.
+ * Copyright (C) 2005-2018 Alfresco Software Limited.
  */
 function mapCacheMetrics(metrics, cacheInfo)
 {
@@ -51,14 +51,15 @@ function mapCacheMetrics(metrics, cacheInfo)
 
 function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
 {
-    var maxItems, cacheInfo, invHandler, alfCacheStatsEnabled, alfCacheStats, stats;
+    var configCacheName, maxItems, cacheInfo, invHandler, alfCacheStatsEnabled, alfCacheStats, stats;
 
-    maxItems = propertyGetter('cache.' + cacheName + '.maxItems', '-1');
+    configCacheName = propertyGetter('cache.' + cacheName + '.configCacheName', cacheName);
+    maxItems = propertyGetter('cache.' + configCacheName + '.maxItems', '-1');
 
     cacheInfo = {
         name : cacheName,
-        definedType : propertyGetter('cache.' + cacheName + '.cluster.type', ''),
-        clearable : allowClearGlobal && propertyGetter('cache.' + cacheName + '.clearable', '').toLowerCase() === 'true',
+        definedType : propertyGetter('cache.' + configCacheName + '.cluster.type', ''),
+        clearable : allowClearGlobal && propertyGetter('cache.' + configCacheName + '.clearable', '').toLowerCase() === 'true',
         type : '',
         size : cache.keys.size(),
         maxSize : parseInt(maxItems, 10),
@@ -86,7 +87,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
         cacheInfo.type = String(cache.class.name);
     }
 
-    alfCacheStatsEnabled = propertyGetter('cache.' + cacheName + '.tx.statsEnabled', '').toLowerCase() === 'true';
+    alfCacheStatsEnabled = propertyGetter('cache.' + configCacheName + '.tx.statsEnabled', '').toLowerCase() === 'true';
 
     if (alfCacheStatsEnabled)
     {
