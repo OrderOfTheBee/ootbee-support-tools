@@ -60,7 +60,7 @@ function buildScheduledJobsData()
         execContext = executingJobs.get(count);
         effectiveJobName = quartzMajorVersion === 1 ? execContext.jobDetail.name : execContext.jobDetail.key.name;
         effectiveJobGroupName = quartzMajorVersion === 1 ? execContext.jobDetail.group : execContext.jobDetail.key.group;
-        runningJobs.push(effectiveJobName + "-" + effectiveJobGroupName);
+        runningJobs.push(effectiveJobName + '-' + effectiveJobGroupName);
     }
 
     quartz = Packages.com.cronutils.model.CronType.QUARTZ;
@@ -111,7 +111,7 @@ function buildScheduledJobsData()
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
                 timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
                 jobGroup : jobsList[i],
-                running : (runningJobs.indexOf(effectiveJobName + "-" + effectiveJobGroupName) !== -1)
+                running : (runningJobs.indexOf(effectiveJobName + '-' + effectiveJobGroupName) !== -1)
             });
         }
     }
