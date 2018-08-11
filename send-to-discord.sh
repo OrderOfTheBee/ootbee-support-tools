@@ -29,8 +29,6 @@ esac
 
 AUTHOR_NAME="$(git log -1 "$TRAVIS_COMMIT" --pretty="%aN")"
 COMMITTER_NAME="$(git log -1 "$TRAVIS_COMMIT" --pretty="%cN")"
-COMMIT_SUBJECT="$(git log -1 "$TRAVIS_COMMIT" --pretty="%s")"
-
 if [ "$AUTHOR_NAME" == "$COMMITTER_NAME" ]; then
     CREDITS="$AUTHOR_NAME authored & committed"
 else
@@ -42,18 +40,20 @@ TRAVIS_URL="https://travis-ci.org/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"
 if [[ $TRAVIS_PULL_REQUEST != false ]]; then
     GITHUB_URL="https://github.com/$TRAVIS_REPO_SLUG/pull/$TRAVIS_PULL_REQUEST"
 
+    # GitHub commit subjects for PRs seem to be useless so we just rely on the pull request number, source repository and branch
     WEBHOOK_DATA='{
       "username": "Travis CI",
       "avatar_url": "'"$AVATAR"'",
-      "content" : "'"$STATUS_MESSAGE"'" Travis CI pull request build: '"$COMMIT_SUBJECT"' ('"$CREDITS"', see '"$GITHUB_URL"' / '"$TRAVIS_URL"')"
+      "content" : "'"$STATUS_MESSAGE"'" Travis CI build on pull request '"$TRAVIS_PULL_REQUEST"' from '"$TRAVIS_PULL_REQUEST_SLUG"', branch '"$TRAVIS_PULL_REQUEST_BRANCH"' ('"$CREDITS"', see '"$GITHUB_URL"' / '"$TRAVIS_URL"')"
     }'
 else
     GITHUB_URL="https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT"
+    COMMIT_SUBJECT="$(git log -1 "$TRAVIS_COMMIT" --pretty="%s")"
 
     WEBHOOK_DATA='{
       "username": "Travis CI",
       "avatar_url": "'"$AVATAR"'",
-      "content" : "'"$STATUS_MESSAGE"'" Travis CI commit build: '"$COMMIT_SUBJECT"' ('"$CREDITS"', see '"$GITHUB_URL"' / '"$TRAVIS_URL"')"
+      "content" : "'"$STATUS_MESSAGE"' Travis CI build on commit to '"$TRAVIS_BRANCH"': '"$COMMIT_SUBJECT"' ('"$CREDITS"', see '"$GITHUB_URL"' / '"$TRAVIS_URL"')"
     }'
 fi
 
