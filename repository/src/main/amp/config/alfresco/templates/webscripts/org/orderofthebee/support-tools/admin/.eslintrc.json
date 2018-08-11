@@ -1,0 +1,89 @@
+{
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 3,
+        "sourceType": "script"
+    },
+    "env": {
+        "nashorn": true
+    },
+    "globals": {
+        "guest": false,
+        "server": false,
+        "model": false,
+        "args": false,
+        "argsM": false,
+        "cache": false,
+        "headers": false,
+        "headersM": false,
+        "session": false,
+        "url": false,
+        "format": false,
+        "jsonUtils": false,
+        "logger": false,
+        "msg": false,
+        "json": false,
+        "status": false,
+        "config": false,
+        "companyhome": false,
+        "document": false,
+        "person": false,
+        "roothome": false,
+        "script": false,
+        "space": false,
+        "userhome": false,
+        "actions": false,
+        "activities": false,
+        "appUtils": false,
+        "bulkFSImport": false,
+        "classification": false,
+        "cmis": false,
+        "cmisServer": false,
+        "crossRepoCopy": false,
+        "imap": false,
+        "paging": false,
+        "people": false,
+        "presence": false,
+        "search": false,
+        "slingshotDocLib": false,
+        "utils": false,
+        "webprojects": false,
+        "workflow": false,
+        "siteService": false,
+        "Admin": false
+    },
+    "rules": {
+        "no-bitwise": "off",
+        "curly": "error",
+        "eqeqeq": "error",
+        "guard-for-in": "error",
+        "no-undef": "error",
+        "no-use-before-define": "error",
+        "no-caller": "error",
+        "new-cap": "off",
+        "no-new-object": "error",
+        "strict": "off",
+        "no-unused-vars": "error",
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "one-var": [
+            "error",
+            {
+                "var": "always",
+                "let": "never",
+                "const": "never"
+            }
+        ],
+        "vars-on-top": "error",
+        "semi": [
+            "error",
+            "always"
+        ],
+        "radix": [
+            "error",
+            "always"
+        ]
+    }
+}

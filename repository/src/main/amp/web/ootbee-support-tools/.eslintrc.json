@@ -4,13 +4,19 @@
         "ecmaVersion": 5,
         "sourceType": "script"
     },
+    "env": {
+        "browser": true,
+        "jquery": true
+    },
+    "globals": {
+    },
     "rules": {
         "no-bitwise": "off",
         "curly": "error",
         "eqeqeq": "error",
         "guard-for-in": "error",
         "no-undef": "error",
-        "no-use-before-define": "error",
+        "no-use-before-define": "off",
         "no-caller": "error",
         "new-cap": "off",
         "no-new-object": "error",

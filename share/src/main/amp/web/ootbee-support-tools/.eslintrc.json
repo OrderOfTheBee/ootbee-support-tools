@@ -4,6 +4,11 @@
         "ecmaVersion": 5,
         "sourceType": "script"
     },
+    "env": {
+        "browser": true
+    },
+    "globals": {
+    },
     "rules": {
         "no-bitwise": "off",
         "curly": "error",
