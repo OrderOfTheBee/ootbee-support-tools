@@ -4,8 +4,9 @@
 **/webscripts/**/*.put.js
 **/webscripts/**/*.post.json.js
 **/webscripts/**/*.put.json.js
-**/moment-with-locales.min.js
-**/jquery-2.2.3.js
-**/jquery.dataTables.js
-**/dataTables.buttons.min.js
-**/dataTables.bootstrap4.min.js
+**/web/ootbee-support-tools/js/moment-with-locales.min.js
+**/web/ootbee-support-tools/js/smoothie.js
+**/web/ootbee-support-tools/js/jquery-2.2.3.js
+**/web/ootbee-support-tools/js/jquery.dataTables.js
+**/web/ootbee-support-tools/js/dataTables.buttons.min.js
+**/web/ootbee-support-tools/js/dataTables.bootstrap4.min.js
