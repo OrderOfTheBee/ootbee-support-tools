@@ -5,3 +5,7 @@ jdk:
 cache:
   directories:
   - $HOME/.m2
+after_success:
+  - ./send-to-discord.sh success $DISCORD_WEBHOOK_URL
+after_failure:
+  - ./send-to-discord.sh failure $DISCORD_WEBHOOK_URL
