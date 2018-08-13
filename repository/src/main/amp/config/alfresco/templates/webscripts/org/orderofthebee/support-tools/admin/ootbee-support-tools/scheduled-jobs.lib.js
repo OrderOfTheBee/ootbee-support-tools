@@ -166,7 +166,7 @@ function executeJobNow(jobName, groupName)
 
     if (quartzMajorVersion === 1)
     {
-        scheduler.triggerJob(jobKey);
+        scheduler.triggerJob(jobName, groupName);
     }
     else
     {
