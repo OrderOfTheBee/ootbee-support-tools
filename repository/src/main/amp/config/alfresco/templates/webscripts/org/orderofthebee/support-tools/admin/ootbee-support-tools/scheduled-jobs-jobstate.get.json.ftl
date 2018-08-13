@@ -1,8 +1,8 @@
 <#compress>
 <#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
-Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
-Copyright (C) 2016 Order of the Bee
+Copyright (C) 2016 - 2018 Axel Faust / Markus Joos / Jens Goldhammer
+Copyright (C) 2016 - 2018 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -20,7 +20,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with Community Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005-2016 Alfresco Software Limited.
+Copyright (C) 2005-2018 Alfresco Software Limited.
  
   -->
 

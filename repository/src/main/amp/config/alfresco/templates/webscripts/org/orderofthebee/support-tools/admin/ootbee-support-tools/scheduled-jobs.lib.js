@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2016 Axel Faust / Markus Joos / Jens Goldhammer
- * Copyright (C) 2016 Order of the Bee
+ * Copyright (C) 2016 - 2018 Axel Faust / Markus Joos / Jens Goldhammer
+ * Copyright (C) 2016 - 2018 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -19,18 +19,37 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005-2016 Alfresco Software Limited.
+ * Copyright (C) 2005-2018 Alfresco Software Limited.
  */
+
+function determineQuartzMajorVersion(scheduler)
+{
+    var quartzMajorVersion;
+    if (scheduler.listenerManager !== undefined)
+    {
+        // Alfresco 6.0+
+        quartzMajorVersion = 2;
+    }
+    else
+    {
+        quartzMajorVersion = 1;
+    }
+    return quartzMajorVersion;
+}
 
 /* exported buildScheduledJobsData */
 function buildScheduledJobsData()
 {
-    var ctxt, scheduler, jobsList, scheduledJobsData, scheduledJobsName, i, j, jobTriggerDetail, runningJobs, count, executingJobs, quartz, cronDefinition, parser, descriptor, cronExpressionDescription, cronExpression, execContext, jobName;
+    var ctxt, scheduler, quartzMajorVersion, jobsList, scheduledJobsData, scheduledJobsName, runningJobs, executingJobs, count,
+        execContext,effectiveJobName, effectiveJobGroupName, quartz, cronDefinition, parser, descriptor,i, j, jobKeys, jobTriggerDetail, 
+        cronExpressionDescription, cronExpression;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
 
-    jobsList = scheduler.jobGroupNames;
+    quartzMajorVersion = determineQuartzMajorVersion(scheduler);
+    
+    jobsList = quartzMajorVersion === 1 ? scheduler.jobGroupNames : scheduler.jobGroupNames.toArray();
     scheduledJobsData = [];
     scheduledJobsName = [];
     runningJobs = [];
@@ -39,7 +58,9 @@ function buildScheduledJobsData()
     for (count = 0; count < executingJobs.size(); count++)
     {
         execContext = executingJobs.get(count);
-        runningJobs.push(execContext.getJobDetail().getName() + "-" + execContext.getJobDetail().getGroup());
+        effectiveJobName = quartzMajorVersion === 1 ? execContext.jobDetail.name : execContext.jobDetail.key.name;
+        effectiveJobGroupName = quartzMajorVersion === 1 ? execContext.jobDetail.group : execContext.jobDetail.key.group;
+        runningJobs.push(effectiveJobName + '-' + effectiveJobGroupName);
     }
 
     quartz = Packages.com.cronutils.model.CronType.QUARTZ;
@@ -50,12 +71,25 @@ function buildScheduledJobsData()
 
     for (i = 0; i < jobsList.length; i++)
     {
-        jobName = scheduler.getJobNames(jobsList[i]);
-        Packages.java.util.Arrays.sort(jobName);
-
-        for (j = 0; j < jobName.length; j++)
+        if (quartzMajorVersion === 1)
         {
-            jobTriggerDetail = scheduler.getTriggersOfJob(jobName[j], jobsList[i]);
+            jobKeys = scheduler.getJobNames(jobsList[i]);
+        }
+        else
+        {
+            jobKeys = scheduler.getJobKeys(Packages.org.quartz.impl.matchers.GroupMatcher.jobGroupEquals(jobsList[i])).toArray();
+        }
+
+        for (j = 0; j < jobKeys.length; j++)
+        {
+            if (quartzMajorVersion === 1)
+            {
+                jobTriggerDetail = scheduler.getTriggersOfJob(jobKeys[j], jobsList[i]);
+            }
+            else
+            {
+                jobTriggerDetail = scheduler.getTriggersOfJob(jobKeys[j]).toArray();
+            }
 
             cronExpression = jobTriggerDetail[0].cronExpression;
             if (cronExpression)
@@ -63,8 +97,12 @@ function buildScheduledJobsData()
                 cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
             }
 
+            effectiveJobName = quartzMajorVersion === 1 ? jobKeys[j] : jobKeys[j].name;
+            effectiveJobGroupName = quartzMajorVersion === 1 ? jobsList[i] : jobKeys[j].group;
             scheduledJobsData.push({
-                jobsName : jobName[j],
+                jobName : effectiveJobName,
+                jobDisplayName : effectiveJobName.indexOf('org.springframework.scheduling.quartz.JobDetailFactoryBean') === 0 ? null : effectiveJobName,
+                triggerName : jobTriggerDetail[0].name,
                 // trigger may not be cron-based
                 cronExpression : jobTriggerDetail[0].cronExpression || null,
                 cronExpressionDescription : cronExpressionDescription || null,
@@ -73,7 +111,7 @@ function buildScheduledJobsData()
                 nextFireTime : jobTriggerDetail[0].nextFireTime,
                 timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
                 jobGroup : jobsList[i],
-                running : (runningJobs.indexOf(jobName[j] + "-" + jobsList[i]) !== -1)
+                running : (runningJobs.indexOf(effectiveJobName + '-' + effectiveJobGroupName) !== -1)
             });
         }
     }
@@ -90,19 +128,26 @@ function buildScheduledJobsData()
 /* exported buildRunningJobsData*/
 function buildRunningJobsData()
 {
-    var ctxt, scheduler, runningJobsData, count, executingJobs, execContext;
+    var ctxt, scheduler, quartzMajorVersion, runningJobsData, executingJobs, count, execContext, effectiveJobName, effectiveJobGroupName;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
+
+    quartzMajorVersion = determineQuartzMajorVersion(scheduler);
+
     runningJobsData = [];
 
     executingJobs = scheduler.getCurrentlyExecutingJobs();
     for (count = 0; count < executingJobs.size(); count++)
     {
         execContext = executingJobs.get(count);
+
+        effectiveJobName = quartzMajorVersion === 1 ? execContext.jobDetail.name : execContext.jobDetail.key.name;
+        effectiveJobGroupName = quartzMajorVersion === 1 ? execContext.jobDetail.group : execContext.jobDetail.key.group;
+
         runningJobsData.push({
-            jobName : execContext.getJobDetail().getName(),
-            groupName : execContext.getJobDetail().getGroup()
+            jobName : effectiveJobName,
+            groupName : effectiveJobGroupName
         });
     }
 
@@ -112,9 +157,20 @@ function buildRunningJobsData()
 /* exported executeJobNow */
 function executeJobNow(jobName, groupName)
 {
-    var ctxt, scheduler;
+    var ctxt, scheduler, quartzMajorVersion, jobKey;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-    scheduler.triggerJob(jobName, groupName);
+
+    quartzMajorVersion = determineQuartzMajorVersion(scheduler);
+
+    if (quartzMajorVersion === 1)
+    {
+        scheduler.triggerJob(jobName, groupName);
+    }
+    else
+    {
+        jobKey = new Packages.org.quartz.JobKey(jobName, groupName);
+        scheduler.triggerJob(jobKey);
+    }
 }
