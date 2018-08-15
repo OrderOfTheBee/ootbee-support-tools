@@ -120,7 +120,7 @@ function buildScheduledJobsData()
                     previousFireTime : jobTriggerDetail.previousFireTime,
                     nextFireTime : jobTriggerDetail.nextFireTime,
                     timeZone : (jobTriggerDetail.timeZone !== undefined && jobTriggerDetail.timeZone !== null) ? jobTriggerDetail.timeZone.getID() : null,
-                    running : (runningJobs.indexOf(effectiveJobName + "-" + effectiveJobGroupName) !== -1)
+                    running : (runningJobs.indexOf(effectiveJobName + '-' + effectiveJobGroupName) !== -1)
                 });
             }
         }
