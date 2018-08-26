@@ -1,8 +1,8 @@
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/scheduled-jobs.lib.js">
 
 /**
- * Copyright (C) 2016 - 2018 Axel Faust / Markus Joos
- * Copyright (C) 2016 - 2018 Order of the Bee
+ * Copyright (C) 2016-2018 Axel Faust
+ * Copyright (C) 2016-2018 Order of the Bee
  *
  * This file is part of Community Support Tools
  *
@@ -24,12 +24,4 @@
  * Copyright (C) 2005-2018 Alfresco Software Limited.
  */
 
-try {
-    executeJobNow(args.jobName, args.groupName);
-    model.success = true;
-}
-catch(e)
-{
-    logger.warn('Failed to trigger job ' + args.jobName + ' in group ' + args.groupName + ': ' + e.message)
-    model.success = false;
-}
+pauseTrigger(url.templateArgs.triggerName, url.templateArgs.triggerGroup);

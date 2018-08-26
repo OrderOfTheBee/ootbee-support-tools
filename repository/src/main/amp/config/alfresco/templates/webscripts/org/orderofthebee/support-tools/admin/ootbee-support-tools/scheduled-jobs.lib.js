@@ -40,9 +40,9 @@ function determineQuartzMajorVersion(scheduler)
 /* exported buildScheduledJobsData */
 function buildScheduledJobsData()
 {
-    var ctxt, scheduler, quartzMajorVersion, jobsList, scheduledJobsData, scheduledJobsName, runningJobs, executingJobs, count,
-        execContext,effectiveJobName, effectiveJobGroupName, quartz, cronDefinition, parser, descriptor,i, j, jobKeys, jobTriggerDetail, 
-        cronExpressionDescription, cronExpression;
+    var ctxt, scheduler, quartzMajorVersion, jobsList, jobTriggers, scheduledJobsName, runningJobs, executingJobs, count,
+        execContext, effectiveJobName, effectiveJobGroupName, quartz, cronDefinition, parser, descriptor, i, jobKeys, j,
+        jobTriggerDetails, k, jobTriggerDetail, triggerState, cronExpression, cronExpressionDescription;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
@@ -50,7 +50,7 @@ function buildScheduledJobsData()
     quartzMajorVersion = determineQuartzMajorVersion(scheduler);
     
     jobsList = quartzMajorVersion === 1 ? scheduler.jobGroupNames : scheduler.jobGroupNames.toArray();
-    scheduledJobsData = [];
+    jobTriggers = [];
     scheduledJobsName = [];
     runningJobs = [];
 
@@ -84,39 +84,49 @@ function buildScheduledJobsData()
         {
             if (quartzMajorVersion === 1)
             {
-                jobTriggerDetail = scheduler.getTriggersOfJob(jobKeys[j], jobsList[i]);
+                jobTriggerDetails = scheduler.getTriggersOfJob(jobKeys[j], jobsList[i]);
             }
             else
             {
-                jobTriggerDetail = scheduler.getTriggersOfJob(jobKeys[j]).toArray();
+                jobTriggerDetails = scheduler.getTriggersOfJob(jobKeys[j]).toArray();
             }
 
-            cronExpression = jobTriggerDetail[0].cronExpression;
-            if (cronExpression)
+            for (k = 0; k < jobTriggerDetails.length; k++)
             {
-                cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
+                jobTriggerDetail = jobTriggerDetails[k];
+                triggerState = quartzMajorVersion === 1 ? scheduler.getTriggerState(jobTriggerDetail.name, jobTriggerDetail.group) : scheduler.getTriggerState(jobTriggerDetail.key);
+                cronExpression = jobTriggerDetail.cronExpression;
+                cronExpressionDescription = null;
+                if (cronExpression)
+                {
+                    cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
+                }
+    
+                effectiveJobName = quartzMajorVersion === 1 ? jobTriggerDetail.jobName : jobTriggerDetail.jobKey.name;
+                effectiveJobGroupName = quartzMajorVersion === 1 ? jobTriggerDetail.jobGroup : jobTriggerDetail.jobKey.group;
+                jobTriggers.push({
+                    triggerName : quartzMajorVersion === 1 ? jobTriggerDetail.name : jobTriggerDetail.key.name,
+                    triggerGroup : quartzMajorVersion === 1 ? jobTriggerDetail.group : jobTriggerDetail.key.group,
+                    // Quartz 1.x trigger state is -1 based (for none) while Quartz 2.x is an enum starting at 0
+                    // standardise on 0 as base
+                    triggerState : quartzMajorVersion === 1 ? (triggerState + 1) : triggerState.ordinal(),
+                    jobName : effectiveJobName,
+                    jobDisplayName : effectiveJobName.indexOf('org.springframework.scheduling.quartz.JobDetailFactoryBean') === 0 ? null : effectiveJobName,
+                    jobGroup : effectiveJobGroupName,
+                    // trigger may not be cron-based
+                    cronExpression : cronExpression || null,
+                    cronExpressionDescription : cronExpressionDescription || null,
+                    startTime : jobTriggerDetail.startTime,
+                    previousFireTime : jobTriggerDetail.previousFireTime,
+                    nextFireTime : jobTriggerDetail.nextFireTime,
+                    timeZone : (jobTriggerDetail.timeZone !== undefined && jobTriggerDetail.timeZone !== null) ? jobTriggerDetail.timeZone.getID() : null,
+                    running : (runningJobs.indexOf(effectiveJobName + '-' + effectiveJobGroupName) !== -1)
+                });
             }
-
-            effectiveJobName = quartzMajorVersion === 1 ? jobKeys[j] : jobKeys[j].name;
-            effectiveJobGroupName = quartzMajorVersion === 1 ? jobsList[i] : jobKeys[j].group;
-            scheduledJobsData.push({
-                jobName : effectiveJobName,
-                jobDisplayName : effectiveJobName.indexOf('org.springframework.scheduling.quartz.JobDetailFactoryBean') === 0 ? null : effectiveJobName,
-                triggerName : jobTriggerDetail[0].name,
-                // trigger may not be cron-based
-                cronExpression : jobTriggerDetail[0].cronExpression || null,
-                cronExpressionDescription : cronExpressionDescription || null,
-                startTime : jobTriggerDetail[0].startTime,
-                previousFireTime : jobTriggerDetail[0].previousFireTime,
-                nextFireTime : jobTriggerDetail[0].nextFireTime,
-                timeZone : jobTriggerDetail[0].timeZone !== undefined ? jobTriggerDetail[0].timeZone.getID() : null,
-                jobGroup : jobsList[i],
-                running : (runningJobs.indexOf(effectiveJobName + '-' + effectiveJobGroupName) !== -1)
-            });
         }
     }
 
-    model.scheduledjobs = scheduledJobsData;
+    model.jobTriggers = jobTriggers;
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }
 
@@ -155,22 +165,61 @@ function buildRunningJobsData()
 }
 
 /* exported executeJobNow */
-function executeJobNow(jobName, groupName)
+function executeJobNow(jobName, jobGroup)
 {
     var ctxt, scheduler, quartzMajorVersion, jobKey;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-
     quartzMajorVersion = determineQuartzMajorVersion(scheduler);
-
+    
     if (quartzMajorVersion === 1)
     {
-        scheduler.triggerJob(jobName, groupName);
+        scheduler.triggerJob(jobName, jobGroup);
     }
     else
     {
-        jobKey = new Packages.org.quartz.JobKey(jobName, groupName);
+        jobKey = new Packages.org.quartz.JobKey(jobName, jobGroup);
         scheduler.triggerJob(jobKey);
+    }
+}
+
+/* exported pauseTrigger */
+function pauseTrigger(triggerName, triggerGroup)
+{
+    var ctxt, scheduler, quartzMajorVersion, triggerKey;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
+    quartzMajorVersion = determineQuartzMajorVersion(scheduler);
+    
+    if (quartzMajorVersion === 1)
+    {
+        scheduler.pauseTrigger(triggerName, triggerGroup);
+    }
+    else
+    {
+        triggerKey = new Packages.org.quartz.TriggerKey(triggerName, triggerGroup);
+        scheduler.pauseTrigger(triggerKey);
+    }
+}
+
+/* exported resumeTrigger */
+function resumeTrigger(triggerName, triggerGroup)
+{
+    var ctxt, scheduler, quartzMajorVersion, triggerKey;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    scheduler = ctxt.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
+    quartzMajorVersion = determineQuartzMajorVersion(scheduler);
+    
+    if (quartzMajorVersion === 1)
+    {
+        scheduler.resumeTrigger(triggerName, triggerGroup);
+    }
+    else
+    {
+        triggerKey = new Packages.org.quartz.TriggerKey(triggerName, triggerGroup);
+        scheduler.resumeTrigger(triggerKey);
     }
 }

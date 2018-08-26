@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Job Trigger Pause</shortname>
+    <description>Pauses a particular trigger for a scheduled job</description>
+    <url>/ootbee/admin/scheduled-jobs/triggers/{triggerGroup}/{triggerName}/pause</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

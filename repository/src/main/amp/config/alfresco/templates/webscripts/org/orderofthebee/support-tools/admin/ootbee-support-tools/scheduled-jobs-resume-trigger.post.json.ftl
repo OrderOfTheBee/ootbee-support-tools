@@ -1,8 +1,7 @@
 <#compress>
-<#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
-Copyright (C) 2016 - 2018 Axel Faust / Markus Joos / Jens Goldhammer
-Copyright (C) 2016 - 2018 Order of the Bee
+Copyright (C) 2016-2018 Axel Faust
+Copyright (C) 2016-2018 Order of the Bee
 
 This file is part of Community Support Tools
 
@@ -23,15 +22,5 @@ Linked to Alfresco
 Copyright (C) 2005-2018 Alfresco Software Limited.
  
   -->
-
-{
-    "runningJobs" : [
-        <#if runningJobs??><#list runningJobs as runningJob>{
-            "jobName" : "${runningJob.jobName}",
-            "jobGroup" : "${runningJob.groupName}"
-        }<#if runningJob_has_next>,</#if>
-        </#list></#if>
-    ]
-}
-</#escape>
+{}
 </#compress>

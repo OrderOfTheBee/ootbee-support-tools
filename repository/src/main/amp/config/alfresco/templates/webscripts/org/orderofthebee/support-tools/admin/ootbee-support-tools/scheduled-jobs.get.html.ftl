@@ -43,31 +43,52 @@ Copyright (C) 2005-2018 Alfresco Software Limited.
             <table id="jobs-table" class="data results scheduledjobs" width="100%">
                 <thead>
                     <tr>
-                        <th>${msg("scheduled-jobs.table-header.job-name")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.trigger-name")?html}</th>
+                        <th title="${msg("scheduled-jobs.table-header.trigger-group-title")?html}">${msg("scheduled-jobs.table-header.trigger-group")?html}</th>
+                        <th title="${msg("scheduled-jobs.table-header.trigger-state-title")?html}">${msg("scheduled-jobs.table-header.trigger-state")?html}</th>
+                        <th>${msg("scheduled-jobs.table-header.job-name")?html}</th>
+                        <th title="${msg("scheduled-jobs.table-header.job-group-title")?html}">${msg("scheduled-jobs.table-header.job-group")?html}</th>
+                        <th title="${msg("scheduled-jobs.table-header.job-state-title")?html}">${msg("scheduled-jobs.table-header.job-state")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.cron-expression")?html}</th>				
                         <th>${msg("scheduled-jobs.table-header.start-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.previous-fire-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.next-fire-time")?html}</th>
                         <th>${msg("scheduled-jobs.table-header.time-zone")?html}</th>
-                        <th>${msg("scheduled-jobs.table-header.state")?html}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <#list scheduledjobs as jobs>
-                        <tr id="${jobs.jobName?html}">
-                            <td>${(jobs.jobDisplayName!"")?html}</td>
-                            <td>${jobs.triggerName?html}</td>
-                            <td title="${(jobs.cronExpressionDescription!"")?html}">${(jobs.cronExpression!"")?html}</td>
-                            <td id="jobStartTime"><#if jobs.startTime??>${xmldate(jobs.startTime)?js_string}</#if></td>
-                            <td id="jobPreviousFire"><#if jobs.previousFireTime??>${xmldate(jobs.previousFireTime)?html}</#if></td>
-                            <td id="jobNextFire"><#if jobs.nextFireTime??>${xmldate(jobs.nextFireTime)?html}</#if></td>
-                            <td>${(jobs.timeZone!"")?html}</td>
+                    <#assign stateMessages = [
+                        msg('scheduled-jobs.table-header.trigger-state.none'),
+                        msg('scheduled-jobs.table-header.trigger-state.normal'),
+                        msg('scheduled-jobs.table-header.trigger-state.paused'),
+                        msg('scheduled-jobs.table-header.trigger-state.complete'),
+                        msg('scheduled-jobs.table-header.trigger-state.error'),
+                        msg('scheduled-jobs.table-header.trigger-state.blocked')] />
+                    <#list jobTriggers as trigger>
+                        <tr id="${trigger.triggerName?html}">
+                            <td id="triggerName">${trigger.triggerName?html}</td>
+                            <td id="triggerGroup">${trigger.triggerGroup?html}</td>
+                            <#-- offset by one as states have value space -1 (none) to 4 (blocked) -->
+                            <td id="triggerState">${stateMessages[trigger.triggerState]?html}</td>
+                            <td id="jobName">${(trigger.jobDisplayName!"")?html}</td>
+                            <td id="jobGroup">${trigger.jobGroup?html}</td>
                             <td id="jobState">
-                                 ${msg(jobs.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}
+                                 ${msg(trigger.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}
                             </td>
-                            <td><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${jobs.jobName?url('UTF-8')}&amp;groupName=${jobs.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></td>
+                            <td title="${(trigger.cronExpressionDescription!"")?html}">${(trigger.cronExpression!"")?html}</td>
+                            <td id="jobStartTime"><#if trigger.startTime??>${xmldate(trigger.startTime)?html}</#if></td>
+                            <td id="jobPreviousFire"><#if trigger.previousFireTime??>${xmldate(trigger.previousFireTime)?html}</#if></td>
+                            <td id="jobNextFire"><#if trigger.nextFireTime??>${xmldate(trigger.nextFireTime)?html}</#if></td>
+                            <td>${(trigger.timeZone!"")?html}</td>
+                            <td>
+                                <p><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${trigger.jobName?url('UTF-8')}&amp;groupName=${trigger.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></p>
+                                <#if trigger.triggerState == 1>
+                                    <p><a href="#" onclick="AdminSJ.pauseTrigger('${trigger.triggerName?js_string}', '${trigger.triggerGroup?js_string}');">${msg("scheduled-jobs.pause-trigger")?html}</a></p>
+                                <#elseif trigger.triggerState == 2>
+                                    <p><a href="#" onclick="AdminSJ.resumeTrigger('${trigger.triggerName?js_string}', '${trigger.triggerGroup?js_string}');">${msg("scheduled-jobs.resume-trigger")?html}</a></p>
+                                </#if>
+                            </td>
                         </tr>
                     </#list>
                 </tbody>
