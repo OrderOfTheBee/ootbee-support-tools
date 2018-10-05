@@ -12,34 +12,64 @@
         </property>
     </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.put" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript"
-        parent="webscript" />
+    <bean name="ootbee-support-tools.propertyBackedBeansPersister.sharedCache" factory-bean="cacheFactory" factory-method="createCache">
+        <constructor-arg value="cache.propertyBackedBeansPersisterSharedCache" />
+    </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileGet"
-        parent="webscript">
+    <bean name="ootbee-support-tools.propertyBackedBeansPersister.txnCache" class="org.alfresco.repo.cache.TransactionalCache">
+        <property name="sharedCache" ref="ootbee-support-tools.propertyBackedBeansPersister.sharedCache" />
+        <property name="name" value="ootbee-support-tools.propertyBackedBeansPersister.txnCache" />
+        <property name="maxCacheSize" value="${cache.propertyBackedBeansPersisterSharedCache.tx.maxItems}" />
+        <property name="mutable" value="true" />
+        <property name="disableSharedCache" value="${system.cache.disableMutableSharedCaches}" />
+        <property name="tenantAware" value="false" />
+        <property name="cacheStats" ref="cacheStatistics" />
+        <property name="cacheStatsEnabled" value="${cache.propertyBackedBeansPersisterSharedCache.tx.statsEnabled}" />
+    </bean>
+
+    <bean id="ootbee-support-tools.propertyBackedBeansPersister"
+        class="org.orderofthebee.addons.support.tools.repo.config.PropertyBackedBeanPersister">
+        <property name="registry" ref="propertyBackedBeanRegistry" />
+        <property name="descriptorService" ref="DescriptorService" />
+        <property name="transactionService" ref="TransactionService" />
+        <property name="attributeService" ref="AttributeService" />
+        <property name="propertyBackedBeanPropertiesCache" ref="ootbee-support-tools.propertyBackedBeansPersister.txnCache" />
+
+        <property name="enabled" value="${ootbee-support-tools.propertyBackedBeanPersister.enabled}" />
+        <property name="useLegacyJmxKeysForRead"
+            value="${ootbee-support-tools.propertyBackedBeanPersister.useLegacyJmxKeysForRead}" />
+        <property name="processLegacyJmxKeysOnRemoveProperties"
+            value="${ootbee-support-tools.propertyBackedBeanPersister.processLegacyJmxKeysOnRemoveProperties}" />
+    </bean>
+
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.get"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.post"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.post"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.put"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.delete"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.delete"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
+
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-file.get"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileGet" parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-file.delete" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileDelete"
-        parent="webscript" />
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-file.delete"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileDelete" parent="webscript" />
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFilesZIPPost"
-        parent="webscript">
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-files.post"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFilesZIPPost" parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-snapshot-complete.get" class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogSnapshotComplete"
-        parent="webscript" >
+    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-snapshot-complete.get"
+        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogSnapshotComplete" parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
     </bean>
 
