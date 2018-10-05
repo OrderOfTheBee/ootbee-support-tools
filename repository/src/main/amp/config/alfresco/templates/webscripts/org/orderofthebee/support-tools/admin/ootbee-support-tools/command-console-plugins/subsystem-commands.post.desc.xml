@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Command Console - Subsystem Commands</shortname>
+    <description>Executes supported commands of the subsystems command console plugin</description>
+    <url>/ootbee/admin/command-console/subsystems/help</url>
+    <url>/ootbee/admin/command-console/subsystems/listInstances</url>
+    <url>/ootbee/admin/command-console/subsystems/listProperties</url>
+    <url>/ootbee/admin/command-console/subsystems/setProperty</url>
+    <url>/ootbee/admin/command-console/subsystems/setProperties</url>
+    <url>/ootbee/admin/command-console/subsystems/removeProperties</url>
+    <url>/ootbee/admin/command-console/subsystems/revert</url>
+    <family>OOTBee Support Tools</family>
+    <format default="json">any</format>
+    <negotiate accept="application/json">json</negotiate>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction bufferSize="8192" allow="readonly">required</transaction>
+</webscript>
