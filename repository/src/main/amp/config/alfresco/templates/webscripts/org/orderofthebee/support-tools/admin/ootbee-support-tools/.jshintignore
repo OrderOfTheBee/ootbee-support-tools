@@ -1,0 +1,6 @@
+*.get.js
+*.delete.js
+*.post.js
+*.put.js
+*.post.json.js
+*.put.json.js

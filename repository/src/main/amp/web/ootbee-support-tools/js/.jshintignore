@@ -1,1 +1,6 @@
 smoothie.js
+moment-with-locales.min.js
+jquery-2.2.3.js
+jquery.dataTables.js
+dataTables.buttons.min.js
+dataTables.bootstrap4.min.js

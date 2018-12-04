@@ -142,22 +142,6 @@
             <plugin>
                 <groupId>de.acosix.maven</groupId>
                 <artifactId>jshint-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.get.js</exclude>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.delete.js</exclude>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.post.js</exclude>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.put.js</exclude>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.post.json.js</exclude>
-                        <exclude>amp/config/alfresco/templates/webscripts/**/*.put.json.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/moment-with-locales.min.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/smoothie.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/jquery-2.2.3.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/jquery.dataTables.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/dataTables.buttons.min.js</exclude>
-                        <exclude>amp/web/ootbee-support-tools/js/dataTables.bootstrap4.min.js</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
