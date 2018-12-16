@@ -77,93 +77,6 @@ public class PropertyBackedBeanPersister implements InitializingBean
     // property
     private static final String ROOT_PATH = "ootbee-support-tools.property-backed-beans";
 
-    /**
-     * This class provides simple holder instances for {@link PropertyBackedBean} to simplify lookup in a list of known property backed bean
-     * instances and avoid having to reconstruct the bean name.
-     *
-     * @author Axel Faust
-     */
-    protected static class PropertyBackedBeanHolder
-    {
-
-        private final String name;
-
-        private final PropertyBackedBean propertyBackedBean;
-
-        protected PropertyBackedBeanHolder(final PropertyBackedBean propertyBackedBean)
-        {
-            this(null, propertyBackedBean);
-        }
-
-        protected PropertyBackedBeanHolder(final String name, final PropertyBackedBean propertyBackedBean)
-        {
-            this.name = name;
-            this.propertyBackedBean = propertyBackedBean;
-        }
-
-        /**
-         * @return the name
-         */
-        public String getName()
-        {
-            return this.name;
-        }
-
-        /**
-         * @return the propertyBackedBean
-         */
-        public PropertyBackedBean getPropertyBackedBean()
-        {
-            return this.propertyBackedBean;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int hashCode()
-        {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((this.propertyBackedBean == null) ? 0 : this.propertyBackedBean.hashCode());
-            return result;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean equals(final Object obj)
-        {
-            if (this == obj)
-            {
-                return true;
-            }
-            if (obj == null)
-            {
-                return false;
-            }
-            if (this.getClass() != obj.getClass())
-            {
-                return false;
-            }
-            final PropertyBackedBeanHolder other = (PropertyBackedBeanHolder) obj;
-            if (this.propertyBackedBean == null)
-            {
-                if (other.propertyBackedBean != null)
-                {
-                    return false;
-                }
-            }
-            else if (!this.propertyBackedBean.equals(other.propertyBackedBean))
-            {
-                return false;
-            }
-            return true;
-        }
-
-    }
-
     protected PropertyBackedBeanRegistry registry;
 
     protected DescriptorService descriptorService;
@@ -318,9 +231,6 @@ public class PropertyBackedBeanPersister implements InitializingBean
             {
                 this.handleRemovedPropertyBackedBean(source, ((PropertyBackedBeanUnregisteredEvent) applicationEvent).isPermanent());
             }
-            else if (applicationEvent instanceof PropertyBackedBeanRemovePropertiesEvent)
-            {
-            }
             else if (applicationEvent instanceof PropertyBackedBeanSetPropertiesEvent)
             {
                 this.setProperties(source, ((PropertyBackedBeanSetPropertiesEvent) applicationEvent).getProperties());
@@ -330,15 +240,13 @@ public class PropertyBackedBeanPersister implements InitializingBean
                 this.setProperty(source, ((PropertyBackedBeanSetPropertyEvent) applicationEvent).getName(),
                         ((PropertyBackedBeanSetPropertyEvent) applicationEvent).getValue());
             }
-            else if (applicationEvent instanceof PropertyBackedBeanStartedEvent
-                    || applicationEvent instanceof PropertyBackedBeanStoppedEvent)
-            {
-                // these we can ignore
-            }
-            else
+            else if (!(applicationEvent instanceof PropertyBackedBeanStartedEvent
+                    || applicationEvent instanceof PropertyBackedBeanStoppedEvent
+                    || applicationEvent instanceof PropertyBackedBeanRemovePropertiesEvent))
             {
                 LOGGER.warn("Received unsupported / unexpected application event: {}", applicationEvent);
             }
+            // else we can ignore these
         }
         else
         {
