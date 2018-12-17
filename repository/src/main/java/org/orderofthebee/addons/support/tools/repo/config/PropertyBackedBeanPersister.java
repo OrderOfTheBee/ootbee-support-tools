@@ -302,8 +302,15 @@ public class PropertyBackedBeanPersister implements InitializingBean
     {
         final Map<String, String> properties = this.getPersistedProperties(name);
         properties.keySet().removeIf(key -> !propertyBackedBean.isUpdateable(key));
-        propertyBackedBean.setProperties(properties);
-        LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+        if (!properties.isEmpty())
+        {
+            propertyBackedBean.setProperties(properties);
+            LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+        }
+        else
+        {
+            LOGGER.debug("No persisted properties exist for bean {}", name);
+        }
     }
 
     protected Map<String, String> getPersistedProperties(final String name)
