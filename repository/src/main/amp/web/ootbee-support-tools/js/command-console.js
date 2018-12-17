@@ -29,7 +29,7 @@ var AdminCC = AdminCC || {};
 
 (function()
 {
-    var serviceContext, messages = {}, activeCommandConsolePlugin = 'global';
+    var serviceContext, messages = {}, activeCommandConsolePlugin = 'global', lastTriggeredRequestTimestamp;
 
     AdminCC.setServiceContext = function setServiceContext(context)
     {
@@ -122,9 +122,16 @@ var AdminCC = AdminCC || {};
 
     AdminCC.runCommand = function runCommand(plugin, command, commandArgs)
     {
+        var timestamp;
+
         // default to currently active plugin if not specified
         plugin = plugin || activeCommandConsolePlugin;
         commandArgs = commandArgs || [];
+        
+        timestamp = new Date().getTime();
+        lastTriggeredRequestTimestamp = timestamp;
+
+        // TODO Need progress indicator since commands may take a while
 
         Admin.request({
             url : serviceContext + '/ootbee/admin/command-console/' + encodeURIComponent(plugin) + '/' + encodeURIComponent(command),
@@ -136,86 +143,93 @@ var AdminCC = AdminCC || {};
             {
                 var output, idx;
 
-                output = '';
-                // TODO How to support more flexibility (HTML provided by command plugin) without injection issues?
-                if (response.responseJSON.outputLines && Array.isArray(response.responseJSON.outputLines))
+                if (timestamp === lastTriggeredRequestTimestamp)
                 {
-                    for (idx = 0; idx < response.responseJSON.outputLines.length; idx++)
+                    output = '';
+                    // TODO How to support more flexibility (HTML provided by command plugin) without injection issues?
+                    if (response.responseJSON.outputLines && Array.isArray(response.responseJSON.outputLines))
                     {
-                        output += Admin.html(response.responseJSON.outputLines[idx]);
-                        output += '<br />';
+                        for (idx = 0; idx < response.responseJSON.outputLines.length; idx++)
+                        {
+                            output += Admin.html(response.responseJSON.outputLines[idx]);
+                            output += '<br />';
+                        }
                     }
-                }
-                else if (response.responseJSON.preformattedOutputLines && Array.isArray(response.responseJSON.preformattedOutputLines))
-                {
-                    for (idx = 0; idx < response.responseJSON.preformattedOutputLines.length; idx++)
+                    else if (response.responseJSON.preformattedOutputLines && Array.isArray(response.responseJSON.preformattedOutputLines))
                     {
-                        output += Admin.html(response.responseJSON.preformattedOutputLines[idx]);
-                        output += '\n';
+                        for (idx = 0; idx < response.responseJSON.preformattedOutputLines.length; idx++)
+                        {
+                            output += Admin.html(response.responseJSON.preformattedOutputLines[idx]);
+                            output += '\n';
+                        }
+                        output = '<pre>' + output + '</pre>';
                     }
-                    output = '<pre>' + output + '</pre>';
+                    else if (response.responseJSON.multilineOutput)
+                    {
+                        output += Admin.html(response.responseJSON.multilineOutput);
+                    }
+                    else if (response.responseJSON.preformattedMultilineOutput)
+                    {
+                        output += '<pre>' + Admin.html(response.responseJSON.preformattedMultilineOutput) + '</pre>';
+                    }
+    
+                    el('command-console-result').innerHTML = output;
                 }
-                else if (response.responseJSON.multilineOutput)
-                {
-                    output += Admin.html(response.responseJSON.multilineOutput);
-                }
-                else if (response.responseJSON.preformattedMultilineOutput)
-                {
-                    output += '<pre>' + Admin.html(response.responseJSON.preformattedMultilineOutput) + '</pre>';
-                }
-
-                el('command-console-result').innerHTML = output;
             },
             fnFailure : function submitConsoleCommand__failure(response)
             {
                 var output, jsonResponse;
-                if (response.responseStatus === 404)
+                
+                if (timestamp === lastTriggeredRequestTimestamp)
                 {
-                    if (command !== 'help')
+                    if (response.responseStatus === 404)
                     {
-                        el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.unknownCommand'].replace(
-                                /\{0\}/, command).replace(/\{1\}/, plugin));
-                        AdminCC.runCommand(plugin, 'help', []);
-                    }
-                    else if (plugin !== 'global')
-                    {
-                        el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.unknownPlugin'].replace(
-                                /\{0\}/, plugin));
-                        activeCommandConsolePlugin = 'global';
-                        el('command-console-activePlugin').innerHTML = Admin.html(activeCommandConsolePlugin);
-                        AdminCC.runCommand('global', 'listPlugins', []);
-                    }
-                }
-                else if (response.responseStatus === 401)
-                {
-                    el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.authentication']);
-                }
-                else
-                {
-                    el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.generic']);
-                    output = response.responseText;
-                    try
-                    {
-                        jsonResponse = JSON.parse(response.responseText);
-                        if (jsonResponse.message)
+                        if (command !== 'help')
                         {
-                            output = jsonResponse.message;
+                            el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.unknownCommand'].replace(
+                                    /\{0\}/, command).replace(/\{1\}/, plugin));
+                            AdminCC.runCommand(plugin, 'help', []);
+                        }
+                        else if (plugin !== 'global')
+                        {
+                            el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.unknownPlugin'].replace(
+                                    /\{0\}/, plugin));
+                            activeCommandConsolePlugin = 'global';
+                            el('command-console-activePlugin').innerHTML = Admin.html(activeCommandConsolePlugin);
+                            AdminCC.runCommand('global', 'listPlugins', []);
                         }
                     }
-                    catch(ignore)
+                    else if (response.responseStatus === 401)
                     {
-                        // no-op
+                        el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.authentication']);
                     }
-                }
+                    else
+                    {
+                        el('command-console-lastError').innerHTML = Admin.html(messages['command-console.error.generic']);
+                        output = response.responseText;
+                        try
+                        {
+                            jsonResponse = JSON.parse(response.responseText);
+                            if (jsonResponse.message)
+                            {
+                                output = jsonResponse.message;
+                            }
+                        }
+                        catch(ignore)
+                        {
+                            // no-op
+                        }
+                    }
 
-                Admin.removeClass(el('command-console-lastError'), 'hidden');
-                if (output)
-                {
-                    el('command-console-result').innerHTML = Admin.html(output);
-                }
-                else
-                {
-                    el('command-console-result').innerHTML = '';
+                    Admin.removeClass(el('command-console-lastError'), 'hidden');
+                    if (output)
+                    {
+                        el('command-console-result').innerHTML = Admin.html(output);
+                    }
+                    else
+                    {
+                        el('command-console-result').innerHTML = '';
+                    }
                 }
             }
         });
@@ -227,10 +241,10 @@ var AdminCC = AdminCC || {};
 
         if (commandInput)
         {
-            pattern = /("([^"\\](\\.)?)+"|[^\s]+)/g;
+            pattern = /(?:"((?:[^"\\](?:\\.)?)+)"|([^\s]+))/g;
             while ((matchResult = pattern.exec(commandInput)) !== null)
             {
-                extractedFragments.push(matchResult[0]);
+                extractedFragments.push(matchResult[1] ? matchResult[1] : matchResult[2]);
             }
         }
 
