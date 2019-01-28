@@ -307,8 +307,20 @@ public class PropertyBackedBeanPersister implements InitializingBean
         properties.keySet().removeIf(key -> !propertyBackedBean.isUpdateable(key));
         if (!properties.isEmpty())
         {
-            propertyBackedBean.setProperties(properties);
-            LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+            try
+            {
+                propertyBackedBean.setProperties(properties);
+                LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+            }
+            catch (AlfrescoRuntimeException are)
+            {
+                LOGGER.warn("Error initialising {} from persisted properties {}: {}", name, properties, are.getMessage());
+                // Setting properties will initialise subsystems even if they are not enabled
+                // Rethrowing would interrupt Alfresco startup even if affected subsystem is actually disabled
+                // This is a design / implementation flaw in Alfresco subsystems (should also affect JMX)
+                // If subsystem is actually enabled, same error should occur when it is properly started
+                // see https://github.com/OrderOfTheBee/ootbee-support-tools/issues/132#issuecomment-458252681
+            }
         }
         else
         {
