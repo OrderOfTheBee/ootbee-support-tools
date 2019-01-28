@@ -290,10 +290,13 @@ public class PropertyBackedBeanPersister implements InitializingBean
     {
         final String name = this.lookupPropertyBackedBeanName(propertyBackedBean);
 
-        this.transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            this.clearPropertiesInTransaction(name);
-            return null;
-        }, false, true);
+        if (permanent)
+        {
+            this.transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+                this.clearPropertiesInTransaction(name);
+                return null;
+            }, false, true);
+        }
 
         this.knownPropertyBackedBeanInstances.remove(new PropertyBackedBeanHolder(propertyBackedBean));
     }
