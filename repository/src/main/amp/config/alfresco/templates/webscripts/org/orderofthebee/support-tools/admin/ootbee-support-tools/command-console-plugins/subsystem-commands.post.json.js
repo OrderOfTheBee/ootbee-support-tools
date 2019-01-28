@@ -1,15 +1,21 @@
 /**
- * Copyright (C) 2018 Axel Faust Copyright (C) 2018 Order of the Bee
+ * Copyright (C) 2018 Axel Faust
+ * Copyright (C) 2018 Order of the Bee
  * 
  * This file is part of Community Support Tools
  * 
- * Community Support Tools is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Community Support Tools is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  * 
- * Community Support Tools is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * Community Support Tools is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+ * General Public License for more details.
  * 
- * You should have received a copy of the GNU Lesser General Public License along with Community Support Tools. If not, see
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Community Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 /*
@@ -53,25 +59,6 @@ function toInstanceId(instanceIds)
     return id;
 }
 
-function toInstance(factoryOrManager)
-{
-    var instance;
-
-    instance = {
-        id : toInstanceId(factoryOrManager.id),
-        // getCategory unfortunately is protected / inaccessible, but always first element in ID list
-        category : factoryOrManager.id.get(0),
-        typeName : factoryOrManager.typeName ? factoryOrManager.typeName : null
-    };
-
-    if (factoryOrManager.currentSourceBeanName)
-    {
-        instance.currentSourceBean = factoryOrManager.currentSourceBeanName;
-    }
-
-    return instance;
-}
-
 function fromInstanceId(instanceId)
 {
     var pattern, instanceIds, lastIndex, match, idx;
@@ -111,6 +98,32 @@ function matchIds(instanceId, requestedId)
     return result;
 }
 
+function getChildApplicationContextFactoryForManager(childApplicationContextManager, instanceId)
+{
+    var factory, cls, stateGetter, state, contextFactoryGetter;
+
+    if (typeof childApplicationContextManager.getChildApplicationContextFactory === 'function')
+    {
+        factory = childApplicationContextManager.getChildApplicationContextFactory(instanceId);
+    }
+    else
+    {
+        // deal with Alfresco versions before 5.2 which did not provide a decent public getter
+
+        cls = Packages.java.lang.Class.forName('org.alfresco.repo.management.subsystems.AbstractPropertyBackedBean');
+        stateGetter = cls.getDeclaredMethod('getState', Packages.java.lang.Boolean.TYPE);
+        stateGetter.setAccessible(true);
+        state = stateGetter.invoke(childApplicationContextManager, Packages.java.lang.Boolean.FALSE);
+
+        cls = Packages.java.lang.Class.forName('org.alfresco.repo.management.subsystems.DefaultChildApplicationContextManager$ApplicationContextManagerState');
+        contextFactoryGetter = cls.getDeclaredMethod('getApplicationContextFactory', Packages.java.lang.Class.forName('java.lang.String'));
+        contextFactoryGetter.setAccessible(true);
+        factory = contextFactoryGetter.invoke(state, instanceId);
+    }
+
+    return factory;
+}
+
 function resolveSubsystemInstance(instanceId)
 {
     var match, requestedId, simpleFactories, instanceIdx, factory, managers, managerIdx, manager, instanceIds;
@@ -144,7 +157,7 @@ function resolveSubsystemInstance(instanceId)
                 for (instanceIdx = 0; match === undefined && instanceIdx < instanceIds.size(); instanceIdx++)
                 {
                     instanceId = instanceIds.get(instanceIdx);
-                    factory = manager.getChildApplicationContextFactory(instanceId);
+                    factory = getChildApplicationContextFactoryForManager(manager, instanceId);
 
                     if (matchIds(factory.id, requestedId))
                     {
@@ -156,6 +169,25 @@ function resolveSubsystemInstance(instanceId)
     }
 
     return match;
+}
+
+function toInstance(factoryOrManager)
+{
+    var instance;
+
+    instance = {
+        id : toInstanceId(factoryOrManager.id),
+        // getCategory unfortunately is protected / inaccessible, but always first element in ID list
+        category : factoryOrManager.id.get(0),
+        typeName : factoryOrManager.typeName ? factoryOrManager.typeName : null
+    };
+
+    if (factoryOrManager.currentSourceBeanName)
+    {
+        instance.currentSourceBean = factoryOrManager.currentSourceBeanName;
+    }
+
+    return instance;
 }
 
 function listInstances()
@@ -181,7 +213,7 @@ function listInstances()
         for (instanceIdx = 0; instanceIdx < instanceIds.size(); instanceIdx++)
         {
             instanceId = instanceIds.get(instanceIdx);
-            factory = manager.getChildApplicationContextFactory(instanceId);
+            factory = getChildApplicationContextFactoryForManager(manager, instanceId);
             instances.push(toInstance(factory));
         }
     }
