@@ -290,10 +290,13 @@ public class PropertyBackedBeanPersister implements InitializingBean
     {
         final String name = this.lookupPropertyBackedBeanName(propertyBackedBean);
 
-        this.transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            this.clearPropertiesInTransaction(name);
-            return null;
-        }, false, true);
+        if (permanent)
+        {
+            this.transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+                this.clearPropertiesInTransaction(name);
+                return null;
+            }, false, true);
+        }
 
         this.knownPropertyBackedBeanInstances.remove(new PropertyBackedBeanHolder(propertyBackedBean));
     }
@@ -302,8 +305,27 @@ public class PropertyBackedBeanPersister implements InitializingBean
     {
         final Map<String, String> properties = this.getPersistedProperties(name);
         properties.keySet().removeIf(key -> !propertyBackedBean.isUpdateable(key));
-        propertyBackedBean.setProperties(properties);
-        LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+        if (!properties.isEmpty())
+        {
+            try
+            {
+                propertyBackedBean.setProperties(properties);
+                LOGGER.debug("Initialised {} from persisted properties {}", name, properties);
+            }
+            catch (AlfrescoRuntimeException are)
+            {
+                LOGGER.warn("Error initialising {} from persisted properties {}: {}", name, properties, are.getMessage());
+                // Setting properties will initialise subsystems even if they are not enabled
+                // Rethrowing would interrupt Alfresco startup even if affected subsystem is actually disabled
+                // This is a design / implementation flaw in Alfresco subsystems (should also affect JMX)
+                // If subsystem is actually enabled, same error should occur when it is properly started
+                // see https://github.com/OrderOfTheBee/ootbee-support-tools/issues/132#issuecomment-458252681
+            }
+        }
+        else
+        {
+            LOGGER.debug("No persisted properties exist for bean {}", name);
+        }
     }
 
     protected Map<String, String> getPersistedProperties(final String name)
