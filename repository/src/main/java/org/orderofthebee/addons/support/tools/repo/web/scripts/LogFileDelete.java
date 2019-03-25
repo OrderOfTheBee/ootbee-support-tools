@@ -42,9 +42,7 @@ public class LogFileDelete extends AbstractLogFileWebScript
     @Override
     public void execute(final WebScriptRequest req, final WebScriptResponse res) throws IOException
     {
-        final String servicePath = req.getServicePath();
-        final String matchPath = req.getServiceMatch().getPath();
-        final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
+        final String filePath = getFilePath(req);
 
         final File file = this.validateFilePath(filePath);
         if (file.delete())
