@@ -36,6 +36,7 @@ import org.apache.log4j.spi.LoggerRepository;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
+import org.springframework.extensions.webscripts.WebScriptRequest;
 
 /**
  *
@@ -174,6 +175,20 @@ public abstract class AbstractLogFileWebScript extends AbstractWebScript
             loggers.add(currentLoggers.nextElement());
         }
         return loggers;
+    }
+
+    protected String getFilePath(final WebScriptRequest req) {
+
+        final String servicePath = req.getServicePath();
+        final String matchPath = req.getServiceMatch().getPath();
+        String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
+
+        if(!filePath.startsWith("/")) {
+            filePath = "/" + filePath;
+        }
+
+        return filePath;
+
     }
 
 }
