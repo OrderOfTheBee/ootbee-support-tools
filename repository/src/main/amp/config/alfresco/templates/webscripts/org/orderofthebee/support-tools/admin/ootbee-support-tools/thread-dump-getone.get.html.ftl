@@ -28,7 +28,7 @@ Copyright (C) 2005-2016 Alfresco Software Limited.
 
 <#if modelThreads?? && modelThreads?size gt 0>
     <#list modelThreads as modelThread>
-<span class="highlight">"${modelThread.threadName}" tid=${modelThread.threadId} Total_Blocked=${modelThread.blockedCount} Total_Waited=${modelThread.waitedCount} Waited_Time=${modelThread.waitedTime} ${modelThread.threadState}</span>
+<span class="highlight">"${modelThread.threadName}" Thread t@${modelThread.threadId} Total_Blocked=${modelThread.blockedCount} Total_Waited=${modelThread.waitedCount} Waited_Time=${modelThread.waitedTime} ${modelThread.threadState}</span>
    java.lang.Thread.State: ${modelThread.threadState}
         <#if modelThread.stackTrace??>
 ${modelThread.stackTrace}</#if>   Locked ownable synchronizers:
