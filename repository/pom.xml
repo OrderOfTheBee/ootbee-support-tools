@@ -11,10 +11,9 @@
     <artifactId>support-tools-repo</artifactId>
 
     <name>OOTBee Support Tools - Repository Module</name>
-    <packaging>amp</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <alfresco.client.war>alfresco</alfresco.client.war>
         <basePackage>org.orderofthebee.addons.support.tools.repo</basePackage>
     </properties>
 
@@ -23,6 +22,7 @@
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-remote-api</artifactId>
+            <scope>provided</scope>
             <exclusions>
                <!-- exclude transitive dependencies not relevant to this addon's purpose (some are even not available any more) -->
                <!-- the following addresses either completely irrelevant groups (e.g. openoffice) or ones we don't require (yet) with substantial transitive dependency tails -->
@@ -98,8 +98,7 @@
             <groupId>net.time4j</groupId>
             <artifactId>time4j-i18n</artifactId>
             <version>3.23</version>
-        </dependency>
-
+        </dependency>   
     </dependencies>
 
     <build>
@@ -107,24 +106,32 @@
             <resource>
                 <directory>src\main\resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/.jshintrc</exclude>
+                    <exclude>**/.jshintignore</exclude>
+                    <exclude>**/.eslintrc.json</exclude>
+                </excludes>
             </resource>
-            <resource>
-                <directory>src\main\amp</directory>
-                <targetPath>${project.build.directory}/amp</targetPath>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/.jshintrc</exclude>
                     <exclude>**/.jshintignore</exclude>
+                    <exclude>**/.eslintrc.json</exclude>
                 </excludes>
-            </resource>
-        </resources>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <escapeString>\</escapeString>
-                </configuration>
+            </plugin>
+            
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
 
             <plugin>
@@ -142,17 +149,12 @@
             <plugin>
                 <groupId>de.acosix.maven</groupId>
                 <artifactId>jshint-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jshint</goal>
-                        </goals>
-                    </execution>
-                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
             </plugin>
         </plugins>
-
-        <!-- TODO Handle "standard" JAR, sources + JavaDoc creation which SDK sucks at -->
     </build>
 
 </project>
