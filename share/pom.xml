@@ -11,27 +11,15 @@
     <artifactId>support-tools-share</artifactId>
 
     <name>OOTBee Support Tools - Share Module</name>
-    <packaging>amp</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <basePackage>org.orderofthebee.addons.support.tools.share</basePackage>
-
-        <app.amp.client.war.artifactId>${alfresco.share.artifactId}</app.amp.client.war.artifactId>
-        <maven.tomcat.port>8081</maven.tomcat.port>
-        <alfresco.repo.url>http://localhost:8080/alfresco</alfresco.repo.url>
         <dependency.surf.version>6.2</dependency.surf.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Alfresco artifacts include bad transitive version -->
-            <dependency>
-                <groupId>org.alfresco.surf</groupId>
-                <artifactId>spring-surf</artifactId>
-                <version>${dependency.surf.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>aikau</artifactId>
@@ -46,6 +34,22 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <!-- missing from Alfresco Share transitive dependencies -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <!-- no longer provided via Alfresco BOM -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.18</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -57,20 +61,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.alfresco</groupId>
+            <groupId>${alfresco.groupId}</groupId>
             <artifactId>share</artifactId>
             <classifier>classes</classifier>
             <scope>provided</scope>
             <exclusions>
-                <!-- Alfresco is incapable of properly including transitive dependency versions -->
-                <exclusion>
-                    <groupId>org.alfresco.surf</groupId>
-                    <artifactId>spring-surf</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.alfresco.surf</groupId>
-                    <artifactId>spring-surf-api</artifactId>
-                </exclusion>
                 <!-- exclude transitive dependencies not relevant to this addon's purpose -->
                 <exclusion>
                     <groupId>org.apache.chemistry.opencmis</groupId>
@@ -80,15 +75,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.alfresco.surf</groupId>
-            <artifactId>spring-surf</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -96,24 +90,32 @@
             <resource>
                 <directory>src\main\resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/.jshintrc</exclude>
+                    <exclude>**/.jshintignore</exclude>
+                    <exclude>**/.eslintrc.json</exclude>
+                </excludes>
             </resource>
-            <resource>
-                <directory>src\main\amp</directory>
-                <targetPath>${project.build.directory}/amp</targetPath>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/.jshintrc</exclude>
                     <exclude>**/.jshintignore</exclude>
+                    <exclude>**/.eslintrc.json</exclude>
                 </excludes>
-            </resource>
-        </resources>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <escapeString>\</escapeString>
-                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
 
             <plugin>
@@ -138,7 +140,7 @@
                 <artifactId>yuicompressor-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>compress-js</id>
+                        <id>compress-resources</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>compress</goal>
@@ -146,25 +148,26 @@
                         <configuration>
                             <excludes>
                                 <exclude>**/webscripts/**</exclude>
-                                <exclude>**/webscripts/**</exclude>
                                 <exclude>**/site-webscripts/**</exclude>
                                 <exclude>**/*.lib.js</exclude>
                                 <exclude>**/*.css</exclude>
+                                <exclude>**/*-min.js</exclude>
+                                <exclude>**/*-min.css</exclude>
                                 <!-- exclude Aikau resources (minified at runtime) -->
-                                <exclude>web/ootbee-support-tools/**/*.js</exclude>
-                                <exclude>web/ootbee-support-tools/**/*.css</exclude>
+                                <exclude>META-INF/resources/ootbee-support-tools/**/*.js</exclude>
+                                <exclude>META-INF/resources/ootbee-support-tools/**/*.css</exclude>
                             </excludes>
-                            <sourceDirectory>src/main/amp</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/amp</outputDirectory>
-                            <excludeResources>true</excludeResources>
+                            <force>true</force>
                             <jswarn>false</jswarn>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
 
-        <!-- TODO Handle "standard" JAR, sources + JavaDoc creation which SDK sucks at -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

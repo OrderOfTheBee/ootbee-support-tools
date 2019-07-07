@@ -1,0 +1,82 @@
+version: '3.4'
+services:
+  support-tools-share:
+    image: alfresco-share-support-tools-share:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../share/target/docker/
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
+      REPO_HOST: acs
+      REPO_PORT: 8080
+    ports:
+      - ${share.port}:8080
+      - ${share.debug.port}:8888
+    networks:
+      support-tools:
+        aliases:
+          - share
+
+  support-tools-acs:
+    image: alfresco-content-services-support-tools-repo:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../repository/target/docker/
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
+    ports:
+      - ${acs.port}:8080
+      - ${acs.debug.port}:8888
+    networks:
+      support-tools:
+        aliases:
+          - acs
+    volumes:
+      - support-tools-acs-volume:/usr/local/tomcat/alf_data
+    depends_on:
+      - support-tools-postgres
+
+  support-tools-postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: alfresco
+      POSTGRES_USER: alfresco
+      POSTGRES_PASSWORD: alfresco
+    command: postgres -c max_connections=300 -c log_min_messages=LOG
+    ports:
+      - ${postgres.port}:5432
+    networks:
+      support-tools:
+        aliases:
+          - postgres
+    volumes:
+      - support-tools-db-volume:/var/lib/postgresql/data
+
+  support-tools-ass:
+    image: alfresco/alfresco-search-services:1.2.0
+    environment:
+      SOLR_ALFRESCO_HOST: acs
+      SOLR_ALFRESCO_PORT: 8080
+      SOLR_SOLR_HOST: ass
+      SOLR_SOLR_PORT: 8983
+      SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco,archive
+    ports:
+      - 8983:8983
+    networks:
+      support-tools:
+        aliases:
+          - ass
+    volumes:
+      - support-tools-ass-volume:/opt/alfresco-search-services/contentstore
+      - support-tools-ass-volume:/opt/alfresco-search-services/data
+
+networks:
+  support-tools:
+
+volumes:
+  support-tools-acs-volume:
+    external: true
+  support-tools-db-volume:
+    external: true
+  support-tools-ass-volume:
+    external: true

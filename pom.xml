@@ -2,11 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.alfresco.maven</groupId>
-        <artifactId>alfresco-sdk-parent</artifactId>
-        <version>2.2.0</version>
-    </parent>
 
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
@@ -73,19 +68,52 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- with SDK 4 there no longer is a plugin to construct a version without SNAPSHOT suffix -->
+        <!-- we use .9999999999 suffix for 1.1.0.0 version since people may have already used a SNAPSHOT build where last number was a 10-digit timestamp -->
+        <!-- suffix will likely be dropped for next version -->
+        <noSnapshotVersion>1.1.0.0.9999999999</noSnapshotVersion>
 
         <!-- Java 7 is out of support - everything will be built for Java 8 by default even if Alfresco up to 5.0 officially supports Java 7 -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <maven.compiler.version>3.5.1</maven.compiler.version>
+        <maven.clean.version>3.1.0</maven.clean.version>
+        <maven.resources.version>3.1.0</maven.resources.version>
+        <maven.dependency.version>3.1.1</maven.dependency.version>
+        <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.source.version>3.0.1</maven.source.version>
-        <maven.jar.version>3.0.2</maven.jar.version>
-        <maven.javadoc.version>2.10.4</maven.javadoc.version>
-        <maven.resources.version>3.0.1</maven.resources.version>
+        <maven.javadoc.version>3.1.0</maven.javadoc.version>
+        <maven.jar.version>3.1.1</maven.jar.version>
+        <!-- using milestone versions is ugly, but apparently Alfresco SDK devs have no qualms   -->
+        <maven.surefire.version>3.0.0-M3</maven.surefire.version>
+        <maven.failsafe.version>3.0.0-M3</maven.failsafe.version>
+        <!-- apparently SDK 4 only works with very old version due to API conflicts -->
+        <maven.assembly.version>2.6</maven.assembly.version>
+        <maven.install.version>2.5.2</maven.install.version>
+        <maven.deploy.version>2.8.2</maven.deploy.version>
 
-        <alfresco.version>5.1.g</alfresco.version>
+        <maven.acosix.jshint.version>1.0.0</maven.acosix.jshint.version>
+        <maven.alchim.yuicompressor.version>1.5.1</maven.alchim.yuicompressor.version>
+
         <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
+        
+        <!-- purely SDK 4 stuff from here on out -->
+        <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
+        <alfresco.groupId>org.alfresco</alfresco.groupId>
+        <alfresco.bomDependencyArtifactId>acs-community-packaging</alfresco.bomDependencyArtifactId>
+        <alfresco.platform.version>6.1.2-ga</alfresco.platform.version>
+        <alfresco.share.version>6.1.0</alfresco.share.version>
+        
+        <docker.acs.image>alfresco/alfresco-content-repository-community</docker.acs.image>
+        <docker.share.image>alfresco/alfresco-share</docker.share.image>
+        
+        <acs.port>8080</acs.port>
+        <acs.debug.port>8888</acs.debug.port>
+        <share.port>8180</share.port>
+        <share.debug.port>9898</share.debug.port>
+        <postgres.port>5555</postgres.port>
+        <test.acs.endpoint.path></test.acs.endpoint.path>
     </properties>
 
     <repositories>
@@ -142,15 +170,39 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
-                <artifactId>alfresco-platform-distribution</artifactId>
-                <version>${alfresco.version}</version>
+                <artifactId>${alfresco.bomDependencyArtifactId}</artifactId>
+                <version>${alfresco.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Redefine the following Share dependencies as they have different version numbers than platform.
+                 They are defined in alfresco-platform-distribution... -->
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>share</artifactId>
+                <version>${alfresco.share.version}</version>
+                <type>war</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>share</artifactId>
+                <version>${alfresco.share.version}</version>
+                <classifier>classes</classifier>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>alfresco-web-framework-commons</artifactId>
+                <version>${alfresco.share.version}</version>
+                <classifier>classes</classifier>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -158,6 +210,173 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.version}</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.version}</version>
+                    <configuration>
+                        <escapeString>\</escapeString>
+                        <nonFilteredFileExtensions>
+                            <nonFilteredFileExtension>ftl</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>js</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>css</nonFilteredFileExtension>
+
+                            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>svg</nonFilteredFileExtension>
+
+                            <nonFilteredFileExtension>bin</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>exe</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>lic</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>acp</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>zip</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>keystore</nonFilteredFileExtension>
+
+                            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>swf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>doc</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>docx</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>ppt</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>pptx</nonFilteredFileExtension>
+
+                            <nonFilteredFileExtension>msg</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>eot</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                        </nonFilteredFileExtensions>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>copy-and-filter-docker-resources</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>src/main/docker</directory>
+                                        <filtering>true</filtering>
+                                        <excludes>
+                                            <exclude>**/*.jar</exclude>
+                                            <exclude>**/*.so</exclude>
+                                            <exclude>**/*.gz</exclude>
+                                        </excludes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-and-filter-docker-resources-non-filtered</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>src/main/docker</directory>
+                                        <filtering>false</filtering>
+                                        <includes>
+                                            <include>**/*.jar</include>
+                                            <include>**/*.so</include>
+                                            <include>**/*.gz</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-repository-extension</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/extensions</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>target</directory>
+                                        <includes>
+                                            <include>${project.build.finalName}.jar</include>
+                                        </includes>
+                                        <filtering>false</filtering>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-repository-tests</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/extensions</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>target</directory>
+                                        <includes>
+                                            <include>${project.build.finalName}-tests.jar</include>
+                                        </includes>
+                                        <filtering>false</filtering>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.version}</version>
+                    <executions>
+                        <execution>
+                            <id>collect-test-artifacts</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/extensions</outputDirectory>
+                                <excludeScope>compile</excludeScope>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>collect-extensions</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/extensions</outputDirectory>
+                                <includeScope>runtime</includeScope>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.version}</version>
+                    <configuration>
+                        <source>${maven.compiler.target}</source>
+                        <target>${maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven.source.version}</version>
@@ -178,18 +397,36 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven.jar.version}</version>
                     <executions>
                         <execution>
-                            <id>attach-jar</id>
+                            <id>attach-classes</id>
                             <goals>
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
                                 <classifier>classes</classifier>
+                                <excludes>
+                                    <!-- keep config out of classes JAR -->
+                                    <exclude>alfresco</exclude>
+                                    <exclude>alfresco/*</exclude>
+                                    <exclude>alfresco/**/*</exclude>
+                                    <!-- keep Spring-related config out of classes JAR -->
+                                    <exclude>org/springframework/*.xml</exclude>
+                                    <exclude>org/springframework/**/*.xml</exclude>
+                                    <!-- keep web artifacts out of classes JAR -->
+                                    <exclude>META-INF/resources</exclude>
+                                    <exclude>META-INF/resources/*</exclude>
+                                    <exclude>META-INF/resources/**/*</exclude>
+                                </excludes>
                             </configuration>
+                        </execution>
+                        <execution>
+                            <id>attach-tests</id>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>
@@ -210,11 +447,18 @@
                 <plugin>
                     <groupId>de.acosix.maven</groupId>
                     <artifactId>jshint-maven-plugin</artifactId>
-                    <version>1.0.0</version>
+                    <version>${maven.acosix.jshint.version}</version>
                     <configuration>
-                        <sourceDirectory>${project.basedir}/src/main</sourceDirectory>
+                        <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
                         <includes>
-                            <include>amp/**/*.js</include>
+                            <include>META-INF/resources/*.js</include>
+                            <include>META-INF/resources/**/*.js</include>
+                            <include>alfresco/templates/*.js</include>
+                            <include>alfresco/templates/**/*.js</include>
+                            <include>alfresco/webscripts/*.js</include>
+                            <include>alfresco/webscripts/**/*.js</include>
+                            <include>alfresco/site-webscripts/*.js</include>
+                            <include>alfresco/site-webscripts/**/*.js</include>
                         </includes>
                         <checkstyleReportFile>js-checkstyle.xml</checkstyleReportFile>
                     </configuration>
@@ -225,6 +469,81 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven.failsafe.version}</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <acs.endpoint.path>${test.acs.endpoint.path}</acs.endpoint.path>
+                        </systemPropertyVariables>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <phase>integration-test</phase>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>verify-test</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit47</artifactId>
+                            <version>${maven.surefire.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>yuicompressor-maven-plugin</artifactId>
+                    <version>${maven.alchim.yuicompressor.version}</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven.assembly.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-amp-file</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <configuration>
+                                <descriptor>src/main/assembly/amp.xml</descriptor>
+                                <escapeString>\</escapeString>
+                                <attach>true</attach>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.alfresco.maven.plugin</groupId>
+                            <artifactId>alfresco-maven-plugin</artifactId>
+                            <version>${alfresco.sdk.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven.install.version}</version>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven.deploy.version}</version>
                 </plugin>
 
                 <plugin>
@@ -239,52 +558,19 @@
                     </configuration>
                 </plugin>
 
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
                     <configuration>
                         <lifecycleMappingMetadata>
                             <pluginExecutions>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
-                                        <groupId>org.alfresco.maven.plugin</groupId>
-                                        <artifactId>alfresco-maven-plugin</artifactId>
-                                        <versionRange>[0.0,)</versionRange>
-                                        <goals>
-                                            <goal>set-version</goal>
-                                            <goal>refresh-share</goal>
-                                            <goal>refresh-repo</goal>
-                                            <goal>refresh</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute>
-                                            <runOnIncremental>true</runOnIncremental>
-                                            <runOnConfiguration>true</runOnConfiguration>
-                                        </execute>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>build-helper-maven-plugin</artifactId>
-                                        <versionRange>[1.10,)</versionRange>
-                                        <goals>
-                                            <goal>add-test-resource</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute>
-                                            <runOnIncremental>true</runOnIncremental>
-                                            <runOnConfiguration>true</runOnConfiguration>
-                                        </execute>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
                                         <groupId>de.acosix.maven</groupId>
                                         <artifactId>jshint-maven-plugin</artifactId>
-                                        <versionRange>[1.0.0,)</versionRange>
+                                        <versionRange>[${maven.acosix.jshint.version},)</versionRange>
                                         <goals>
                                             <goal>jshint</goal>
                                         </goals>
@@ -302,6 +588,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
     <modules>
