@@ -42,6 +42,7 @@ Including the AMP artifact into an All-in-One project created from the archetype
     <artifactId>support-tools-repo</artifactId>
     <version>1.1.0.0</version>
     <type>amp</type>
+    <classifier>amp</classifier>
     <exclusions>
         <exclusion>
             <groupId>*</groupId>
@@ -63,6 +64,7 @@ Including the AMP artifact into an All-in-One project created from the archetype
     <artifactId>support-tools-share</artifactId>
     <version>1.1.0.0</version>
     <type>amp</type>
+    <classifier>amp</classifier>
     <exclusions>
         <exclusion>
             <groupId>*</groupId>
