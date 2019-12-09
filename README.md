@@ -74,14 +74,6 @@ Including the AMP artifact into an All-in-One project created from the archetype
 </dependency>
 ```
 
-## Artifact Repository and Building
-
-Currently this addon is not yet published to an artifact repository, so before you can use it you need to clone and build it locally using:
-
-```
-mvn install
-```
-
 # Contributing
 
 We hope to have lots of collaborators on this project. As such, we have outlined our contribution policies and proceedures in the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
