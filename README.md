@@ -76,7 +76,7 @@ Including the AMP artifact into an All-in-One project created from the archetype
 
 ## Artifact Repository and Building
 
-Releases of this addon are [published to Maven Central](https://mvnrepository.com/artifact/org.orderofthebee.support-tools) so you can use these artifacts in your Maven build without any extra configuration. If you want to use a SNAPSHOT build, clone this project and build it locally using:
+Releases of this addon are [published to Maven Central](https://search.maven.org/search?q=g:org.orderofthebee.support-tools) so you can use these artifacts in your Maven build without any extra configuration. If you want to use a SNAPSHOT build, clone this project and build it locally using:
 
 ```
 mvn install
