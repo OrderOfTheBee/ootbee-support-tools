@@ -117,12 +117,21 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
             case 'org.alfresco.repo.cache.DefaultSimpleCache':
                 stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getDefaultSimpleCacheStats(cache);
 
-                cacheInfo.cacheGets = stats.requestCount();
-                cacheInfo.cacheHits = stats.hitCount();
-                cacheInfo.cacheMisses = stats.missCount();
-                cacheInfo.cacheEvictions = stats.evictionCount();
-                cacheInfo.cacheHitRate = stats.hitRate() * 100;
-                cacheInfo.cacheMissRate = stats.missRate() * 100;
+                if ((stats === null || stats.requestCount() === 0) && alfCacheStats !== undefined && alfCacheStats !== null)
+                {
+                    // fallback to Alfresco cache statistics
+                    // (DefaultSimpleCache in most/all Alfresco version uses Google cache with stats disabled)
+                    mapCacheMetrics(alfCacheStats, cacheInfo);
+                }
+                else if (stats !== null)
+                {
+                    cacheInfo.cacheGets = stats.requestCount();
+                    cacheInfo.cacheHits = stats.hitCount();
+                    cacheInfo.cacheMisses = stats.missCount();
+                    cacheInfo.cacheEvictions = stats.evictionCount();
+                    cacheInfo.cacheHitRate = stats.hitRate() * 100;
+                    cacheInfo.cacheMissRate = stats.missRate() * 100;
+                }
 
                 cacheInfo.clearable = cacheInfo.clearable
                         && propertyGetter('ootbee-support-tools.cache.default.clearable', '').toLowerCase() === 'true';
@@ -130,12 +139,21 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
             case 'org.alfresco.enterprise.repo.cluster.cache.InvalidatingCache':
                 stats = Packages.org.orderofthebee.addons.support.tools.repo.caches.CacheLookupUtils.getHzInvalidatingCacheStats(cache);
 
-                cacheInfo.cacheGets = stats.requestCount();
-                cacheInfo.cacheHits = stats.hitCount();
-                cacheInfo.cacheMisses = stats.missCount();
-                cacheInfo.cacheEvictions = stats.evictionCount();
-                cacheInfo.cacheHitRate = stats.hitRate() * 100;
-                cacheInfo.cacheMissRate = stats.missRate() * 100;
+                if ((stats === null || stats.requestCount() === 0) && alfCacheStats !== undefined && alfCacheStats !== null)
+                {
+                    // fallback to Alfresco cache statistics
+                    // (DefaultSimpleCache in most/all Alfresco version uses Google cache with stats disabled)
+                    mapCacheMetrics(alfCacheStats, cacheInfo);
+                }
+                else if (stats !== null)
+                {
+                    cacheInfo.cacheGets = stats.requestCount();
+                    cacheInfo.cacheHits = stats.hitCount();
+                    cacheInfo.cacheMisses = stats.missCount();
+                    cacheInfo.cacheEvictions = stats.evictionCount();
+                    cacheInfo.cacheHitRate = stats.hitRate() * 100;
+                    cacheInfo.cacheMissRate = stats.missRate() * 100;
+                }
 
                 cacheInfo.clearable = cacheInfo.clearable
                         && propertyGetter('ootbee-support-tools.cache.invalidating.clearable', '').toLowerCase() === 'true';
@@ -150,7 +168,7 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                     // fallback to Alfresco cache statistics
                     mapCacheMetrics(alfCacheStats, cacheInfo);
                 }
-                else
+                else if (stats !== null)
                 {
                     cacheInfo.cacheGets = stats.operationStats.numberOfGets;
                     // cacheInfo.cacheHits = stats.hits;
@@ -168,24 +186,15 @@ function buildCacheInfo(cacheName, cache, allowClearGlobal, propertyGetter)
                 if (cache.metrics !== undefined && cache.metrics !== null)
                 {
                     mapCacheMetrics(cache.metrics, cacheInfo);
-                    cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
                 }
                 else if (alfCacheStats !== undefined && alfCacheStats !== null)
                 {
                     // fallback to Alfresco cache statistics
                     mapCacheMetrics(alfCacheStats, cacheInfo);
-                    cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
                 }
-                else
-                {
-                    cacheInfo.clearable = cacheInfo.clearable
-                            && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
-                                    propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
-                }
+                cacheInfo.clearable = cacheInfo.clearable
+                        && propertyGetter('ootbee-support-tools.cache.' + cacheInfo.type + '.clearable',
+                                propertyGetter('ootbee-support-tools.cache.unknown.clearable', '')).toLowerCase() === 'true';
         }
     }
     catch (e)
