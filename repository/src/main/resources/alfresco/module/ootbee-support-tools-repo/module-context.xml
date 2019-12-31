@@ -12,13 +12,13 @@
         </property>
     </bean>
 
-    <bean name="ootbee-support-tools.propertyBackedBeansPersister.sharedCache" factory-bean="cacheFactory" factory-method="createCache">
+    <bean name="propertyBackedBeansPersisterSharedCache" factory-bean="cacheFactory" factory-method="createCache">
         <constructor-arg value="cache.propertyBackedBeansPersisterSharedCache" />
     </bean>
 
-    <bean name="ootbee-support-tools.propertyBackedBeansPersister.txnCache" class="org.alfresco.repo.cache.TransactionalCache">
-        <property name="sharedCache" ref="ootbee-support-tools.propertyBackedBeansPersister.sharedCache" />
-        <property name="name" value="ootbee-support-tools.propertyBackedBeansPersister.txnCache" />
+    <bean name="propertyBackedBeansPersisterSharedCache.txnCache" class="org.alfresco.repo.cache.TransactionalCache">
+        <property name="sharedCache" ref="propertyBackedBeansPersisterSharedCache" />
+        <property name="name" value="propertyBackedBeansPersisterSharedCache.txnCache" />
         <property name="maxCacheSize" value="${cache.propertyBackedBeansPersisterSharedCache.tx.maxItems}" />
         <property name="mutable" value="true" />
         <property name="disableSharedCache" value="${system.cache.disableMutableSharedCaches}" />
@@ -33,7 +33,7 @@
         <property name="descriptorService" ref="DescriptorService" />
         <property name="transactionService" ref="TransactionService" />
         <property name="attributeService" ref="AttributeService" />
-        <property name="propertyBackedBeanPropertiesCache" ref="ootbee-support-tools.propertyBackedBeansPersister.txnCache" />
+        <property name="propertyBackedBeanPropertiesCache" ref="propertyBackedBeansPersisterSharedCache.txnCache" />
 
         <property name="enabled" value="${ootbee-support-tools.propertyBackedBeanPersister.enabled}" />
         <property name="useLegacyJmxKeysForRead"
