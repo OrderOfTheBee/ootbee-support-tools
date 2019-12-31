@@ -34,9 +34,9 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
             <#if cacheInfo.maxSize &gt; 0>"maxSize": ${cacheInfo.maxSize?c},</#if>
             <#if cacheInfo.cacheGets &gt;= 0>"cacheGets": ${cacheInfo.cacheGets?c},</#if>
             <#if cacheInfo.cacheHits &gt;= 0>"cacheHits": ${cacheInfo.cacheHits?c},</#if>
-            <#if cacheInfo.cacheHitRate &gt;= 0>"cacheHitRate": ${cacheInfo.cacheHitRate?c},</#if>
+            <#if cacheInfo.cacheHitRate &gt;= 0>"cacheHitRate": ${cacheInfo.cacheHitRate?string["0.#"]},</#if>
             <#if cacheInfo.cacheMisses &gt;= 0>"cacheMisses": ${cacheInfo.cacheMisses?c},</#if>
-            <#if cacheInfo.cacheMissRate &gt;= 0>"cacheMissRate": ${cacheInfo.cacheMissRate?c},</#if>
+            <#if cacheInfo.cacheMissRate &gt;= 0>"cacheMissRate": ${cacheInfo.cacheMissRate?string["0.#"]},</#if>
             <#if cacheInfo.cacheEvictions &gt;= 0>"cacheEvictions": ${cacheInfo.cacheEvictions?c},</#if>
             "clearable": ${cacheInfo.clearable?string}
         }<#if cacheInfo_has_next>,</#if>
