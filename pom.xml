@@ -5,7 +5,7 @@
 
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
-    <version>1.1.0.0</version>
+    <version>1.2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OOTBee Support Tools - Parent</name>
@@ -68,30 +68,27 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <!-- with SDK 4 there no longer is a plugin to construct a version without SNAPSHOT suffix -->
-        <!-- we use .9999999999 suffix for 1.1.0.0 version since people may have already used a SNAPSHOT build where last number was a 10-digit timestamp -->
-        <!-- suffix will likely be dropped for next version -->
-        <noSnapshotVersion>1.1.0.0.9999999999</noSnapshotVersion>
 
         <!-- Java 7 is out of support - everything will be built for Java 8 by default even if Alfresco up to 5.0 officially supports Java 7 -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <maven.enforcer.version>3.0.0-M3</maven.enforcer.version>
         <maven.clean.version>3.1.0</maven.clean.version>
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.dependency.version>3.1.1</maven.dependency.version>
-        <maven.compiler.version>3.8.0</maven.compiler.version>
-        <maven.source.version>3.0.1</maven.source.version>
-        <maven.javadoc.version>3.1.0</maven.javadoc.version>
-        <maven.jar.version>3.1.1</maven.jar.version>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.source.version>3.2.1</maven.source.version>
+        <maven.javadoc.version>3.1.1</maven.javadoc.version>
+        <maven.jar.version>3.2.0</maven.jar.version>
         <!-- using milestone versions is ugly, but apparently Alfresco SDK devs have no qualms   -->
-        <maven.surefire.version>3.0.0-M3</maven.surefire.version>
-        <maven.failsafe.version>3.0.0-M3</maven.failsafe.version>
+        <maven.surefire.version>3.0.0-M4</maven.surefire.version>
+        <maven.failsafe.version>3.0.0-M4</maven.failsafe.version>
         <!-- apparently SDK 4 only works with very old version due to API conflicts -->
         <maven.assembly.version>2.6</maven.assembly.version>
-        <maven.install.version>2.5.2</maven.install.version>
-        <maven.deploy.version>2.8.2</maven.deploy.version>
+        <maven.install.version>3.0.0-M1</maven.install.version>
+        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
+        <maven.sonatype.version>1.6.8</maven.sonatype.version>
 
         <maven.acosix.jshint.version>1.0.0</maven.acosix.jshint.version>
         <maven.alchim.yuicompressor.version>1.5.1</maven.alchim.yuicompressor.version>
@@ -210,6 +207,28 @@
     <build>
         <pluginManagement>
             <plugins>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven.enforcer.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>[3.5,)</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${maven.clean.version}</version>
@@ -549,7 +568,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>${maven.sonatype.version}</version>
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>ossrh</serverId>
@@ -590,6 +609,10 @@
         </pluginManagement>
         
         <plugins>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.orderofthebee.support-tools</groupId>
         <artifactId>support-tools-parent</artifactId>
-        <version>1.1.0.0</version>
+        <version>1.2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>support-tools-repo</artifactId>
@@ -124,6 +124,27 @@
                 </excludes>
             </testResource>
         </testResources>
+
+<!-- relevant for when we can update maven-assembly-plugin version -->
+<!-- 
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>build-amp-file</id>
+                            <configuration>
+                                <descriptors>
+                                    <descriptor>src/main/assembly/amp.xml</descriptor>
+                                </descriptors>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+ -->
 
         <plugins>
             <plugin>

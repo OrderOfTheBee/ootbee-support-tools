@@ -5,7 +5,9 @@
             <!-- would normally be only \${project.artifactId} but we need the prefix due to lack of namespacing to avoid conflict with Alfresco Support Tools -->
             <id>ootbee-${project.artifactId}</id>
             <description>${project.name}</description>
-            <version>${noSnapshotVersion}</version>
+            <!-- Surf Extension Module version is documentation only -->
+            <!-- arbitrary string supported - incl Maven -SNAPSHOT suffix -->
+            <version>${project.version}</version>
             <auto-deploy>true</auto-deploy>
             
             <!-- nothing here yet -->
