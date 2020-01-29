@@ -414,6 +414,58 @@ function revert(reqArgs)
     }
 }
 
+function stop(reqArgs)
+{
+    var factoryOrManager;
+
+    if (reqArgs.length >= 1)
+    {
+        model.requestedInstanceId = reqArgs[0];
+        factoryOrManager = resolveSubsystemInstance(model.requestedInstanceId);
+
+        if (factoryOrManager)
+        {
+            model.subsystemInstance = toInstance(factoryOrManager);
+            factoryOrManager.stop();
+        }
+    }
+}
+
+function start(reqArgs)
+{
+    var factoryOrManager;
+
+    if (reqArgs.length >= 1)
+    {
+    	model.requestedInstanceId = reqArgs[0]; 
+        factoryOrManager = resolveSubsystemInstance(model.requestedInstanceId);
+
+        if (factoryOrManager)
+        {
+            model.subsystemInstance = toInstance(factoryOrManager);
+            factoryOrManager.start();
+        }
+    }
+}
+
+function restart(reqArgs)
+{
+    var factoryOrManager;
+
+    if (reqArgs.length >= 1)
+    {
+        model.requestedInstanceId = reqArgs[0];
+        factoryOrManager = resolveSubsystemInstance(model.requestedInstanceId);
+
+        if (factoryOrManager)
+        {
+            model.subsystemInstance = toInstance(factoryOrManager);
+            factoryOrManager.stop();
+            factoryOrManager.start();
+        }
+    }
+}
+
 function main()
 {
     var service, reqBody, reqArgs, argIdx;
@@ -451,6 +503,15 @@ function main()
             break;
         case 'revert':
             revert(reqArgs);
+            break;
+        case 'stop':
+            stop(reqArgs);
+            break;
+        case 'start':
+            start(reqArgs);
+            break;
+        case 'restart':
+            restart(reqArgs);
             break;
         case 'help': // no-op
             break;

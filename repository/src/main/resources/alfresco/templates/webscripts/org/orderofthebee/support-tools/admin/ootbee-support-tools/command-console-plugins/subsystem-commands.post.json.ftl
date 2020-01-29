@@ -45,7 +45,13 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                 "\t${msg("ootbee-support-tools.command-console.subsystems.removeProperties.description")}",
                 "",
                 "revert <instanceId>",
-                "\t${msg("ootbee-support-tools.command-console.subsystems.revert.description")}"
+                "\t${msg("ootbee-support-tools.command-console.subsystems.revert.description")}",
+                "stop <instanceId>",
+                "\t${msg("ootbee-support-tools.command-console.subsystems.stop.description")}",
+                "start <instanceId>",
+                "\t${msg("ootbee-support-tools.command-console.subsystems.start.description")}",
+                "restart <instanceId>",
+                "\t${msg("ootbee-support-tools.command-console.subsystems.restart.description")}"
                 <#break>
             <#case "listInstances">
                 <#list subsystemInstances as subsystemInstance>
@@ -131,6 +137,33 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                 </#if>
                 <#break>
             <#case "revert">
+                <#if requestedInstanceId?? && subsystemInstance??>
+                    <@renderSubsystemInstanceRow subsystemInstance />
+                <#elseif requestedInstanceId??>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.unknownInstance", requestedInstanceId)}"
+                <#else>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.instanceIdRequired")}"
+                </#if>
+                <#break>
+			<#case "stop">
+                <#if requestedInstanceId?? && subsystemInstance??>
+                    <@renderSubsystemInstanceRow subsystemInstance />
+                <#elseif requestedInstanceId??>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.unknownInstance", requestedInstanceId)}"
+                <#else>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.instanceIdRequired")}"
+                </#if>
+                <#break>
+			<#case "start">
+                <#if requestedInstanceId?? && subsystemInstance??>
+                    <@renderSubsystemInstanceRow subsystemInstance />
+                <#elseif requestedInstanceId??>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.unknownInstance", requestedInstanceId)}"
+                <#else>
+                    "${msg("ootbee-support-tools.command-console.subsystems.error.instanceIdRequired")}"
+                </#if>
+                <#break>
+			<#case "restart">
                 <#if requestedInstanceId?? && subsystemInstance??>
                     <@renderSubsystemInstanceRow subsystemInstance />
                 <#elseif requestedInstanceId??>
