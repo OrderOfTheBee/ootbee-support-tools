@@ -9,6 +9,9 @@
     <url>/ootbee/admin/command-console/subsystems/setProperties</url>
     <url>/ootbee/admin/command-console/subsystems/removeProperties</url>
     <url>/ootbee/admin/command-console/subsystems/revert</url>
+    <url>/ootbee/admin/command-console/subsystems/stop</url>
+    <url>/ootbee/admin/command-console/subsystems/start</url>
+    <url>/ootbee/admin/command-console/subsystems/restart</url>
     <family>OOTBee Support Tools</family>
     <format default="json">any</format>
     <negotiate accept="application/json">json</negotiate>
