@@ -55,6 +55,8 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
 <head>
    <title>Alfresco &raquo; ${title?html}<#if metadata??> [${HOSTNAME} ${HOSTADDR}]</#if></title>
    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+   <link rel="shortcut icon" href="${url.context}/favicon.ico" type="image/vnd.microsoft.icon" />
+   <link rel="icon" href="${url.context}/favicon.ico" type="image/vnd.microsoft.icon" />
    <link rel="stylesheet" type="text/css" href="${url.context}/css/reset.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/css/alfresco.css" />
    <link rel="stylesheet" type="text/css" href="${url.context}/admin/css/admin.css" />
