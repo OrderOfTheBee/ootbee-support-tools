@@ -35,12 +35,21 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                 "",
                 "effectivePermissions user <userName> node <nodeRef>",
                 "\t${msg("ootbee-support-tools.command-console.permissions.effectivePermissions.description")}",
-                "\t${msg("ootbee-support-tools.command-console.permissions.effectivePermissions.flexibleParameterPairs")}"
+                "\t${msg("ootbee-support-tools.command-console.permissions.effectivePermissions.flexibleParameterPairs")}",
+                "",
+                "effectiveAuthorisations user <userName> node <nodeRef>",
+                "\t${msg("ootbee-support-tools.command-console.permissions.effectiveAuthorisations.description")}",
+                "\t${msg("ootbee-support-tools.command-console.permissions.effectiveAuthorisations.flexibleParameterPairs")}"
                 <#break>
             <#case "effectivePermission">
             <#case "effectivePermissions">
                 <#list checkedPermissions as checkedPermission>
                 "${msg("permissionCheck.result", checkedPermission.user, checkedPermission.permission, checkedPermission.node.nodeRef, checkedPermission.node.name, checkedPermission.allowed?string(msg("permissionCheck.allowed"), msg("permissionCheck.denied")))}"<#if checkedPermission_has_next>,</#if>
+                </#list>
+                <#break>
+            <#case "effectiveAuthorisations">
+                <#list authorisations as authorisation>
+                "${authorisation}"<#if authorisation_has_next>,</#if>
                 </#list>
                 <#break>
         </#switch>
