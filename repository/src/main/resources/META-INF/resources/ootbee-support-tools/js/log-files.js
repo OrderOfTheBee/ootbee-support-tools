@@ -70,6 +70,14 @@ Admin.addEventListener(window, 'load', function()
             pathFragments[idx] = encodeURIComponent(pathFragments[idx]).replace(/:/g, '%3A');
         }
         realPath = pathFragments.join('/');
+        // cleanup any duplicate slashes
+        realPath = realPath.replace(/\/+/g, '/');
+        // path should not start with a slash to avoid double-slash in URL
+        // (leading slash will be re-added as part of file path resolution in backend)
+        if (realPath.substr(0, 1) === '/')
+        {
+            realPath = realPath.substr(1);
+        }
 
         Admin.request({
             url : serviceContext + '/ootbee/admin/log4j-log-file/' + realPath,

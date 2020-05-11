@@ -107,8 +107,12 @@ public class LogFileGetServlet extends HttpServlet
         if (user != null && user.isAdmin())
         {
             final String requestURI = req.getRequestURI();
-            final String filePath = URLDecoder
+            String filePath = URLDecoder
                     .decode(requestURI.substring(req.getContextPath().length() + req.getServletPath().length() + 1));
+            if (!filePath.startsWith("/"))
+            {
+                filePath = "/" + filePath;
+            }
 
             final Map<String, Object> model = new HashMap<>();
             final Status status = new Status();
