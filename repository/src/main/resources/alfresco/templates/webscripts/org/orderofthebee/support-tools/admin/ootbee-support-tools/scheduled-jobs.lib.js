@@ -98,9 +98,16 @@ function buildScheduledJobsData()
                 cronExpressionDescription = null;
                 if (cronExpression)
                 {
-                    cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
+                    try
+                    {
+                        cronExpressionDescription = descriptor.describe(parser.parse(cronExpression));
+                    }
+                    catch (e)
+                    {
+                        cronExpressionDescription = msg.get('scheduled-jobs.table-header.cron-expression.unparseable', [ cronExpression ]);
+                    }
                 }
-    
+
                 effectiveJobName = quartzMajorVersion === 1 ? jobTriggerDetail.jobName : jobTriggerDetail.jobKey.name;
                 effectiveJobGroupName = quartzMajorVersion === 1 ? jobTriggerDetail.jobGroup : jobTriggerDetail.jobKey.group;
                 jobTriggers.push({
