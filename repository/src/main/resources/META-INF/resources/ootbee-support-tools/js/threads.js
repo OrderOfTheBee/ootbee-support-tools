@@ -54,21 +54,45 @@ Admin.addEventListener(window, 'load', function()
     {
         toolName = newToolName;
     };
+    
+    AdminTD.copyToClipboard = function copyToClipBoard(toSave)
+    {
+        var textToWrite, dump, tDump, area;
+
+        textToWrite = '';
+        dump = el(toSave);
+        if (dump)
+        {
+            tDump = dump.innerHTML;
+            textToWrite += tDump + '\n';
+        }
+
+        textToWrite = textToWrite.replace(/<\/?span[^>]*>/g, '');
+        textToWrite = textToWrite.replace(/&lt;/g, '<');
+        textToWrite = textToWrite.replace(/&gt;/g, '>');
+        
+        area = document.createElement('textarea');
+        area.value = textToWrite;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        document.body.removeChild(area);
+    };
 
     AdminTD.saveTextAsFile = function saveTextAsFile(toSave)
     {
         var textToWrite, allDumps, i, tDump, dump, textFileAsBlob, fileNameToSaveAs, ie, ieVer, ie11, downloadLink;
 
-        textToWrite = "";
+        textToWrite = '';
 
-        if (toSave === "all")
+        if (toSave === 'all')
         {
-            allDumps = document.getElementsByClassName("thread");
+            allDumps = document.getElementsByClassName('thread');
 
             for (i = 0; i < allDumps.length; i++)
             {
                 tDump = allDumps[i].innerHTML;
-                textToWrite += tDump + "\n";
+                textToWrite += tDump + '\n';
             }
         }
         else
@@ -77,20 +101,18 @@ Admin.addEventListener(window, 'load', function()
             if (dump)
             {
                 tDump = dump.innerHTML;
-                textToWrite += tDump + "\n";
+                textToWrite += tDump + '\n';
             }
         }
 
-        textToWrite = textToWrite.replace(/<span id="date" class="highlight">/g, "");
-        textToWrite = textToWrite.replace(/<span class="highlight">/g, "");
-        textToWrite = textToWrite.replace(/<\/span>/g, "");
-        textToWrite = textToWrite.replace(/&lt;/g, "<");
-        textToWrite = textToWrite.replace(/&gt;/g, ">");
+        textToWrite = textToWrite.replace(/<\/?span[^>]*>/g, '');
+        textToWrite = textToWrite.replace(/&lt;/g, '<');
+        textToWrite = textToWrite.replace(/&gt;/g, '>');
 
         textFileAsBlob = new Blob([ textToWrite ], {
             type : 'text/plain'
         });
-        fileNameToSaveAs = toolName + ".txt";
+        fileNameToSaveAs = toolName + '.txt';
 
         ie = navigator.userAgent.match(/MSIE\s([\d.]+)/);
         ie11 = navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.match(/rv:11/);
@@ -99,7 +121,7 @@ Admin.addEventListener(window, 'load', function()
         if (ie && ieVer < 10)
         {
             // TODO I18n
-            alert("No blobs on IE ver < 10");
+            alert('No blobs on IE ver < 10');
             return;
         }
 
@@ -109,11 +131,11 @@ Admin.addEventListener(window, 'load', function()
         }
         else
         {
-            downloadLink = document.createElement("a");
+            downloadLink = document.createElement('a');
 
             downloadLink.download = fileNameToSaveAs;
             // TODO I18n
-            downloadLink.innerHTML = "Download File";
+            downloadLink.innerHTML = 'Download File';
 
             if (window.webkitURL)
             {
@@ -126,7 +148,7 @@ Admin.addEventListener(window, 'load', function()
                 // Firefox requires the link to be added to the DOM
                 // before it can be clicked.
                 downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-                downloadLink.style.display = "none";
+                downloadLink.style.display = 'none';
                 document.body.appendChild(downloadLink);
             }
 
@@ -138,31 +160,32 @@ Admin.addEventListener(window, 'load', function()
     {
         var allTabs, i, selectors;
 
-        allTabs = document.getElementsByClassName("thread");
+        allTabs = document.getElementsByClassName('thread');
         for (i = 0; i < allTabs.length; i++)
         {
             if (allTabs[i].id === tabName)
             {
-                Admin.removeClass(allTabs[i], "hidden");
+                Admin.removeClass(allTabs[i], 'hidden');
             }
             else
             {
-                Admin.addClass(allTabs[i], "hidden");
+                Admin.addClass(allTabs[i], 'hidden');
             }
         }
 
-        selectors = document.getElementsByClassName("selector");
+        selectors = document.getElementsByClassName('selector');
 
         for (i = 0; i < selectors.length; i++)
         {
-            if (selectors[i].id === "s" + tabName)
+            if (selectors[i].id === 's' + tabName)
             {
-                Admin.addClass(selectors[i], "selected");
-                el("savecurrent").setAttribute("onclick", "AdminTD.saveTextAsFile('" + tabName + "');");
+                Admin.addClass(selectors[i], 'selected');
+                el('copycurrent').setAttribute('onclick', 'AdminTD.copyToClipboard("' + tabName + '");');
+                el('savecurrent').setAttribute('onclick', 'AdminTD.saveTextAsFile("' + tabName + '");');
             }
             else
             {
-                Admin.removeClass(selectors[i], "selected");
+                Admin.removeClass(selectors[i], 'selected');
             }
         }
     };
@@ -170,28 +193,28 @@ Admin.addEventListener(window, 'load', function()
     AdminTD.getDump = function getDump()
     {
         Admin.request({
-            url : serviceContext + "/ootbee/admin/" + encodeURIComponent(toolName) + "-getone.html",
-            requestContentType : "text/html",
-            responseContentType : "text/html",
+            url : serviceContext + '/ootbee/admin/' + encodeURIComponent(toolName) + '-getone.html',
+            requestContentType : 'text/html',
+            responseContentType : 'text/html',
             fnSuccess : function(res)
             {
                 var counter, viewer, control, firstDel, secondDel, tabTitle;
                 if (res.responseText)
                 {
-                    counter = document.getElementsByClassName("thread").length;
-                    viewer = document.getElementById("viewer");
-                    control = document.getElementById("control");
+                    counter = document.getElementsByClassName('thread').length;
+                    viewer = document.getElementById('viewer');
+                    control = document.getElementById('control');
                     // Find the date in the response text:
-                    firstDel = res.responseText.indexOf(">", res.responseText.indexOf("id=\"date\""));
-                    secondDel = res.responseText.indexOf("<", firstDel);
+                    firstDel = res.responseText.indexOf('>', res.responseText.indexOf('id="date"'));
+                    secondDel = res.responseText.indexOf('<', firstDel);
                     tabTitle = res.responseText.substr(firstDel + 1, secondDel - (firstDel + 1));
 
                     viewer.innerHTML = viewer.innerHTML
-                            + res.responseText.replace("__id__", "td" + counter).replace("__class__", "thread hidden");
-                    control.innerHTML = control.innerHTML + "<input type=\"button\" class=\"selector\" value=\"" + tabTitle + "\" id=\"std"
-                            + counter + "\" onclick=\"AdminTD.showTab('td" + counter + "');\" /> ";
+                            + res.responseText.replace('__id__', 'td' + counter).replace('__class__', 'thread hidden');
+                    control.innerHTML = control.innerHTML + '<input type="button" class="selector" value="' + tabTitle + '" id="std'
+                            + counter + '" onclick="AdminTD.showTab(\'td' + counter + '\');" />';
 
-                    AdminTD.showTab("td" + counter);
+                    AdminTD.showTab('td' + counter);
                 }
             }
         });

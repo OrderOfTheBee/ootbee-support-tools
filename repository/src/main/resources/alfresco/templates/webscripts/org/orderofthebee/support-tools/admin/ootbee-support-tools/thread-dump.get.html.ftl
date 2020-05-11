@@ -34,6 +34,7 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
         <p class="intro">${msg("threaddump.intro-text")?html}</p>
 
         <@button label=msg("threaddump.get-another") onclick="AdminTD.getDump();"/>
+        <@button id="copycurrent" class="copy" label=msg("threaddump.copycurrent") onclick="AdminTD.copyToClipboard('current');"/>
         <@button id="savecurrent" class="save" label=msg("threaddump.savecurrent") onclick="AdminTD.saveTextAsFile('current');"/>
         <@button class="save" label=msg("threaddump.saveall") onclick="AdminTD.saveTextAsFile('all');"/>
 
