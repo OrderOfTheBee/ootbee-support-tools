@@ -453,6 +453,10 @@
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.version}</version>
+                    <configuration>
+                        <!-- if built on a JDK 11, this suppresses issues due to referencing unnamed Java modules -->
+                        <source>8</source>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>attach-javadoc</id>
