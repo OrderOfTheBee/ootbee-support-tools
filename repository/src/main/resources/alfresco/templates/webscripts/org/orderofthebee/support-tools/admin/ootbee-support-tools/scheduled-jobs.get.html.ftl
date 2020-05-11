@@ -66,19 +66,19 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                         msg('scheduled-jobs.table-header.trigger-state.blocked')] />
                     <#list jobTriggers as trigger>
                         <tr id="${trigger.triggerName?html}">
-                            <td id="triggerName">${trigger.triggerName?html}</td>
-                            <td id="triggerGroup">${trigger.triggerGroup?html}</td>
+                            <td name="triggerName">${trigger.triggerName?html}</td>
+                            <td name="triggerGroup">${trigger.triggerGroup?html}</td>
                             <#-- offset by one as states have value space -1 (none) to 4 (blocked) -->
-                            <td id="triggerState">${stateMessages[trigger.triggerState]?html}</td>
-                            <td id="jobName">${(trigger.jobDisplayName!"")?html}</td>
-                            <td id="jobGroup">${trigger.jobGroup?html}</td>
-                            <td id="jobState">
+                            <td name="triggerState">${stateMessages[trigger.triggerState]?html}</td>
+                            <td name="jobName" data-technicalName="${trigger.jobName?html}">${(trigger.jobDisplayName!"")?html}</td>
+                            <td name="jobGroup">${trigger.jobGroup?html}</td>
+                            <td name="jobState">
                                  ${msg(trigger.running?string("scheduled-jobs.state.running", "scheduled-jobs.state.notRunning"))?html}
                             </td>
                             <td title="${(trigger.cronExpressionDescription!"")?html}">${(trigger.cronExpression!"")?html}</td>
-                            <td id="jobStartTime"><#if trigger.startTime??>${xmldate(trigger.startTime)?html}</#if></td>
-                            <td id="jobPreviousFire"><#if trigger.previousFireTime??>${xmldate(trigger.previousFireTime)?html}</#if></td>
-                            <td id="jobNextFire"><#if trigger.nextFireTime??>${xmldate(trigger.nextFireTime)?html}</#if></td>
+                            <td name="jobStartTime"><#if trigger.startTime??>${xmldate(trigger.startTime)?html}</#if></td>
+                            <td name="jobPreviousFire"><#if trigger.previousFireTime??>${xmldate(trigger.previousFireTime)?html}</#if></td>
+                            <td name="jobNextFire"><#if trigger.nextFireTime??>${xmldate(trigger.nextFireTime)?html}</#if></td>
                             <td>${(trigger.timeZone!"")?html}</td>
                             <td>
                                 <p><a href="#" onclick="Admin.showDialog('${url.serviceContext}/ootbee/admin/scheduled-jobs-execute?jobName=${trigger.jobName?url('UTF-8')}&amp;groupName=${trigger.jobGroup?url('UTF-8')}');">${msg("scheduled-jobs.execute-now")?html}</a></p>

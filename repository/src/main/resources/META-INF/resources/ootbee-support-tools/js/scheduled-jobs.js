@@ -105,7 +105,7 @@ Admin.addEventListener(window, 'load', function()
                     {
                         jobRow = jobRows[rowIdx];
                         nameCell = jobRow.cells.namedItem('jobName');
-                        jobName = nameCell.innerHTML;
+                        jobName = nameCell.getAttribute('data-technicalName');
                         groupCell = jobRow.cells.namedItem('jobGroup');
                         jobGroup = groupCell.innerHTML;
                         stateCell = jobRow.cells.namedItem('jobState');
