@@ -1,20 +1,15 @@
 /**
  * Copyright (C) 2016 - 2020 Order of the Bee
- *
+ * 
  * This file is part of OOTBee Support Tools
- *
- * OOTBee Support Tools is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OOTBee Support Tools is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
- * General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with OOTBee Support Tools. If not, see
+ * 
+ * OOTBee Support Tools is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * OOTBee Support Tools is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along with OOTBee Support Tools. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 /*
@@ -79,7 +74,7 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
                     'accept-charset' : 'utf-8',
                     style : 'display:none'
                 }, document.body);
-                
+
                 array.forEach(payload.selectedItems, lang.hitch(this,
                         function ootbeeSupportTools_service_LogFileService__onDownloadLogFilesZip_forEachSelectedItem(logFile)
                         {
@@ -199,6 +194,14 @@ define([ 'dojo/_base/declare', 'alfresco/services/BaseService', 'alfresco/core/C
                     pathFragments[idx] = encodeURIComponent(pathFragments[idx]).replace(/:/g, '%3A');
                 }
                 path = pathFragments.join('/');
+                // cleanup any duplicate slashes
+                path = path.replace(/\/+/g, '/');
+                // path should not start with a slash to avoid double-slash in URL
+                // (leading slash will be re-added as part of file path resolution in backend)
+                if (path.substr(0, 1) === '/')
+                {
+                    path = path.substr(1);
+                }
             }
 
             return path;
