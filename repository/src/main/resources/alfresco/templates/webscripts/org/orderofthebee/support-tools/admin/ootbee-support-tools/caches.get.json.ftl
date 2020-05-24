@@ -21,6 +21,8 @@ Linked to Alfresco
 Copyright (C) 2005 - 2020 Alfresco Software Limited.
  
   -->
+<#-- necessary so that ?string["0.0"] gives machine readable, rounded and sortable numbers; wanted to use ?c but that lacks rounding to one digit of precision -->
+<#setting locale="en">
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "caches": [
