@@ -39,7 +39,7 @@ function stackTrace(stacks, lockedMonitors, thisThread)
 
         if (stack.nativeMethod === true)
         {
-            stackTrace = "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
+            stackTrace += "\tat " + stack.className + "." + stack.methodName + "(Native Method)\n";
 
             if (thisThread.lockInfo)
             {
