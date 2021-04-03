@@ -23,7 +23,7 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("test-transform.title") readonly=true customJSFiles=["ootbee-support-tools/js/test-transform.js"]>
+<@page title=msg("test-transform.title") readonly=true customJSFiles=["ootbee-support-tools/js/transform.js"]>
 
     <script type="text/javascript">//<![CDATA[
         AdminTT.setServiceUrl('${url.service}');

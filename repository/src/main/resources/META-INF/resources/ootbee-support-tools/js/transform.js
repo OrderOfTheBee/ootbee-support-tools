@@ -65,7 +65,7 @@ var AdminTT = AdminTT || {};
 
     AdminTT.showInDialog = function showInDialog(operation)
     {
-        var url = serviceUrl + "-details?operation=" + operation;
+        var url = serviceUrl + "-content-service-details?operation=" + operation;
 
         for (var i = 1; i < arguments.length; i++)
         {
