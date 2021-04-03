@@ -1,5 +1,5 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/test-transform.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/content-service-transform.lib.js">
 
 /**
  * Copyright (C) 2016 - 2020 Order of the Bee
@@ -24,8 +24,13 @@
  * Copyright (C) 2005 - 2020 Alfresco Software Limited.
  */
 
-buildTransformerNames();
-buildExtensionsAndMimetypes();
-
-model.tools = Admin.getConsoleTools("test-transform");
-model.metadata = Admin.getServerMetaData();
+// operation should be reflected
+if (args.operation !== null && args.operation in this)
+{
+    this[args.operation]();
+}
+else
+{
+    model.messageKey = "default.message";
+    model.headerKey = "default.heading";
+}
