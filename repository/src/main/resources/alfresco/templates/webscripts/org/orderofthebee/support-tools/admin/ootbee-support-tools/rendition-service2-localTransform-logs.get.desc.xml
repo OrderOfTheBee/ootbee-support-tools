@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Local Transform Logs</shortname>
+    <description>View Local Transform Logs</description>
+    <url>/ootbee/admin/transform/renditionService2/{localTransformName}/localTransformLogs</url>
+    <format default="html" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

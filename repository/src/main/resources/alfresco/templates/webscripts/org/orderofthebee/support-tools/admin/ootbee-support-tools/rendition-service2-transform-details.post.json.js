@@ -1,9 +1,7 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/content-service-transform.lib.js">
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/rendition-service2-transform.lib.js">
-
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2021 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -22,23 +20,18 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2021 Alfresco Software Limited.
  */
-
-model.supportsContentServiceTransformers = supportsContentServiceTransformers();
-if (model.supportsContentServiceTransformers)
+ 
+// operation should be reflected
+// name prefix since .lib.js might be imported together with contentService related file
+// (some operations might overlap)
+var operation = 'renditionService2' + url.templateArgs.operation;
+if (operation in this)
 {
-    buildTransformerNames();
-    buildExtensionsAndMimetypes();
+    this[operation]();
 }
-
-model.supportsRenditionService2 = supportsRenditionService2();
-if (model.supportsRenditionService2)
+else
 {
-    buildMimetypesModel();
-    buildRenditionService2Model();
-    buildTransformServiceRegistryModels();
+    status.setCode(404, 'Operation not found');
 }
-
-model.tools = Admin.getConsoleTools("transform");
-model.metadata = Admin.getServerMetaData();

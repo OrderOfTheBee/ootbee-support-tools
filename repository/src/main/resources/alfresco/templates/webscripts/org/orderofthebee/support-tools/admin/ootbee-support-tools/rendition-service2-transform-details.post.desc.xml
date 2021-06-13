@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>RenditionService2 Transform Details</shortname>
+    <description>View / Check RenditionService2 Transform Details</description>
+    <url>/ootbee/admin/transform/renditionService2/{operation}</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

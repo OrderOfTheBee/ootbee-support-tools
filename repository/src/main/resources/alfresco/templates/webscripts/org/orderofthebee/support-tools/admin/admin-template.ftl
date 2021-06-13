@@ -273,18 +273,36 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
 </#macro>
 
 <#-- Label and simple read-only field -->
-<#macro field label="" description="" value="" style="">
-   <div class="control field"<#if style?has_content> style="${style?html}"</#if>>
+<#macro field label="" description="" value="" id="" style="" extraClasses="">
+   <div <#if id?has_content>id="${id?html}" </#if>class="control field<#if extraClasses?has_content> ${extraClasses}</#if>"<#if style?has_content> style="${style?html}"</#if>>
       <#if label?has_content><span class="label">${label?html}:</span></#if>
       <#if value?has_content><span class="value">${value?html}</span></#if>
       <#if description?has_content><span class="description">${description?html}</span></#if>
       <#nested>
    </div>
 </#macro>
-<#macro attrfield attribute label=attribute.name description="" style="">
-   <@field label=label description=description value=cvalue(attribute.type, attribute.value) style=style>
+<#macro attrfield attribute label=attribute.name description="" id="" style="" extraClasses="">
+   <@field label=label description=description value=cvalue(attribute.type, attribute.value) id=id style=style extraClasses=extraClasses>
       <#nested>
    </@field>
+</#macro>
+
+<#macro dynamicField id label="" description="" style="" extraClasses="">
+   <div id="${id?html}" class="control field<#if extraClasses?has_content> ${extraClasses}</#if>"<#if style?has_content> style="${style?html}"</#if>>
+      <#if label?has_content><span class="label">${label?html}:</span></#if>
+      <span id="${id?html}-value" class="value"></span>
+      <#if description?has_content><span class="description">${description?html}</span></#if>
+      <#nested>
+   </div>
+</#macro>
+
+<#-- Label and field with custom value rendering-->
+<#macro customField label="" description="" id="" style="" extraClasses="">
+   <div <#if id?has_content>id="${id?html}" </#if>class="control field<#if extraClasses?has_content> ${extraClasses}</#if>"<#if style?has_content> style="${style?html}"</#if>>
+      <#if label?has_content><span class="label">${label?html}:</span></#if>
+      <span class="value"><#nested></span>
+      <#if description?has_content><span class="description">${description?html}</span></#if>
+   </div>
 </#macro>
 
 <#-- Label and text input field -->
@@ -348,12 +366,12 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
 
 <#-- Status read-only boolean field -->
 <#macro status label description="" value="false" style="">
-   <#if value != "">
-      <#if value="true"><#local tooltip=msg("admin-console.enabled")?html><#else><#local tooltip=msg("admin-console.disabled")?html></#if>
+   <#if value?is_boolean || (value?is_string && value?has_content)>
+      <#if (value?is_boolean && value == true) || (value?is_string && value == "true")><#local tooltip=msg("admin-console.enabled")?html><#else><#local tooltip=msg("admin-console.disabled")?html></#if>
       <div class="control status"<#if style?has_content> style="${style?html}"</#if>>
          <span class="label">${label?html}:</span>
          <span class="value">
-            <img src="${url.context}/admin/images/<#if value="true">enabled<#else>disabled</#if>.gif" width="16" height="16" alt="${tooltip}" title="${tooltip}" />
+            <img src="${url.context}/admin/images/<#if (value?is_boolean && value == true) || (value?is_string && value == "true")>enabled<#else>disabled</#if>.gif" width="16" height="16" alt="${tooltip}" title="${tooltip}" />
             <span>${tooltip}</span>
          </span>
          <#if description?has_content><span class="description">${description?html}</span></#if>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2021 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,20 +18,32 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2021 Alfresco Software Limited.
  */
+
+/* exported supportsContentServiceTransformers */
+function supportsContentServiceTransformers()
+{
+    var ctxt, contentService, supported;
+
+    ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+    contentService = ctxt.getBean('ContentService', Packages.org.alfresco.service.cmr.repository.ContentService);
+    supported = typeof contentService.getTransformer === 'function';
+
+    return supported;
+}
 
 function buildTransformerNames()
 {
     var ctxt, transformerDebug, transformers, transformerNames, i, transformerName, ArrayList; 
-    
+
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     transformerDebug = ctxt.getBean('transformerDebug', Packages.org.alfresco.repo.content.transform.TransformerDebug);
-    
+
     ArrayList = Packages.java.util.ArrayList;
     transformers = new ArrayList(transformerDebug.sortTransformersByName(null));
     transformerNames = [];
-    
+
     for (i = 0; i < transformers.size(); i++)
     {
         transformerName = String(transformers.get(i).name);
@@ -41,7 +53,7 @@ function buildTransformerNames()
         }
         transformerNames.push(transformerName);
     }
-    
+
     model.transformerNames = transformerNames;
 }
 
