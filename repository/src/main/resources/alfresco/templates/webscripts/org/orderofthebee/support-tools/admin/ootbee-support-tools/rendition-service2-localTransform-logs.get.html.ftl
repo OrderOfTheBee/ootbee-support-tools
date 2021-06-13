@@ -23,22 +23,24 @@ Copyright (C) 2005 - 2021 Alfresco Software Limited.
 
 <#include "../admin-template.ftl" />
 
-<@page title=msg("transform.contentServiceTransform.detail.title") dialog=true >
+<@page title=msg("transform.localTransform.logs.title") dialog=true customCSSFiles=["ootbee-support-tools/css/transform.css"]>
     <@dialogbuttons />
     <div class="column-full">
-        <#if headerKey??>
-            <@section label=msg("transform.contentServiceTransform.detail." + headerKey)?html/>
+        <@section label=msg("transform.localTransform.logs.heading", localTransformName)?html/>
+        <p class="intro">${msg("transform.localTransform.logs.intro", localTransformName, localTransformUrl)?html}</p>
+        <#if logTable??>
+            <div class="localTransform-logs">
+                ${logTable}
+            </div>
         <#else>
-            <@section label=header?html/>
-        </#if>
-        <div style="border: 1px solid #ccc; padding:0.5em; margin-top:1em;">
-            <pre style="white-space: pre-wrap;">
-                <#if messageKey??>
-${msg("transform.contentServiceTransform.detail." + messageKey)?html}
+            <p>
+                <#if errorMessage??>
+                ${msg("transform.localTransform.logs.error", errorMessage)?html}
                 <#else>
-${message?html}
+                ${msg("transform.localTransform.logs.noLogs")?html}
                 </#if>
-            </pre>
-        </div>
+            </p>
+        </#if>
+    </div>
     <@dialogbuttons />
 </@page>
