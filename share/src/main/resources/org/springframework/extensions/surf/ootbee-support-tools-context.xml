@@ -39,5 +39,19 @@
 
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-log-files.post" class="org.orderofthebee.addons.support.tools.share.LogFilesZIPPost"
         parent="ootbee-support-tools.abstractLogFileWebScript" />
+        
+    <!-- ##################### JSConsole bean definitions ####################################### -->
+    
+    <!-- Add Admin Console messages -->
+    <bean id="share-extras.javascript-console.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+      <property name="resourceBundles">
+         <list>
+            <value>alfresco.messages.javascript-console</value>
+         </list>
+      </property>
+    </bean>
+   
+    <bean id="fme.evaluator.doclib.action.isAdmin" class="de.fme.jsconsole.IsAdminEvaluator" />
+   
 
 </beans>
