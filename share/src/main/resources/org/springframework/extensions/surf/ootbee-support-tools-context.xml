@@ -12,6 +12,8 @@
         </property>
     </bean>
 
+    <bean id="ootbee-support-tools.doclib.evaluator.isAdmin" class="org.orderofthebee.addons.support.tools.share.IsAdminEvaluator" />
+
     <bean id="ootbee-support-tools.contentStreamer" class="org.orderofthebee.addons.support.tools.share.ContentStreamer" />
 
     <bean id="ootbee-support-tools.logFileHandler" class="org.orderofthebee.addons.support.tools.share.LogFileHandler">

@@ -1,0 +1,10 @@
+# none of the JS Console files have yet been cleaned up sufficiently to pass our JSHint requirements
+*.js
+common/map.js
+
+# never check any of the included open source library files
+beautify.js
+codemirror/
+codemirror-ui/
+jsonlint/
+ternjs/
