@@ -2036,28 +2036,30 @@ if (typeof String.prototype.startsWith != 'function') {
                   self.widgets.codeMirrorScript.setValue(o.responseText);
               },
               failure: function(o) {
-                  text: self.msg("error.script.load", filename)
+                  Alfresco.util.PopupManager.displayMessage({
+                      text: self.msg("error.script.load", o.status + ":" + o.statusText)
+                  });
               },
               scope: this
           }
 
           var callbackFreemarker = {
-                  success : function(o) {
-                      // set the new editor content
-                      self.widgets.codeMirrorTemplate.setValue(o.responseText);
-                  },
-                  failure: function(o) {
-                      text: self.msg("error.script.load", filename)
-                  },
-                  scope: this
+              success : function(o) {
+                  // set the new editor content
+                  self.widgets.codeMirrorTemplate.setValue(o.responseText);
+              },
+              failure: function(o) {
+                  // can fail as stored freemarker code is optional
+                  self.widgets.codeMirrorTemplate.setValue("");
+              },
+              scope: this
           }
 
           var nodeRef = p_aArgs[1].value;
 
           if (nodeRef == "NEW") {
               self.loadDemoScript.call(self);
-          }
-          else {
+          } else {
               var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
               YAHOO.util.Connect.asyncRequest('GET', url, callback);
               var url = Alfresco.constants.PROXY_URI + "api/node/content;jsc:freemarkerScript/" + nodeRef.replace("://","/");
