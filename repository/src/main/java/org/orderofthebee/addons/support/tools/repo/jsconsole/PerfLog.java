@@ -30,7 +30,6 @@ package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -74,10 +73,8 @@ public class PerfLog {
 	 */
 	public PerfLog start(String message, Object... params) {
 		startTime = System.currentTimeMillis();
-		if (LOG.isInfoEnabled() || LOG.isWarnEnabled()) {
-			if (StringUtils.isNotEmpty(message)) {
-				LOG.info(MessageFormat.format(message, params));
-			}
+		if (LOG.isInfoEnabled() && message != null && !message.trim().isEmpty()) {
+			LOG.info(MessageFormat.format(message, params));
 		}
 		return this;
 	}
@@ -98,13 +95,11 @@ public class PerfLog {
 	public long stop(int assertPerformanceOf, String message, Object... params) {
 		long endTime = System.currentTimeMillis();
 		long neededTime = endTime - startTime;
-		if (LOG.isInfoEnabled() || LOG.isWarnEnabled()) {
-			if (neededTime < assertPerformanceOf) {
-				LOG.info("(OK) " + neededTime + " ms:" + MessageFormat.format(message, params));
-			} else {
-				LOG.warn("(WARNING) " + neededTime + " ms: " + MessageFormat.format(message, params));
-			}
-
+		boolean inTime = neededTime < assertPerformanceOf;
+        if (LOG.isInfoEnabled() && inTime) {
+			LOG.info("(OK) " + neededTime + " ms:" + MessageFormat.format(message, params));
+		} else if (LOG.isWarnEnabled() && !inTime) {
+			LOG.warn("(WARNING) " + neededTime + " ms: " + MessageFormat.format(message, params));
 		}
 		return neededTime;
 

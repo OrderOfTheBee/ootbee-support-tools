@@ -57,7 +57,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
 import org.alfresco.util.Pair;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -281,7 +280,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		LOG.debug("running script as user " + jsreq.runas);
 
-		if (StringUtils.isNotBlank(jsreq.runas)) {
+		if (jsreq.runas != null && !jsreq.runas.trim().isEmpty()) {
 			return AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<JavascriptConsoleResult>() {
 				@Override
 				public JavascriptConsoleResult doWork() {
@@ -361,7 +360,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			JavascriptConsoleScriptObject javascriptConsole = printOutput == null ? new JavascriptConsoleScriptObject() : new JavascriptConsoleScriptObject(printOutput);
 			scriptModel.put("jsconsole", javascriptConsole);
 
-			if (StringUtils.isNotBlank(spaceNodeRef)) {
+			if (spaceNodeRef != null && !spaceNodeRef.trim().isEmpty()) {
 				javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(spaceNodeRef));
 			} else {
 				Object ch = scriptModel.get("companyhome");
@@ -374,7 +373,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			scriptModel.put("space", javascriptConsole.getSpace());
 
 			ScriptNode documentNode = null;
-			if (StringUtils.isNotBlank(documentNodeRef)) {
+			if (documentNodeRef != null && !documentNodeRef.trim().isEmpty()) {
 				documentNode = this.scriptUtils.getNodeFromString(documentNodeRef);
 				scriptModel.put("document", documentNode);
 			}
@@ -421,7 +420,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 					res.setHeader(WebScriptResponse.HEADER_LOCATION, location);
 				}
 
-				if (StringUtils.isNotBlank(template)) {
+				if (template != null && !template.trim().isEmpty()) {
 					PerfLog freemarkerPerf = new PerfLog(LOG).start();
 					TemplateProcessor templateProcessor = getContainer().getTemplateProcessorRegistry()
 							.getTemplateProcessorByExtension("ftl");
@@ -462,7 +461,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * @param templateModel
 	 *            template model
 	 */
-	final private void mergeScriptModelIntoTemplateModel(ScriptContent scriptContent, Map<String, Object> scriptModel,
+	private final void mergeScriptModelIntoTemplateModel(ScriptContent scriptContent, Map<String, Object> scriptModel,
 			Map<String, Object> templateModel) {
 		// determine script processor
 		ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessor(scriptContent);
@@ -486,7 +485,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * @param writer
 	 *            where to output
 	 */
-	final protected void renderFormatTemplate(String format, Map<String, Object> model, Writer writer) {
+	protected final void renderFormatTemplate(String format, Map<String, Object> model, Writer writer) {
 		format = (format == null) ? "" : format;
 
 		String templatePath = getDescription().getId() + "." + format;
