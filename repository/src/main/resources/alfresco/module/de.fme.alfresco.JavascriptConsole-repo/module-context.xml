@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="webscript.de.fme.jsconsole.execute.post" class="de.fme.jsconsole.ExecuteWebscript" parent="webscript">
+		<property name="scriptUtils" ref="utilsScript"/>
+		<property name="transactionService" ref="transactionService"/>
+		<property name="jsProcessor" ref="javaScriptProcessor" />
+        <property name="printOutputCache" ref="jconsole.printOutputCache" />
+        <property name="resultCache" ref="jconsole.resultCache" />
+        <property name="dumpService">
+        	<bean class="de.fme.jsconsole.DumpService" >
+        		<property name="nodeService" ref="NodeService" />
+        		<property name="permissionService" ref="PermissionService" />
+        		<property name="namespaceService" ref="NamespaceService" />
+        		<property name="versionService" ref="VersionService" />
+        		<property name="contentService" ref="ContentService" />
+        		<property name="dictionaryService" ref="DictionaryService" />
+        		<property name="workflowService" ref="WorkflowService" />
+        		<property name="renditionService" ref="RenditionService" />
+        		<property name="ruleService" ref="RuleService" />
+        		<property name="tagService" ref="TaggingService" />
+        		<property name="categoryService" ref="CategoryService" />
+        		<property name="webDavService" ref="webdavService" />
+        		<property name="auditService" ref="AuditService" />
+        		<property name="sysAdminParams" ref="sysAdminParams" />
+        		<property name="lockService" ref="LockService" />
+        		<property name="dumpLimit" value="-1" />
+        	</bean>
+        </property>
+	</bean>
+    
+    <bean id="webscript.de.fme.jsconsole.executionResult.get" class="de.fme.jsconsole.ExecutionResultGet" parent="webscript">
+        <property name="printOutputCache" ref="jconsole.printOutputCache" />
+        <property name="resultCache" ref="jconsole.resultCache" />
+    </bean>
+	
+	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
+		<property name="models">
+			<list>
+				<value>alfresco/module/de.fme.alfresco.JavascriptConsole-repo/model/fme-jsconsole-model.xml</value>
+			</list>
+		</property>
+	</bean>
+
+    <!-- Version-aware cache for asynchronous print output retrieval - cluster support only on Alfresco 4.2+ -->
+    <bean id="jconsole.printOutputCache" class="de.fme.jsconsole.VersionAwareCacheFactoryBean">
+        <property name="cacheName" value="cache.jsConsoleOutput" />
+        <property name="preAlf42ClassName" value="org.alfresco.repo.cache.MemoryCache" />
+        <property name="descriptorService" ref="DescriptorService" />
+    </bean>
+    
+    <!-- Version-aware cache for asynchronous result retrieval - cluster support only on Alfresco 4.2+ -->
+    <bean id="jconsole.resultCache" class="de.fme.jsconsole.VersionAwareCacheFactoryBean">
+        <property name="cacheName" value="cache.jsConsoleResult" />
+        <property name="preAlf42ClassName" value="org.alfresco.repo.cache.MemoryCache" />
+        <property name="descriptorService" ref="DescriptorService" />
+    </bean>
+</beans>
+
