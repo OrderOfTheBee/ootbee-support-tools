@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>JSConsole Execute Javascript</shortname>
+    <url>/ootbee/jsconsole/execute</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <transaction>none</transaction>
+    <lifecycle>internal</lifecycle>
+    <family>OOTBee Support Tools</family>
+</webscript>

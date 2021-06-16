@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>JSConsole Execute Javascript - Execution Result Retrieval</shortname>
+    <url>/ootbee/jsconsole/{resultChannel}/executionResult</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <transaction>none</transaction>
+    <lifecycle>internal</lifecycle>
+    <family>OOTBee Support Tools</family>
+</webscript>
