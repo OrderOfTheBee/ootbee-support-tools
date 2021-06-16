@@ -29,6 +29,7 @@
 package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +44,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.admin.SysAdminParams;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.lock.mem.LockState;
@@ -51,7 +53,6 @@ import org.alfresco.service.cmr.audit.AuditService;
 import org.alfresco.service.cmr.audit.AuditService.AuditQueryCallback;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.lock.LockService;
-import org.alfresco.service.cmr.rendition.RenditionService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -62,7 +63,6 @@ import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter;
 import org.alfresco.service.cmr.repository.datatype.TypeConversionException;
 import org.alfresco.service.cmr.rule.Rule;
 import org.alfresco.service.cmr.rule.RuleService;
-import org.alfresco.service.cmr.search.CategoryService;
 import org.alfresco.service.cmr.security.AccessPermission;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.tagging.TaggingService;
@@ -74,16 +74,13 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.io.FileUtils;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.extensions.webscripts.ScriptValueConverter;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 
 /**
  * Implements the 'jsconsole' Javascript extension object that is available in
@@ -113,10 +110,6 @@ public class DumpService {
 	private RuleService ruleService;
 
 	private WorkflowService workflowService;
-
-	private RenditionService renditionService;
-
-	private CategoryService categoryService;
 
 	private TaggingService tagService;
 
@@ -255,13 +248,33 @@ public class DumpService {
 			if (contentReader != null) {
 				json.put("content encoding", contentReader.getEncoding());
 				json.put("content mimetype", contentReader.getMimetype());
-				json.put("content size", FileUtils.byteCountToDisplaySize(contentReader.getSize()));
+				json.put("content size", byteCountToDisplaySize(contentReader.getSize()));
 				json.put("content locale", contentReader.getLocale());
 				json.put("content lastModified", new Date(contentReader.getLastModified()));
 				json.put("content url", contentReader.getContentUrl());
 			}
 		}
 	}
+
+	// similar result to commons-io FileUtils#byteCountToDisplaySize(BigInteger)
+    // implemented here to avoid hard dependency (flagged by extension inspector)
+    private static String byteCountToDisplaySize(long size) {
+        String displaySize = String.valueOf(size) + " bytes";
+        if (size > 1024) {
+            BigInteger bis = BigInteger.valueOf(size);
+            BigInteger unitStep = BigInteger.valueOf(2^10);
+            BigInteger unitDivisor = BigInteger.valueOf(2^60);
+            String[] unitSuffixes = {" EB", " PB", " TB", " GB", " MB", " KB"};
+            for (String unitSuffix : unitSuffixes) {
+                if (bis.compareTo(unitDivisor) > 0) {
+                    displaySize = String.valueOf(bis.divide(unitDivisor)) + unitSuffix;
+                    break;
+                }
+                unitDivisor = unitDivisor.divide(unitStep);
+            }
+        }
+        return displaySize;
+    }
 
 	 /**
      * @param json
@@ -300,14 +313,12 @@ public class DumpService {
 		VersionHistory versionHistory = versionService.getVersionHistory(nodeRef);
 		if (versionHistory != null) {
 			json.put("version count", versionHistory.getAllVersions().size());
-			json.put("version count tooltip", Iterables.transform(versionHistory.getAllVersions(), new Function<Version, String>(){
-
-				@Override
-				public String apply(Version input) {
-					return input.getVersionProperties().toString();
-				}
-
-			}));
+	        Collection<Version> allVersions = versionHistory.getAllVersions();
+            List<String> tooltipFragments = new ArrayList<>(allVersions.size());
+            for (Version version : allVersions) {
+                tooltipFragments.add(version.getVersionProperties().toString());
+            }
+            json.put("version count tooltip", tooltipFragments);
 		} else {
 			json.put("version count", "0");
 		}
@@ -385,7 +396,9 @@ public class DumpService {
 	 * @throws JSONException
 	 */
 	private void extractRenditionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		List<ChildAssociationRef> renditions = renditionService.getRenditions(nodeRef);
+	    // cannot use RenditionService or RenditionService2
+	    // not consistently available / supported across the various ACS versions
+		List<ChildAssociationRef> renditions = nodeService.getChildAssocs(nodeRef, RenditionModel.ASSOC_RENDITION, RegexQNamePattern.MATCH_ALL);
 		json.put("renditions count", renditions.size());
 
 		JSONArray renditionsJson = new JSONArray();
@@ -549,14 +562,6 @@ public class DumpService {
 
 	public void setWorkflowService(WorkflowService workflowService) {
 		this.workflowService = workflowService;
-	}
-
-	public void setRenditionService(RenditionService renditionService) {
-		this.renditionService = renditionService;
-	}
-
-	public void setCategoryService(CategoryService categoryService) {
-		this.categoryService = categoryService;
 	}
 
 	public void setTagService(TaggingService tagService) {

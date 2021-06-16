@@ -70,6 +70,14 @@
                   <groupId>org.codehaus.groovy</groupId>
                   <artifactId>*</artifactId>
                </exclusion>
+               <exclusion>
+                  <groupId>commons-lang</groupId>
+                  <artifactId>commons-lang</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>commons-io</groupId>
+                  <artifactId>commons-io</artifactId>
+               </exclusion>
             </exclusions>
         </dependency>
 
