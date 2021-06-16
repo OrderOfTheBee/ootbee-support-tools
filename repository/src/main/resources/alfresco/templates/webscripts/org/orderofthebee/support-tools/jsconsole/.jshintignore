@@ -1,0 +1,2 @@
+# none of the JS Console files have yet been cleaned up sufficiently to pass our JSHint requirements
+*.js

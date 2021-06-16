@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>JSConsole read server information</shortname>
+    <url>/ootbee/jsconsole/serverInfo</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>

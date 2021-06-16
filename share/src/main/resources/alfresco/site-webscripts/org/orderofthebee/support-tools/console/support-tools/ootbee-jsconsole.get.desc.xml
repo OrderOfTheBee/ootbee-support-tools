@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>Admin Console Javascript Console</shortname>
+    <description>Administration Console - Javascript Console</description>
+    <url>/components/console/ootbee-support-tools/javascript-console</url>
+    <family>admin-console</family>
+    <family>OOTBee Support Tools</family>
+</webscript>

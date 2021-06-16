@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<model name="jsc:jsconsole-model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Javascript Console Model </description>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+    </imports>
+
+    <namespaces>
+        <!-- even though we've forked JS Console, we keep the namespace URI -->
+        <!-- necessary for backwards compatibility with existing content -->
+        <namespace uri="http://www.fme.de/alfresco/models/jsconsole" prefix="jsc" />
+    </namespaces>
+
+    <aspects>
+        <aspect name="jsc:scriptContext">
+            <properties>
+                <property name="jsc:freemarkerScript">
+                    <type>d:content</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

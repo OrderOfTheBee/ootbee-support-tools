@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>JSConsole read existing javascript and freemarker</shortname>
+    <url>/ootbee/jsconsole/readScript?nodeRef={nodeRef}</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <lifecycle>internal</lifecycle>
+    <family>OOTBee Support Tools</family>
+</webscript>
