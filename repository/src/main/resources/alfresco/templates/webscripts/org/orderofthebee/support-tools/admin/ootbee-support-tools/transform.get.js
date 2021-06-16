@@ -1,5 +1,6 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
-<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/test-transform.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/content-service-transform.lib.js">
+<import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/rendition-service2-transform.lib.js">
 
 /**
  * Copyright (C) 2016 - 2020 Order of the Bee
@@ -24,13 +25,20 @@
  * Copyright (C) 2005 - 2020 Alfresco Software Limited.
  */
 
-// operation should be reflected
-if (args.operation !== null && args.operation in this)
+model.supportsContentServiceTransformers = supportsContentServiceTransformers();
+if (model.supportsContentServiceTransformers)
 {
-    this[args.operation]();
+    buildTransformerNames();
+    buildExtensionsAndMimetypes();
 }
-else
+
+model.supportsRenditionService2 = supportsRenditionService2();
+if (model.supportsRenditionService2)
 {
-    model.messageKey = "default.message";
-    model.headerKey = "default.heading";
+    buildMimetypesModel();
+    buildRenditionService2Model();
+    buildTransformServiceRegistryModels();
 }
+
+model.tools = Admin.getConsoleTools("transform");
+model.metadata = Admin.getServerMetaData();

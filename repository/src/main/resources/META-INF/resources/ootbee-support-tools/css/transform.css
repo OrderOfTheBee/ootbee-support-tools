@@ -1,0 +1,68 @@
+/* ol used for menu - global reset.css removes sane ol/ul defaults */
+.main ol,
+.main ul {
+	list-style: revert;
+	margin: revert;
+	padding: revert;
+}
+
+.main div.dynamicResultContainer {
+	margin-top: 2ex;
+}
+
+.main span.value > ol,
+.main span.value > ul {
+	/* 1/4th the default */
+	margin-top: 0.5ex;
+}
+
+.main span.value > ol > li,
+.main span.value > ul > li {
+	margin-bottom: 0.5ex;
+}
+
+.main li.renditionDefinition {
+    margin-bottom: 1ex;
+}
+
+.main .supported-transform-details-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.main .supported-transform-details-container > .supported-transform-details {
+	margin: 2ex;
+}
+
+.main .supported-transform-details-container > .supported-transform-details > .nested-details {
+	margin-top: 1ex;
+}
+
+.main .supported-transform-details-container > .supported-transform-details  > .nested-details > .control {
+	padding-bottom: 0;
+}
+
+.main .extractionAndEmbedding-mimetype-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.localTransform-logs > table {
+	border-collapse: collapse;
+}
+
+.localTransform-logs > table,
+.localTransform-logs > table th,
+.localTransform-logs > table td {
+	border: 1px solid #d3d3d3;
+}
+
+.localTransform-logs > table th,
+.localTransform-logs > table td {
+    padding: 0.5ex;
+}
+
+.localTransform-logs > table th {
+	font-weight: bold;
+}
