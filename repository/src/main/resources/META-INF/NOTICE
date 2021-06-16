@@ -1,0 +1,43 @@
+This addon contains the following external open source libraries or modifications / derivative works of such libraries or projects:
+
+JavaScript Console
+Copyright 2016 Florian Maul
+https://github.com/share-extras/js-console
+Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+Forked from version 0.7-SNAPSHOT, Git commit cc58afefef90942e013f239856b047519a467b3b (latest unified / merged revision on the project's master branch at the time)
+Modifications / derivative work re-licensed under GNU Lesser General Public License v3
+
+
+MenoData Time4J
+Copyright 2013-2016 Meno Hochschild (http://www.menodata.de/)
+https://github.com/MenoData/Time4J
+GNU Lesser General Public License v2.1
+
+
+cron-utils
+Copyright 2015 jmrozanec
+https://github.com/jmrozanec/cron-utils
+Apache License, Version 2.0
+
+
+moment.js
+Tim Wood, Iskren Chernev, Moment.js contributors
+https://momentjs.com/
+MIT License
+
+
+Smoothie Charts
+Copyright 2010-2013 Joe Walnes, 2013-2014 Drew Noakes
+http://smoothiecharts.org/
+MIT License
+
+
+jQuery JavaScript Library
+Copyright jQuery Foundation and other contributors
+http://jquery.com/
+MIT Licnse
+
+
+Sizzle.js
+Copyright JS Foundation and other contributors
+http://sizzlejs.com/

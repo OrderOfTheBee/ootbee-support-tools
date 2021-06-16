@@ -1,0 +1,32 @@
+This addon contains the following external open source libraries or modifications / derivative works of such libraries or projects:
+
+JavaScript Console
+Copyright 2016 Florian Maul
+https://github.com/share-extras/js-console
+Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+Forked from version 0.7-SNAPSHOT, Git commit cc58afefef90942e013f239856b047519a467b3b (latest unified / merged revision on the project's master branch at the time)
+Modifications / derivative work re-licensed under GNU Lesser General Public License
+
+
+js-beautify
+Copyright 2007-2013 Einar Lielmanis and contributors
+https://beautifier.io/
+MIT License
+
+
+Tern
+Copyright 2013 Marijn Haverbeke and others
+https://ternjs.net/
+MIT License
+
+
+jsonlint
+Copyright 2012 Zachary Carter
+https://github.com/zaach/jsonlint
+MIT License
+
+
+CodeMirror
+Copyright 2017 Marijn Haverbeke and others
+https://codemirror.net/
+MIT License
