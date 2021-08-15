@@ -49,7 +49,7 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
  * Web script to retrieve the result of a web script execution or - in case the web script has not run to completion yet - the intermediary
  * log output.
  * 
- * @author Axel Faust, <a href="http://www.prodyna.com">PRODYNA AG</a>
+ * @author Axel Faust
  */
 public class ExecutionResultGet extends AbstractWebScript implements InitializingBean
 {
@@ -71,7 +71,7 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
 
     /**
      * @param printOutputCache
-     *            the printOutputCache to set
+     *     the printOutputCache to set
      */
     public final void setPrintOutputCache(final SimpleCache<Pair<String, Integer>, List<String>> printOutputCache)
     {
@@ -80,7 +80,7 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
 
     /**
      * @param resultCache
-     *            the resultCache to set
+     *     the resultCache to set
      */
     public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache)
     {

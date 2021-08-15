@@ -1,5 +1,3 @@
-<import resource="classpath:alfresco/templates/webscripts/de/fme/jsconsole/listscripts.get.js">
-
 /**
  * Copyright (C) 2016 - 2021 Order of the Bee
  *
@@ -29,26 +27,83 @@
  * addon.
  */
 
-var isUpdate = args.isUpdate;
+var prepareOutput = function prepareOutput(folder)
+{
+    var scriptList, children, idx, node;
 
-var saveScript = function saveScript(){
-    var scriptFolder = search.selectNodes("/app:company_home/app:dictionary/app:scripts")[0];
-    if (scriptFolder) {
-        var scriptNode;
-        if(isUpdate && isUpdate=="true"){
-            scriptNode = scriptFolder.childByNamePath(args.name);
-        }else{
-            scriptNode = scriptFolder.createFile(args.name);
+    scriptList = [];
+
+    children = folder.children;
+    children.sort(function(a, b)
+    {
+        return String(a.name).localeCompare(b.name);
+    });
+
+    for (idx = 0; idx < children.length; idx++)
+    {
+        node = children[idx];
+
+        if (node.isContainer)
+        {
+            scriptList.push({
+                text : node.name,
+                submenu : {
+                    id: node.id,
+                    itemdata : prepareOutput(node)
+                }
+            });
         }
-    	scriptNode.content = json.get('jsScript');
-    	scriptNode.properties["jsc:freemarkerScript"].content=json.get('fmScript');
-    	scriptNode.save();
-    }else{
+        else
+        {
+            scriptList.push({
+                text : node.name,
+                value : node.nodeRef
+            });
+        }
+    }
+
+    return scriptList;
+};
+
+function findAvailableScripts()
+{
+    var scriptFolder = search.selectNodes('/app:company_home/app:dictionary/app:scripts')[0];
+    if (scriptFolder)
+    {
+        model.scripts = JSON.stringify(prepareOutput(scriptFolder));
+    }
+    else
+    {
+        model.scripts = '[]';
+    }
+}
+
+function saveScript()
+{
+    var scriptFolder, scriptFile, isUpdate;
+
+    isUpdate = String(args.isUpdate) === 'true';
+
+    scriptFolder = search.selectNodes('/app:company_home/app:dictionary/app:scripts')[0];
+    if (scriptFolder)
+    {
+        if (isUpdate)
+        {
+            scriptFile = scriptFolder.childByNamePath(args.name);
+        }
+        else
+        {
+            scriptFile = scriptFolder.createFile(args.name);
+        }
+        scriptFile.content = json.get('jsScript');
+        scriptFile.properties['jsc:freemarkerScript'].content=json.get('fmScript');
+        scriptFile.save();
+    }
+    else
+    {
         logger.warn('No script folder');
     }
 }
 
 saveScript();
-
-// from listScripts.get.js
 findAvailableScripts();

@@ -26,30 +26,35 @@
  * is now being licensed under the LGPL as part of the OOTBee Support Tools
  * addon.
  */
+package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
-var prepareOutput= function prepareOutput(folder) {
-  var scriptlist = [];
+public class Dump
+{
 
-  var children = folder.children;
-  
-  for (c in children) {
-    var node = children[c];
-    if(node.isDocument && node.mimetype='application/json'){
-        scriptlist.push(node.content);        
+    private String json;
+
+    private String nodeRef;
+
+    public Dump(String nodeRef, String json)
+    {
+        this.nodeRef = nodeRef;
+        this.json = json;
     }
-  }
-  
-  return scriptlist;
+
+    public String getNodeRef()
+    {
+        return nodeRef;
+    }
+
+    public String getJson()
+    {
+        return json;
+    }
+
+    @Override
+    public String toString()
+    {
+        return json;
+    }
+
 }
-
-var findAvailableSnippets= function findAvailableScripts(){
-    var snippetsFolder = search.selectNodes("/app:company_home/app:dictionary/cm:jsconsole/cm:snippets")[0];
-    if (snippetsFolder) {
-    	model.scripts = jsonUtils.toJSONString(prepareOutput(snippetsFolder));
-    }
-    else {
-    	model.scripts = "[]";
-    }
-}
-
-findAvailableScripts();

@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,6 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.admin.SysAdminParams;
+import org.alfresco.repo.jscript.ScriptLogger;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.lock.mem.LockState;
 import org.alfresco.service.cmr.audit.AuditQueryParameters;
@@ -75,198 +77,236 @@ import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.extensions.webscripts.ScriptValueConverter;
 
 /**
- * Implements the 'jsconsole' Javascript extension object that is available in
- * the Javascript Console and is used internally for print output and
- * communication between Java code and Javascript by the
- * {@link ExecuteWebscript}.
+ * Implements the 'dumpService' JavaScript extension object that is available in the JavaScript Console and is used for quickly dumping the
+ * state of nodes in lieu of inspecting it via the Node Browser.
  *
  * @author Florian Maul (fme AG)
  *
  */
-public class DumpService {
+public class DumpService
+{
 
-	private static final Log logger = LogFactory.getLog("org.alfresco.repo.jscript.ScriptLogger");
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptLogger.class);
 
-	private NodeService nodeService;
+    private NodeService nodeService;
 
-	private PermissionService permissionService;
+    private PermissionService permissionService;
 
-	private NamespaceService namespaceService;
+    private NamespaceService namespaceService;
 
-	private VersionService versionService;
+    private VersionService versionService;
 
-	private ContentService contentService;
+    private ContentService contentService;
 
-	private DictionaryService dictionaryService;
+    private DictionaryService dictionaryService;
 
-	private RuleService ruleService;
+    private RuleService ruleService;
 
-	private WorkflowService workflowService;
+    private WorkflowService workflowService;
 
-	private TaggingService tagService;
+    private TaggingService tagService;
 
-	private WebDavService webDavService;
+    private WebDavService webDavService;
 
-	private AuditService auditService;
+    private AuditService auditService;
 
-	private SysAdminParams sysAdminParams;
+    private SysAdminParams sysAdminParams;
 
-	private AtomicInteger dumpCounter = new AtomicInteger();
+    private AtomicInteger dumpCounter = new AtomicInteger();
 
-	private int dumpLimit;
+    private int dumpLimit;
 
-	private LockService lockService;
+    private LockService lockService;
 
-	public List<JsConsoleDump> addDump(Object obj) {
-		List<JsConsoleDump> dumpOutput = new LinkedList<JsConsoleDump>();
+    public List<Dump> addDump(Object obj)
+    {
+        List<Dump> dumpOutput = new LinkedList<>();
 
-		if (obj != null) {
-			Object value = ScriptValueConverter.unwrapValue(obj);
+        if (obj != null)
+        {
+            Object value = ScriptValueConverter.unwrapValue(obj);
 
-			if (value instanceof Collection<?>) {
-				Collection<?> col = (Collection<?>) value;
-				Iterator<?> colIter = col.iterator();
-				int currentValue = dumpCounter.get();
-				while (colIter.hasNext()) {
-					if (dumpLimit == -1 || currentValue <= dumpLimit) {
-						dumpOutput.add(dumpObject(colIter.next()));
-						currentValue = dumpCounter.incrementAndGet();
-					} else {
-						logger.warn("Reached dump limit");
-					}
-				}
-			} else {
-				int currentValue = dumpCounter.getAndIncrement();
-				if (dumpLimit == -1 || currentValue <= dumpLimit) {
-					dumpOutput.add(dumpObject(value));
-				} else {
-					logger.warn("Reached dump limit");
-				}
-			}
-		}
-		return dumpOutput;
-	}
+            if (value instanceof Collection<?>)
+            {
+                Collection<?> col = (Collection<?>) value;
+                Iterator<?> colIter = col.iterator();
+                int currentValue = dumpCounter.get();
+                while (colIter.hasNext())
+                {
+                    if (dumpLimit == -1 || currentValue <= dumpLimit)
+                    {
+                        dumpOutput.add(dumpObject(colIter.next()));
+                        currentValue = dumpCounter.incrementAndGet();
+                    }
+                    else
+                    {
+                        LOGGER.warn("Reached dump limit");
+                    }
+                }
+            }
+            else
+            {
+                int currentValue = dumpCounter.getAndIncrement();
+                if (dumpLimit == -1 || currentValue <= dumpLimit)
+                {
+                    dumpOutput.add(dumpObject(value));
+                }
+                else
+                {
+                    LOGGER.warn("Reached dump limit");
+                }
+            }
+        }
+        return dumpOutput;
+    }
 
-	private JsConsoleDump dumpObject(Object value) {
+    private Dump dumpObject(Object value)
+    {
+        final NodeRef nodeRef = extractNodeRef(value);
 
-		final NodeRef nodeRef = extractNodeRef(value);
+        // This method is used by the /api/metadata web script
+        String jsonStr = "{}";
 
-		// This method is used by the /api/metadata web script
-		String jsonStr = "{}";
+        if (this.nodeService.exists(nodeRef))
+        {
+            JSONObject json = new JSONObject();
 
-		if (this.nodeService.exists(nodeRef)) {
-			JSONObject json = new JSONObject();
+            try
+            {
+                json.put("nodeRef", nodeRef.toString());
+                QName type = nodeService.getType(nodeRef);
+                String typeString = type.toPrefixString(namespaceService);
+                json.put("type", typeString);
+                json.put("path", nodeService.getPath(nodeRef));
+                json.put("displayPath", nodeService.getPath(nodeRef).toDisplayPath(nodeService, permissionService));
 
-			try {
-				// add type info
-				json.put("nodeRef", nodeRef.toString());
-				QName type = nodeService.getType(nodeRef);
-				String typeString = type.toPrefixString(namespaceService);
-				json.put("type", typeString);
-				json.put("path", nodeService.getPath(nodeRef));
-				json.put("displayPath", nodeService.getPath(nodeRef).toDisplayPath(nodeService, permissionService));
+                Status nodeStatus = this.nodeService.getNodeStatus(nodeRef);
+                json.put("transactionId", nodeStatus.getDbTxnId());
+                json.put("isDeleted", nodeStatus.isDeleted());
 
-				Status nodeStatus = this.nodeService.getNodeStatus(nodeRef);
-				json.put("transactionId", nodeStatus.getDbTxnId());
-				json.put("isDeleted", nodeStatus.isDeleted());
+                extractProperties(nodeRef, json);
+                extractAspects(nodeRef, json);
+                extractPermissionInformation(nodeRef, json);
+                extractVersionInformation(nodeRef, json);
+                extractContentInformation(nodeRef, json, type);
+                extractRulesInformation(nodeRef, json);
+                extractWorkflowInformation(nodeRef, json);
+                extractRenditionInformation(nodeRef, json);
+                extractTagsInformation(nodeRef, json);
+                extractLockInformation(nodeRef, json);
 
-				extractProperties(nodeRef, json);
-				extractAspects(nodeRef, json);
-				extractPermissionInformation(nodeRef, json);
-				extractVersionInformation(nodeRef, json);
-				extractContentInformation(nodeRef, json, type);
-				extractRulesInformation(nodeRef, json);
-				extractWorkflowInformation(nodeRef, json);
-				extractRenditionInformation(nodeRef, json);
-				extractTagsInformation(nodeRef, json);
-				extractLockInformation(nodeRef,json);
-				//rating
+                json.put("webdav url",
+                        sysAdminParams.getAlfrescoProtocol() + "://" + sysAdminParams.getAlfrescoHost() + ":"
+                                + sysAdminParams.getAlfrescoPort() + "/" + sysAdminParams.getAlfrescoContext()
+                                + webDavService.getWebdavUrl(nodeRef));
 
-				json.put(
-						"webdav url",
-						sysAdminParams.getAlfrescoProtocol() + "://" + sysAdminParams.getAlfrescoHost() + ":"
-								+ sysAdminParams.getAlfrescoPort() + "/" + sysAdminParams.getAlfrescoContext()
-								+ webDavService.getWebdavUrl(nodeRef));
+                json.put("audits", getAudits(nodeRef, true));
+                json.put("audit count", getAudits(nodeRef, false).size());
 
-				json.put("audits", getAudits(nodeRef, true));
-				json.put("audit count", getAudits(nodeRef, false).size());
+            }
+            catch (JSONException error)
+            {
+                LOGGER.warn("JSON error creating node dump", error);
+            }
 
-			} catch (JSONException error) {
-				error.printStackTrace();
-			}
+            jsonStr = json.toString();
+        }
 
-			jsonStr = json.toString();
-		}
+        return new Dump(nodeRef.toString(), jsonStr);
+    }
 
-		return new JsConsoleDump(nodeRef.toString(), jsonStr);
-	}
+    /**
+     * Extracts tags information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract tags information
+     * @param json
+     *     the JSON object structure into which to add tags information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractTagsInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        List<String> tags = tagService.getTags(nodeRef);
+        json.put("tags count", tags.size());
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractTagsInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		List<String> tags = tagService.getTags(nodeRef);
-		json.put("tags count", tags.size());
+        JSONArray tagsJson = new JSONArray();
+        for (String tag : tags)
+        {
+            tagsJson.put(tag);
 
-		JSONArray tagsJson = new JSONArray();
-		for (String tag : tags) {
-			tagsJson.put(tag);
+        }
+        json.put("tags", tagsJson);
+    }
 
-		}
-		json.put("tags", tagsJson);
-	}
+    /**
+     * Extracts workflow counts information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract workflow counts information
+     * @param json
+     *     the JSON object structure into which to add workflow counts information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractWorkflowInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        json.put("workflows (active/completed)", workflowService.getWorkflowsForContent(nodeRef, true).size() + " / "
+                + workflowService.getWorkflowsForContent(nodeRef, false).size());
+    }
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractWorkflowInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		json.put("workflows (active/completed)", workflowService.getWorkflowsForContent(nodeRef, true).size() + " / "
-				+ workflowService.getWorkflowsForContent(nodeRef, false).size());
-	}
+    /**
+     * Extracts {@link ContentModel#PROP_CONTENT content} information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract content information
+     * @param json
+     *     the JSON object structure into which to add content information
+     * @param type
+     *     the qualified type of the node
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractContentInformation(final NodeRef nodeRef, JSONObject json, QName type) throws JSONException
+    {
+        if (dictionaryService.isSubClass(type, ContentModel.TYPE_CONTENT))
+        {
+            ContentReader contentReader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
+            if (contentReader != null)
+            {
+                json.put("content encoding", contentReader.getEncoding());
+                json.put("content mimetype", contentReader.getMimetype());
+                json.put("content size", byteCountToDisplaySize(contentReader.getSize()));
+                json.put("content locale", contentReader.getLocale());
+                json.put("content lastModified", new Date(contentReader.getLastModified()));
+                json.put("content url", contentReader.getContentUrl());
+            }
+        }
+    }
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @param type
-	 * @throws JSONException
-	 */
-	private void extractContentInformation(final NodeRef nodeRef, JSONObject json, QName type) throws JSONException {
-		if (dictionaryService.isSubClass(type, ContentModel.TYPE_CONTENT)) {
-			ContentReader contentReader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
-			if (contentReader != null) {
-				json.put("content encoding", contentReader.getEncoding());
-				json.put("content mimetype", contentReader.getMimetype());
-				json.put("content size", byteCountToDisplaySize(contentReader.getSize()));
-				json.put("content locale", contentReader.getLocale());
-				json.put("content lastModified", new Date(contentReader.getLastModified()));
-				json.put("content url", contentReader.getContentUrl());
-			}
-		}
-	}
-
-	// similar result to commons-io FileUtils#byteCountToDisplaySize(BigInteger)
+    // similar result to commons-io FileUtils#byteCountToDisplaySize(BigInteger)
     // implemented here to avoid hard dependency (flagged by extension inspector)
-    private static String byteCountToDisplaySize(long size) {
+    private static String byteCountToDisplaySize(long size)
+    {
         String displaySize = String.valueOf(size) + " bytes";
-        if (size > 1024) {
+        if (size > 1024)
+        {
             BigInteger bis = BigInteger.valueOf(size);
-            BigInteger unitStep = BigInteger.valueOf(2^10);
-            BigInteger unitDivisor = BigInteger.valueOf(2^60);
-            String[] unitSuffixes = {" EB", " PB", " TB", " GB", " MB", " KB"};
-            for (String unitSuffix : unitSuffixes) {
-                if (bis.compareTo(unitDivisor) > 0) {
+            BigInteger unitStep = BigInteger.valueOf(2 ^ 10);
+            BigInteger unitDivisor = BigInteger.valueOf(2 ^ 60);
+            String[] unitSuffixes = { " EB", " PB", " TB", " GB", " MB", " KB" };
+            for (String unitSuffix : unitSuffixes)
+            {
+                if (bis.compareTo(unitDivisor) > 0)
+                {
                     displaySize = String.valueOf(bis.divide(unitDivisor)) + unitSuffix;
                     break;
                 }
@@ -276,15 +316,19 @@ public class DumpService {
         return displaySize;
     }
 
-	 /**
+    /**
+     * Extracts lock status information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract lock information
      * @param json
-	 * @param nodeRef
-	 * @return true if the node is currently locked
-	 * @throws JSONException
+     *     the JSON object structure into which to add lock information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
      */
     public void extractLockInformation(NodeRef nodeRef, JSONObject json) throws JSONException
     {
-		Set<QName> nodeAspects = this.nodeService.getAspects(nodeRef);
+        Set<QName> nodeAspects = this.nodeService.getAspects(nodeRef);
 
         if (nodeAspects.contains(ContentModel.ASPECT_LOCKABLE))
         {
@@ -295,301 +339,405 @@ public class DumpService {
             json.put("lock ExpireDate", lockState.getExpires());
             json.put("lock LifeTime", lockState.getLifetime());
             json.put("lock additional info", lockState.getAdditionalInfo());
-        }else{
+        }
+        else
+        {
             json.put("lock Status", "-");
 
         }
     }
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractVersionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		json.put("isAVersion", versionService.isAVersion(nodeRef));
-		json.put("isVersioned", versionService.isVersioned(nodeRef));
+    /**
+     * Extracts version information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract version information
+     * @param json
+     *     the JSON object structure into which to add version information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractVersionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        json.put("isAVersion", versionService.isAVersion(nodeRef));
+        json.put("isVersioned", versionService.isVersioned(nodeRef));
 
-		VersionHistory versionHistory = versionService.getVersionHistory(nodeRef);
-		if (versionHistory != null) {
-			json.put("version count", versionHistory.getAllVersions().size());
-	        Collection<Version> allVersions = versionHistory.getAllVersions();
+        VersionHistory versionHistory = versionService.getVersionHistory(nodeRef);
+        if (versionHistory != null)
+        {
+            json.put("version count", versionHistory.getAllVersions().size());
+            Collection<Version> allVersions = versionHistory.getAllVersions();
             List<String> tooltipFragments = new ArrayList<>(allVersions.size());
-            for (Version version : allVersions) {
+            for (Version version : allVersions)
+            {
                 tooltipFragments.add(version.getVersionProperties().toString());
             }
             json.put("version count tooltip", tooltipFragments);
-		} else {
-			json.put("version count", "0");
-		}
-	}
+        }
+        else
+        {
+            json.put("version count", "0");
+        }
+    }
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractProperties(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		// add properties
-		Map<QName, Serializable> nodeProperties = this.nodeService.getProperties(nodeRef);
+    /**
+     * Extracts properties information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract properties information
+     * @param json
+     *     the JSON object structure into which to add properties information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractProperties(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        // add properties
+        Map<QName, Serializable> nodeProperties = this.nodeService.getProperties(nodeRef);
 
-		Map<String, Serializable> nodePropertiesShortQNames = new TreeMap<String, Serializable>();
-		for (QName nextLongQName : nodeProperties.keySet()) {
-			try {
-				nodePropertiesShortQNames.put(nextLongQName.toPrefixString(namespaceService),
-						nodeProperties.get(nextLongQName));
-			} catch (NamespaceException ne) {
-				// ignore properties that do not have a registered
-				// namespace
+        Map<String, Serializable> nodePropertiesShortQNames = new TreeMap<String, Serializable>();
+        for (Entry<QName, Serializable> entry : nodeProperties.entrySet())
+        {
+            QName qn = entry.getKey();
+            Serializable value = entry.getValue();
+            try
+            {
+                nodePropertiesShortQNames.put(qn.toPrefixString(namespaceService), value);
+            }
+            catch (NamespaceException ne)
+            {
+                LOGGER.debug("Ignoring property '{}' as it's namespace is not registered", qn);
+            }
+        }
 
-				if (logger.isDebugEnabled()) {
-					logger.debug("Ignoring property '" + nextLongQName + "' as it's namespace is not registered");
-				}
-			}
-		}
+        json.put("properties", nodePropertiesShortQNames);
+    }
 
-		json.put("properties", nodePropertiesShortQNames);
-	}
+    /**
+     * Extracts aspects information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract aspects information
+     * @param json
+     *     the JSON object structure into which to add aspects information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractAspects(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        // add aspects as an array
+        Set<QName> nodeAspects = this.nodeService.getAspects(nodeRef);
+        Set<String> nodeAspectsShortQNames = new LinkedHashSet<>(nodeAspects.size());
+        for (QName nextLongQName : nodeAspects)
+        {
+            nodeAspectsShortQNames.add(nextLongQName.toPrefixString(namespaceService));
+        }
+        json.put("aspects", nodeAspectsShortQNames);
+    }
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractAspects(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		// add aspects as an array
-		Set<QName> nodeAspects = this.nodeService.getAspects(nodeRef);
-		Set<String> nodeAspectsShortQNames = new LinkedHashSet<String>(nodeAspects.size());
-		for (QName nextLongQName : nodeAspects) {
-			nodeAspectsShortQNames.add(nextLongQName.toPrefixString(namespaceService));
-		}
-		json.put("aspects", nodeAspectsShortQNames);
-	}
+    /**
+     * Extracts permission information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract permission information
+     * @param json
+     *     the JSON object structure into which to add permission information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractPermissionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        json.put("inheritPermissions", permissionService.getInheritParentPermissions(nodeRef));
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractPermissionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		json.put("inheritPermissions", permissionService.getInheritParentPermissions(nodeRef));
+        JSONArray permissionJson = new JSONArray();
 
-		JSONArray permissionJson = new JSONArray();
+        Set<AccessPermission> permissions = permissionService.getAllSetPermissions(nodeRef);
+        for (AccessPermission accessPermission : permissions)
+        {
+            JSONObject permission = new JSONObject();
+            permission.put("authority", accessPermission.getAuthority());
+            permission.put("authorityType", accessPermission.getAuthorityType());
+            permission.put("accessStatus", accessPermission.getAccessStatus());
+            permission.put("permission", accessPermission.getPermission());
+            permission.put("directly", accessPermission.isSetDirectly());
+            permissionJson.put(permission);
+        }
 
-		Set<AccessPermission> permissions = permissionService.getAllSetPermissions(nodeRef);
-		for (AccessPermission accessPermission : permissions) {
-			JSONObject permission = new JSONObject();
-			permission.put("authority", accessPermission.getAuthority());
-			permission.put("authorityType", accessPermission.getAuthorityType());
-			permission.put("accessStatus", accessPermission.getAccessStatus());
-			permission.put("permission", accessPermission.getPermission());
-			permission.put("directly", accessPermission.isSetDirectly());
-			permissionJson.put(permission);
-		}
+        json.put("permissions", permissionJson);
+    }
 
-		json.put("permissions", permissionJson);
-	}
+    /**
+     * Extracts renditions information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract renditions information
+     * @param json
+     *     the JSON object structure into which to add renditions information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractRenditionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        // cannot use RenditionService or RenditionService2
+        // not consistently available / supported across the various ACS versions
+        List<ChildAssociationRef> renditions = nodeService.getChildAssocs(nodeRef, RenditionModel.ASSOC_RENDITION,
+                RegexQNamePattern.MATCH_ALL);
+        json.put("renditions count", renditions.size());
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractRenditionInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-	    // cannot use RenditionService or RenditionService2
-	    // not consistently available / supported across the various ACS versions
-		List<ChildAssociationRef> renditions = nodeService.getChildAssocs(nodeRef, RenditionModel.ASSOC_RENDITION, RegexQNamePattern.MATCH_ALL);
-		json.put("renditions count", renditions.size());
+        JSONArray renditionsJson = new JSONArray();
+        for (ChildAssociationRef rendition : renditions)
+        {
+            JSONObject rendtionJson = new JSONObject();
+            rendtionJson.put("typeName", rendition.getTypeQName().toPrefixString(namespaceService));
+            rendtionJson.put("qName", rendition.getQName().toPrefixString(namespaceService));
+            rendtionJson.put("childType", nodeService.getType(rendition.getChildRef()).toPrefixString(namespaceService));
+            renditionsJson.put(rendtionJson);
+        }
+        json.put("renditions", renditionsJson);
+    }
 
-		JSONArray renditionsJson = new JSONArray();
-		for (ChildAssociationRef rendition : renditions) {
-			JSONObject rendtionJson = new JSONObject();
-			rendtionJson.put("typeName", rendition.getTypeQName().toPrefixString(namespaceService));
-			rendtionJson.put("qName", rendition.getQName().toPrefixString(namespaceService));
-			rendtionJson.put("childType", nodeService.getType(rendition.getChildRef()).toPrefixString(namespaceService));
-			renditionsJson.put(rendtionJson);
-		}
-		json.put("renditions", renditionsJson);
-	}
+    /**
+     * Extracts rules information of a node into the aggregate dump JSON object structure.
+     * 
+     * @param nodeRef
+     *     the reference to the node from which to extract rules information
+     * @param json
+     *     the JSON object structure into which to add rules information
+     * @throws JSONException
+     *     if an error occurs filling in the JSON object structure
+     */
+    private void extractRulesInformation(final NodeRef nodeRef, JSONObject json) throws JSONException
+    {
+        List<Rule> rulesLocal = ruleService.getRules(nodeRef, false);
+        json.put("rules local ", rulesLocal.size());
 
-	/**
-	 * @param nodeRef
-	 * @param json
-	 * @throws JSONException
-	 */
-	private void extractRulesInformation(final NodeRef nodeRef, JSONObject json) throws JSONException {
-		List<Rule> rulesLocal = ruleService.getRules(nodeRef, false);
-		json.put("rules local ", rulesLocal.size());
+        List<Rule> rules = ruleService.getRules(nodeRef, true);
+        json.put("rules inherited ", rules.size() - rulesLocal.size());
+        JSONArray rulesJson = new JSONArray();
 
-		List<Rule> rules = ruleService.getRules(nodeRef, true);
-		json.put("rules inherited ", rules.size() - rulesLocal.size());
-		JSONArray rulesJson = new JSONArray();
+        for (Rule rule : rules)
+        {
+            JSONObject ruleJson = new JSONObject();
+            ruleJson.put("title", rule.getTitle());
+            ruleJson.put("description", rule.getDescription());
+            ruleJson.put("asynchronous", rule.getExecuteAsynchronously());
+            ruleJson.put("disabled", rule.getRuleDisabled());
+            ruleJson.put("ruleNode", rule.getNodeRef());
+            ruleJson.put("ruleTypes", rule.getRuleTypes().toString());
+            ruleJson.put("action", rule.getAction().getTitle());
+            ruleJson.put("inherit", rule.isAppliedToChildren());
+            NodeRef owningNodeRef = ruleService.getOwningNodeRef(rule);
+            ruleJson.put("owningNodeRef", owningNodeRef.toString());
+            rulesJson.put(ruleJson);
+        }
 
-		for (Rule rule : rules) {
-			JSONObject ruleJson = new JSONObject();
-			ruleJson.put("title", rule.getTitle());
-			ruleJson.put("description", rule.getDescription());
-			ruleJson.put("asynchronous", rule.getExecuteAsynchronously());
-			ruleJson.put("disabled", rule.getRuleDisabled());
-			ruleJson.put("ruleNode", rule.getNodeRef());
-			ruleJson.put("ruleTypes", rule.getRuleTypes().toString());
-			ruleJson.put("action", rule.getAction().getTitle());
-			ruleJson.put("inherit", rule.isAppliedToChildren());
-			NodeRef owningNodeRef = ruleService.getOwningNodeRef(rule);
-			ruleJson.put("owningNodeRef", owningNodeRef.toString());
-			rulesJson.put(ruleJson);
-		}
+        json.put("rules", rulesJson);
+    }
 
-		json.put("rules", rulesJson);
-	}
+    /**
+     * Extracts the node reference representing a particular value object, which can be either a {@link ScriptNode}, {@link NodeRef regular
+     * node reference} or a textual value.
+     * 
+     * @param value
+     *     the value from which to extract the node reference
+     * @return the node reference
+     */
+    private NodeRef extractNodeRef(Object value)
+    {
+        final NodeRef nodeRef;
+        if (value instanceof ScriptNode)
+        {
+            nodeRef = ((ScriptNode) value).getNodeRef();
+        }
+        else if (value instanceof NodeRef)
+        {
+            nodeRef = (NodeRef) value;
+        }
+        else if (value instanceof String)
+        {
+            nodeRef = new NodeRef((String) value);
+        }
+        else
+        {
+            throw new IllegalArgumentException("value of type " + value.getClass().getSimpleName() + " is not supported for dump");
+        }
+        return nodeRef;
+    }
 
-	/**
-	 * @param value
-	 * @return
-	 */
-	private NodeRef extractNodeRef(Object value) {
-		final NodeRef nodeRef;
-		if (value instanceof ScriptNode) {
-			nodeRef = ((ScriptNode) value).getNodeRef();
-		} else if (value instanceof NodeRef) {
-			nodeRef = (NodeRef) value;
-		} else if (value instanceof String) {
-			nodeRef = new NodeRef((String) value);
-		} else {
-			throw new IllegalArgumentException("value of type " + value.getClass().getSimpleName() + " is not supported for dump");
-		}
-		return nodeRef;
-	}
+    private Collection<Map<String, Object>> getAudits(NodeRef nodeRef, final boolean limited)
+    {
+        // Execute the query
+        AuditQueryParameters params = new AuditQueryParameters();
+        params.setForward(false);
+        params.addSearchKey(null, nodeRef.toString());
 
-	private Collection<Map<String, Object>> getAudits(NodeRef nodeRef, final boolean limited) {
+        final List<Map<String, Object>> entries = new ArrayList<>();
+        AuditQueryCallback callback = new AuditQueryCallback()
+        {
 
-		// Execute the query
-		AuditQueryParameters params = new AuditQueryParameters();
-		params.setForward(false);
-		params.addSearchKey(null, nodeRef.toString());
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean valuesRequired()
+            {
+                if (limited)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
-		final List<Map<String, Object>> entries = new ArrayList<Map<String, Object>>();
-		AuditQueryCallback callback = new AuditQueryCallback() {
-			@Override
-			public boolean valuesRequired() {
-				if (limited) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean handleAuditEntryError(Long entryId, String errorMsg, Throwable error)
+            {
+                return true;
+            }
 
-			@Override
-			public boolean handleAuditEntryError(Long entryId, String errorMsg, Throwable error) {
-				return true;
-			}
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean handleAuditEntry(Long entryId, String applicationName, String user, long time, Map<String, Serializable> values)
+            {
 
-			@Override
-			public boolean handleAuditEntry(Long entryId, String applicationName, String user, long time,
-					Map<String, Serializable> values) {
+                Map<String, Object> entry = new HashMap<>(11);
+                if (limited)
+                {
 
-				Map<String, Object> entry = new HashMap<String, Object>(11);
-				if (limited) {
+                    entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_ID, entryId);
+                    entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_APPLICATION, applicationName);
+                    if (user != null)
+                    {
+                        entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_USER, user);
+                    }
+                    entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_TIME, new Date(time));
+                    if (values != null)
+                    {
+                        // Convert values to Strings
+                        Map<String, String> valueStrings = new HashMap<>(values.size() * 2);
+                        for (Map.Entry<String, Serializable> mapEntry : values.entrySet())
+                        {
+                            String key = mapEntry.getKey();
+                            Serializable value = mapEntry.getValue();
+                            try
+                            {
+                                String valueString = DefaultTypeConverter.INSTANCE.convert(String.class, value);
+                                valueStrings.put(key, valueString);
+                            }
+                            catch (TypeConversionException e)
+                            {
+                                valueStrings.put(key, value.toString());
+                            }
 
-					entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_ID, entryId);
-					entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_APPLICATION, applicationName);
-					if (user != null) {
-						entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_USER, user);
-					}
-					entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_TIME, new Date(time));
-					if (values != null) {
-						// Convert values to Strings
-						Map<String, String> valueStrings = new HashMap<String, String>(values.size() * 2);
-						for (Map.Entry<String, Serializable> mapEntry : values.entrySet()) {
-							String key = mapEntry.getKey();
-							Serializable value = mapEntry.getValue();
-							try {
-								String valueString = DefaultTypeConverter.INSTANCE.convert(String.class, value);
-								valueStrings.put(key, valueString);
-							} catch (TypeConversionException e) {
-								// Use the toString()
-								valueStrings.put(key, value.toString());
-							}
+                        }
+                        entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_VALUES, valueStrings);
+                    }
+                    entries.add(entry);
+                    return true;
+                }
+                else
+                {
+                    entries.add(entry);
+                    return true;
+                }
+            }
+        };
+        int limit;
+        if (limited)
+        {
+            limit = 5;
+        }
+        else
+        {
+            limit = 100;
+        }
+        auditService.auditQuery(callback, params, limit);
+        return entries;
+    }
 
-						}
-						entry.put(JavascriptConsoleScriptObject.JSON_KEY_ENTRY_VALUES, valueStrings);
-					}
-					entries.add(entry);
-					return true;
-				} else {
-					entries.add(entry);
-					return true;
-				}
-			}
-		};
-		int limit;
-		if (limited) {
-			limit = 5;
-		} else {
-			limit = 100;
-		}
-		auditService.auditQuery(callback, params, limit);
-		return entries;
-	}
+    public void setNodeService(NodeService nodeService)
+    {
+        this.nodeService = nodeService;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setPermissionService(PermissionService permissionService)
+    {
+        this.permissionService = permissionService;
+    }
 
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
+    public void setNamespaceService(NamespaceService namespaceService)
+    {
+        this.namespaceService = namespaceService;
+    }
 
-	public void setNamespaceService(NamespaceService namespaceService) {
-		this.namespaceService = namespaceService;
-	}
+    public void setVersionService(VersionService versionService)
+    {
+        this.versionService = versionService;
+    }
 
-	public void setVersionService(VersionService versionService) {
-		this.versionService = versionService;
-	}
+    public void setContentService(ContentService contentService)
+    {
+        this.contentService = contentService;
+    }
 
-	public void setContentService(ContentService contentService) {
-		this.contentService = contentService;
-	}
+    public void setDictionaryService(DictionaryService dictionaryService)
+    {
+        this.dictionaryService = dictionaryService;
+    }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    public void setRuleService(RuleService ruleService)
+    {
+        this.ruleService = ruleService;
+    }
 
-	public void setRuleService(RuleService ruleService) {
-		this.ruleService = ruleService;
-	}
+    public void setWorkflowService(WorkflowService workflowService)
+    {
+        this.workflowService = workflowService;
+    }
 
-	public void setWorkflowService(WorkflowService workflowService) {
-		this.workflowService = workflowService;
-	}
+    public void setTagService(TaggingService tagService)
+    {
+        this.tagService = tagService;
+    }
 
-	public void setTagService(TaggingService tagService) {
-		this.tagService = tagService;
-	}
+    public void setWebDavService(WebDavService webDavService)
+    {
+        this.webDavService = webDavService;
+    }
 
-	public void setWebDavService(WebDavService webDavService) {
-		this.webDavService = webDavService;
-	}
+    public void setAuditService(AuditService auditService)
+    {
+        this.auditService = auditService;
+    }
 
-	public void setAuditService(AuditService auditService) {
-		this.auditService = auditService;
-	}
+    public void setSysAdminParams(SysAdminParams sysAdminParams)
+    {
+        this.sysAdminParams = sysAdminParams;
+    }
 
-	public void setSysAdminParams(SysAdminParams sysAdminParams) {
-		this.sysAdminParams = sysAdminParams;
-	}
+    public void setDumpCounter(AtomicInteger dumpCounter)
+    {
+        this.dumpCounter = dumpCounter;
+    }
 
-	public void setDumpCounter(AtomicInteger dumpCounter) {
-		this.dumpCounter = dumpCounter;
-	}
+    public void setDumpLimit(int dumpLimit)
+    {
+        this.dumpLimit = dumpLimit;
+    }
 
-	public void setDumpLimit(int dumpLimit) {
-		this.dumpLimit = dumpLimit;
-	}
-
-	public void setLockService(LockService lockService) {
-		this.lockService = lockService;
-	}
+    public void setLockService(LockService lockService)
+    {
+        this.lockService = lockService;
+    }
 
 }

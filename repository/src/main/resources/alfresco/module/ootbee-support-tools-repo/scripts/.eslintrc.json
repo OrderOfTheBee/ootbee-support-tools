@@ -11,7 +11,6 @@
         "guest": false,
         "server": false,
         "model": false,
-
         "args": false,
         "argsM": false,
         "cache": false,
@@ -19,12 +18,10 @@
         "headersM": false,
         "session": false,
         "url": false,
-
         "format": false,
         "jsonUtils": false,
         "logger": false,
         "msg": false,
-
         "json": false,
         "status": false,
         "config": false,
@@ -35,7 +32,6 @@
         "script": false,
         "space": false,
         "userhome": false,
-
         "actions": false,
         "activities": false,
         "appUtils": false,
@@ -47,17 +43,13 @@
         "imap": false,
         "paging": false,
         "people": false,
-        "groups": false,
         "presence": false,
         "search": false,
         "slingshotDocLib": false,
         "utils": false,
         "webprojects": false,
         "workflow": false,
-        "actionTrackingService": false,
-        "taggingService": false,
         "siteService": false,
-
         "Admin": false
     },
     "rules": {
