@@ -1,8 +1,15 @@
-logger=jsconsole.getLogger();
-function print(obj) {
-	jsconsole.print(obj);
-};
+// normally, logger should be considered immutable - this is one of the rare exceptions
+/* global jsconsole: false, dumpService: false, logger: true */
+logger = jsconsole.getLogger();
 
-function dump(obj){
+/* exported print */
+function print(obj)
+{
+	jsconsole.print(obj);
+}
+
+/* exported dump */
+function dump(obj)
+{
     dumpService.addDump(obj);
-};
+}

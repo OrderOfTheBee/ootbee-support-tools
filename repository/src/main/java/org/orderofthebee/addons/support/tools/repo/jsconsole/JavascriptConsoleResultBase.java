@@ -47,119 +47,138 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
  * @author Florian Maul (fme AG)
  *
  */
-public class JavascriptConsoleResultBase implements Serializable {
+public class JavascriptConsoleResultBase implements Serializable
+{
 
     private static final long serialVersionUID = 4149990179052751784L;
 
     private String renderedTemplate = "";
 
-	private String spaceNodeRef = "";
+    private String spaceNodeRef = "";
 
-	private String spacePath = "";
+    private String spacePath = "";
 
-	private String scriptPerformance;
+    private String scriptPerformance;
 
-	private String freemarkerPerformance;
+    private String freemarkerPerformance;
 
-	private String webscriptPerformance;
+    private String webscriptPerformance;
 
-	private int scriptOffset;
+    private int scriptOffset;
 
-	public void setWebscriptPerformance(String webscriptPerformance) {
-		this.webscriptPerformance = webscriptPerformance;
-	}
+    public void setWebscriptPerformance(String webscriptPerformance)
+    {
+        this.webscriptPerformance = webscriptPerformance;
+    }
 
-	public void setScriptPerformance(String scriptPerformance) {
-		this.scriptPerformance = scriptPerformance;
-	}
+    public void setScriptPerformance(String scriptPerformance)
+    {
+        this.scriptPerformance = scriptPerformance;
+    }
 
-	public void setFreemarkerPerformance(String freemarkerPerformance) {
-		this.freemarkerPerformance = freemarkerPerformance;
-	}
+    public void setFreemarkerPerformance(String freemarkerPerformance)
+    {
+        this.freemarkerPerformance = freemarkerPerformance;
+    }
 
-	public void setRenderedTemplate(String renderedTemplate) {
-		this.renderedTemplate = renderedTemplate;
-	}
+    public void setRenderedTemplate(String renderedTemplate)
+    {
+        this.renderedTemplate = renderedTemplate;
+    }
 
-	public void setSpaceNodeRef(String spaceNodeRef) {
-		this.spaceNodeRef = spaceNodeRef;
-	}
+    public void setSpaceNodeRef(String spaceNodeRef)
+    {
+        this.spaceNodeRef = spaceNodeRef;
+    }
 
-	public void setSpacePath(String spacePath) {
-		this.spacePath = spacePath;
-	}
-	
-	public String getWebscriptPerformance() {
-	    return this.webscriptPerformance;
-	}
-	
-	public String getScriptPerformance() {
+    public void setSpacePath(String spacePath)
+    {
+        this.spacePath = spacePath;
+    }
+
+    public String getWebscriptPerformance()
+    {
+        return this.webscriptPerformance;
+    }
+
+    public String getScriptPerformance()
+    {
         return this.scriptPerformance;
     }
-	
-	public String getFreemarkerPerformance() {
+
+    public String getFreemarkerPerformance()
+    {
         return this.freemarkerPerformance;
     }
 
-	public String getRenderedTemplate() {
-		return renderedTemplate;
-	}
+    public String getRenderedTemplate()
+    {
+        return renderedTemplate;
+    }
 
-	public String getSpaceNodeRef() {
-		return spaceNodeRef;
-	}
+    public String getSpaceNodeRef()
+    {
+        return spaceNodeRef;
+    }
 
-	public String getSpacePath() {
-		return spacePath;
-	}
+    public String getSpacePath()
+    {
+        return spacePath;
+    }
 
-	public void writeJson(WebScriptResponse response, List<String> printOutput) throws IOException {
-		response.setContentEncoding("UTF-8");
-		response.setContentType(MimetypeMap.MIMETYPE_JSON);
+    public void writeJson(WebScriptResponse response, List<String> printOutput) throws IOException
+    {
+        response.setContentEncoding("UTF-8");
+        response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
-		try {
-			JSONObject jsonOutput = new JSONObject();
-			jsonOutput.put("renderedTemplate", getRenderedTemplate());
-			jsonOutput.put("printOutput", printOutput);
-			jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
-			jsonOutput.put("spacePath", getSpacePath());
-			jsonOutput.put("result", new JSONArray());
-			jsonOutput.put("scriptPerf", this.scriptPerformance);
-			jsonOutput.put("freemarkerPerf", this.freemarkerPerformance);
-			jsonOutput.put("webscriptPerf", this.webscriptPerformance);
-			jsonOutput.put("scriptOffset", this.scriptOffset);
+        try
+        {
+            JSONObject jsonOutput = new JSONObject();
+            jsonOutput.put("renderedTemplate", getRenderedTemplate());
+            jsonOutput.put("printOutput", printOutput);
+            jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
+            jsonOutput.put("spacePath", getSpacePath());
+            jsonOutput.put("result", new JSONArray());
+            jsonOutput.put("scriptPerf", this.scriptPerformance);
+            jsonOutput.put("freemarkerPerf", this.freemarkerPerformance);
+            jsonOutput.put("webscriptPerf", this.webscriptPerformance);
+            jsonOutput.put("scriptOffset", this.scriptOffset);
 
-			response.getWriter().write(jsonOutput.toString());
+            response.getWriter().write(jsonOutput.toString());
 
-		} catch (JSONException e) {
-			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
-					"Error writing json response.", e);
-		}
-	}
-	
-	public JavascriptConsoleResultBase toBaseResult() {
-	    final JavascriptConsoleResultBase base = new JavascriptConsoleResultBase();
-	    base.setFreemarkerPerformance(this.freemarkerPerformance);
-	    base.setRenderedTemplate(this.renderedTemplate);
-	    base.setScriptOffset(this.scriptOffset);
-	    base.setScriptPerformance(this.scriptPerformance);
-	    base.setSpaceNodeRef(this.spaceNodeRef);
-	    base.setSpacePath(this.spacePath);
-	    base.setWebscriptPerformance(this.webscriptPerformance);
-	    
-	    return base;
-	}
+        }
+        catch (JSONException e)
+        {
+            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json response.", e);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return "JavascriptConsoleResultBase [renderedTemplate=" + this.renderedTemplate
-				+ ", spaceNodeRef=" + this.spaceNodeRef + ", spacePath=" + this.spacePath
-				+ ", scriptPerformance=" + this.scriptPerformance + ", freemarkerPerformance=" + this.freemarkerPerformance + "]";
-	}
+    public JavascriptConsoleResultBase toBaseResult()
+    {
+        final JavascriptConsoleResultBase base = new JavascriptConsoleResultBase();
+        base.setFreemarkerPerformance(this.freemarkerPerformance);
+        base.setRenderedTemplate(this.renderedTemplate);
+        base.setScriptOffset(this.scriptOffset);
+        base.setScriptPerformance(this.scriptPerformance);
+        base.setSpaceNodeRef(this.spaceNodeRef);
+        base.setSpacePath(this.spacePath);
+        base.setWebscriptPerformance(this.webscriptPerformance);
 
-	public void setScriptOffset(int scriptOffset) {
-		this.scriptOffset = scriptOffset;
-	}
+        return base;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "JavascriptConsoleResultBase [renderedTemplate=" + this.renderedTemplate + ", spaceNodeRef=" + this.spaceNodeRef
+                + ", spacePath=" + this.spacePath + ", scriptPerformance=" + this.scriptPerformance + ", freemarkerPerformance="
+                + this.freemarkerPerformance + "]";
+    }
+
+    public void setScriptOffset(int scriptOffset)
+    {
+        this.scriptOffset = scriptOffset;
+    }
 
     /**
      * {@inheritDoc}

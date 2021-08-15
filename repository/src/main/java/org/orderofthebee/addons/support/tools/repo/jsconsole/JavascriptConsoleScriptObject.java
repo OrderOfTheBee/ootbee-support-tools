@@ -45,155 +45,198 @@ import org.springframework.extensions.webscripts.ScriptContent;
 import org.springframework.extensions.webscripts.ScriptValueConverter;
 
 /**
- * Implements the 'jsconsole' Javascript extension object that is available in
- * the Javascript Console and is used internally for print output and
- * communication between Java code and Javascript by the
- * {@link ExecuteWebscript}.
+ * Implements the 'jsconsole' Javascript extension object that is available in the JavaScript Console and is used internally for print
+ * output and communication between Java code and Javascript by the {@link ExecuteWebscript}.
  *
  * @author Florian Maul (fme AG)
  *
  */
-public class JavascriptConsoleScriptObject {
+public class JavascriptConsoleScriptObject
+{
 
-	private List<String> printOutput = new ArrayList<String>();
+    private List<String> printOutput = new ArrayList<>();
 
-	private ScriptNode space = null;
+    private ScriptNode space = null;
 
-	public static final String JSON_KEY_ENTRY_ID = "id";
-	public static final String JSON_KEY_ENTRY_APPLICATION = "application";
-	public static final String JSON_KEY_ENTRY_USER = "user";
-	public static final String JSON_KEY_ENTRY_TIME = "time";
-	public static final String JSON_KEY_ENTRY_VALUES = "values";
+    public static final String JSON_KEY_ENTRY_ID = "id";
 
+    public static final String JSON_KEY_ENTRY_APPLICATION = "application";
 
-	/**
-	 * Default constructor with print output stored in an internal data structure.
-	 */
-	public JavascriptConsoleScriptObject()
-	{
-	    // NO-OP as default constructor
-	}
+    public static final String JSON_KEY_ENTRY_USER = "user";
 
-	/**
-	 * Alternative constructor that allows clients to provide a specific data structure for print output management.
-	 */
-	public JavascriptConsoleScriptObject(List<String> printOutput)
+    public static final String JSON_KEY_ENTRY_TIME = "time";
+
+    public static final String JSON_KEY_ENTRY_VALUES = "values";
+
+    /**
+     * Default constructor with print output stored in an internal data structure.
+     */
+    public JavascriptConsoleScriptObject()
+    {
+        // NO-OP as default constructor
+    }
+
+    /**
+     * Alternative constructor that allows clients to provide a specific data structure for print output management.
+     * 
+     * @param printOutput
+     *     the list structure in which to accumulate print output via the {@code print} extension
+     */
+    public JavascriptConsoleScriptObject(List<String> printOutput)
     {
         this.printOutput = printOutput;
     }
 
-	public ScriptNode getSpace() {
-		return space;
-	}
+    public ScriptNode getSpace()
+    {
+        return space;
+    }
 
-	public void setSpace(ScriptNode space) {
-		this.space = space;
-	}
+    public void setSpace(ScriptNode space)
+    {
+        this.space = space;
+    }
 
-	public JavascriptConsoleScriptLogger getLogger() {
-		return new JavascriptConsoleScriptLogger(this);
-	}
+    public JavascriptConsoleScriptLogger getLogger()
+    {
+        return new JavascriptConsoleScriptLogger(this);
+    }
 
-	public void print(Object obj) {
+    public void print(Object obj)
+    {
+        if (obj != null)
+        {
+            Object value = ScriptValueConverter.unwrapValue(obj);
 
-		if (obj != null) {
+            if (value instanceof Collection<?>)
+            {
+                Collection<?> col = (Collection<?>) value;
+                Iterator<?> colIter = col.iterator();
+                int counter = 0;
+                while (colIter.hasNext())
+                {
+                    printOutput.add("" + counter + " : " + formatValue(colIter.next()));
+                    counter++;
+                }
+            }
+            else
+            {
+                printOutput.add(formatValue(value));
+            }
+        }
+        else
+        {
+            printOutput.add("null");
+        }
+    }
 
-			Object value = ScriptValueConverter.unwrapValue(obj);
+    @SuppressWarnings("unchecked")
+    private String formatValue(Object value)
+    {
+        if (value == null)
+        {
+            return "null";
+        }
 
-			if (value instanceof Collection<?>) {
-				Collection<?> col = (Collection<?>) value;
-				Iterator<?> colIter = col.iterator();
-				int counter = 0;
-				while (colIter.hasNext()) {
-					printOutput.add("" + counter + " : " + formatValue(colIter.next()));
-					counter++;
-				}
-			} else {
-				printOutput.add(formatValue(value));
-			}
-		} else {
-			printOutput.add("null");
-		}
+        if (value instanceof ScriptNode)
+        {
+            return formatScriptNode((ScriptNode) value);
+        }
+        else if (value instanceof ScriptContent)
+        {
+            return formatScriptContent((ScriptContent) value);
+        }
+        else if (value instanceof ScriptGroup)
+        {
+            return formatScriptGroup((ScriptGroup) value);
+        }
+        else if (value instanceof ScriptUser)
+        {
+            return formatScriptUser((ScriptUser) value);
+        }
+        else if (value instanceof NodeRef)
+        {
+            return formatNodeRef((NodeRef) value);
+        }
+        else if (value instanceof ChildAssociationRef)
+        {
+            return formatChildAssoc((ChildAssociationRef) value);
+        }
+        else if (value instanceof ScriptContentData)
+        {
+            return formatScriptContentData((ScriptContentData) value);
+        }
+        else if (value instanceof Site)
+        {
+            return formatSite((Site) value);
+        }
+        else if (value instanceof Map)
+        {
+            return formatMap((Map<String, Object>) value);
+        }
+        return value.toString();
+    }
 
-	}
+    private String formatMap(Map<String, Object> map)
+    {
+        StringBuilder buffer = new StringBuilder();
+        for (Map.Entry<String, Object> entry : map.entrySet())
+        {
+            if (entry != null)
+            {
+                buffer.append(formatValue(entry.getKey()));
+                buffer.append(" : ");
+                buffer.append(formatValue(entry.getValue()));
+                buffer.append("\n");
+            }
+        }
+        return buffer.toString();
+    }
 
-	@SuppressWarnings("unchecked")
-	private String formatValue(Object value) {
+    private String formatScriptUser(ScriptUser value)
+    {
+        return "ScriptUser: " + value.getUserName() + " (" + value.getFullName() + ")";
+    }
 
-		if (value == null) {
-			return "null";
-		}
+    private String formatSite(Site site)
+    {
+        return "Site: " + site.getShortName() + " (" + site.getTitle() + ", " + site.getNode().getNodeRef() + ")";
+    }
 
-		if (value instanceof ScriptNode) {
-			return formatScriptNode((ScriptNode) value);
-		} else if (value instanceof ScriptContent) {
-			return formatScriptContent((ScriptContent) value);
-		} else if (value instanceof ScriptGroup) {
-			return formatScriptGroup((ScriptGroup) value);
-		} else if (value instanceof ScriptUser) {
-			return formatScriptUser((ScriptUser) value);
-		} else if (value instanceof NodeRef) {
-			return formatNodeRef((NodeRef) value);
-		} else if (value instanceof ChildAssociationRef) {
-			return formatChildAssoc((ChildAssociationRef) value);
-		} else if (value instanceof ScriptContentData) {
-			return formatScriptContentData((ScriptContentData) value);
-		} else if (value instanceof Site) {
-			return formatSite((Site) value);
-		} else if (value instanceof Map) {
-			return formatMap((Map<String, Object>) value);
-		}
-		return value.toString();
-	}
+    private String formatScriptGroup(ScriptGroup value)
+    {
+        return "ScriptGroup: " + value.getShortName() + " (" + value.getFullName() + ")";
+    }
 
-	private String formatMap(Map<String, Object> map) {
-		StringBuffer buffer = new StringBuffer();
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (entry != null) {
-				buffer.append(formatValue(entry.getKey()));
-				buffer.append(" : ");
-				buffer.append(formatValue(entry.getValue()));
-				buffer.append("\n");
-			}
-		}
-		return buffer.toString();
-	}
+    private String formatScriptContent(ScriptContent value)
+    {
+        return "ScriptContent: " + value.getPath();
+    }
 
-	private String formatScriptUser(ScriptUser value) {
-		return "ScriptUser: " + value.getUserName() + " (" + value.getFullName() + ")";
-	}
+    private String formatChildAssoc(ChildAssociationRef value)
+    {
+        return "ChildAssociationRef: parent=" + value.getParentRef().toString() + ", child=" + value.getChildRef().toString();
+    }
 
-	private String formatSite(Site site) {
-		return "Site: " + site.getShortName() + " (" + site.getTitle() + ", " + site.getNode().getNodeRef() + ")";
-	}
+    private String formatNodeRef(NodeRef value)
+    {
+        return "NodeRef: " + value.toString();
+    }
 
-	private String formatScriptGroup(ScriptGroup value) {
-		return "ScriptGroup: " + value.getShortName() + " (" + value.getFullName() + ")";
-	}
+    private String formatScriptContentData(ScriptContentData value)
+    {
+        return "ScriptContentData: " + value.getMimetype() + " Size:" + value.getSize() + " URL:" + value.getUrl();
+    }
 
-	private String formatScriptContent(ScriptContent value) {
-		return "ScriptContent: " + value.getPath();
-	}
+    private String formatScriptNode(ScriptNode value)
+    {
+        return value.getName() + " (" + value.getNodeRef() + ")";
+    }
 
-	private String formatChildAssoc(ChildAssociationRef value) {
-		return "ChildAssociationRef: parent=" + value.getParentRef().toString() + ", child=" + value.getChildRef().toString();
-	}
-
-	private String formatNodeRef(NodeRef value) {
-		return "NodeRef: " + value.toString();
-	}
-
-	private String formatScriptContentData(ScriptContentData value) {
-		return "ScriptContentData: " + value.getMimetype() + " Size:" + value.getSize() + " URL:" + value.getUrl();
-	}
-
-	private String formatScriptNode(ScriptNode value) {
-		return value.getName() + " (" + value.getNodeRef() + ")";
-	}
-
-	public List<String> getPrintOutput() {
-	    // defensive copy
-		return new ArrayList<String>(this.printOutput);
-	}
+    public List<String> getPrintOutput()
+    {
+        // defensive copy
+        return new ArrayList<>(this.printOutput);
+    }
 
 }

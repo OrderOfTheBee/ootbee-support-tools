@@ -48,30 +48,40 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  * @author Florian Maul (fme AG)
  *
  */
-public class JavascriptConsoleRequest {
+public class JavascriptConsoleRequest
+{
 
-	private static final int DEFAULT_DUMP_LIMIT = 10;
+    private static final int DEFAULT_DUMP_LIMIT = 10;
 
-	public final String script;
-	public final String template;
-	public final String spaceNodeRef;
-	public final String runas;
-	public final boolean useTransaction;
-	public final boolean transactionReadOnly;
-	public final Map<String, String> urlargs;
-	public final String documentNodeRef;
-	public final Integer dumpLimit;
+    public final String script;
 
-	public final String resultChannel;
+    public final String template;
 
-	private JavascriptConsoleRequest(String script, String template,
-            String spaceNodeRef, String transaction, String runas, String urlargs, String documentNodeRef, Integer dumpLimit, String resultChannel) {
+    public final String spaceNodeRef;
+
+    public final String runas;
+
+    public final boolean useTransaction;
+
+    public final boolean transactionReadOnly;
+
+    public final Map<String, String> urlargs;
+
+    public final String documentNodeRef;
+
+    public final Integer dumpLimit;
+
+    public final String resultChannel;
+
+    private JavascriptConsoleRequest(String script, String template, String spaceNodeRef, String transaction, String runas, String urlargs,
+            String documentNodeRef, Integer dumpLimit, String resultChannel)
+    {
         super();
         this.script = script;
         this.template = template;
         this.spaceNodeRef = spaceNodeRef;
         this.documentNodeRef = documentNodeRef;
-		this.dumpLimit = dumpLimit;
+        this.dumpLimit = dumpLimit;
         this.urlargs = parseQueryString(urlargs);
         this.transactionReadOnly = "readonly".equalsIgnoreCase(transaction);
         this.useTransaction = transactionReadOnly || "readwrite".equalsIgnoreCase(transaction);
@@ -79,19 +89,23 @@ public class JavascriptConsoleRequest {
         this.resultChannel = resultChannel;
     }
 
-	/**
-     * parses the query string
-     * is used because HttpUtils.parseQueryString is deprecated
+    /**
+     * Parses the query string of a JavaScript Console request
+     * 
      * @param queryString
-     * @return
+     *     the query string to parse
+     * @return the map of parsed URL parameters
      */
-    protected static Map<String, String> parseQueryString(String queryString) {
+    protected static Map<String, String> parseQueryString(String queryString)
+    {
         Map<String, String> map = new HashMap<String, String>();
 
         String[] parameters = queryString.split("&");
-        for(int i = 0; i < parameters.length; i++) {
+        for (int i = 0; i < parameters.length; i++)
+        {
             String[] keyAndValue = parameters[i].split("=");
-            if(keyAndValue.length != 2) {
+            if (keyAndValue.length != 2)
+            {
                 // "invalid url parameter " + parameters[i]);
                 continue;
             }
@@ -103,46 +117,53 @@ public class JavascriptConsoleRequest {
         return map;
     }
 
-	public static JavascriptConsoleRequest readJson(WebScriptRequest request) {
-		Content content = request.getContent();
+    public static JavascriptConsoleRequest readJson(WebScriptRequest request)
+    {
+        Content content = request.getContent();
 
-		InputStreamReader br = new InputStreamReader(content.getInputStream(),
-				Charset.forName("UTF-8"));
-		JSONTokener jsonTokener = new JSONTokener(br);
-		try {
-			JSONObject jsonInput = new JSONObject(jsonTokener);
+        InputStreamReader br = new InputStreamReader(content.getInputStream(), Charset.forName("UTF-8"));
+        JSONTokener jsonTokener = new JSONTokener(br);
+        try
+        {
+            JSONObject jsonInput = new JSONObject(jsonTokener);
 
-			String script = jsonInput.getString("script");
-			String template = jsonInput.getString("template");
-			String spaceNodeRef = jsonInput.getString("spaceNodeRef");
-			String transaction = jsonInput.getString("transaction");
-			String urlargs = jsonInput.getString("urlargs");
-			String documentNodeRef = jsonInput.getString("documentNodeRef");
-			int dumpLimit = DEFAULT_DUMP_LIMIT;
-			if(jsonInput.has("dumpLimit")){
-				dumpLimit = jsonInput.getInt("dumpLimit");
-			}
-			String logOutputChannel = jsonInput.has("printOutputChannel") ? jsonInput.getString("printOutputChannel") : null;
-			String resultChannel = jsonInput.has("resultChannel") ? jsonInput.getString("resultChannel") : null;
+            String script = jsonInput.getString("script");
+            String template = jsonInput.getString("template");
+            String spaceNodeRef = jsonInput.getString("spaceNodeRef");
+            String transaction = jsonInput.getString("transaction");
+            String urlargs = jsonInput.getString("urlargs");
+            String documentNodeRef = jsonInput.getString("documentNodeRef");
+            int dumpLimit = DEFAULT_DUMP_LIMIT;
+            if (jsonInput.has("dumpLimit"))
+            {
+                dumpLimit = jsonInput.getInt("dumpLimit");
+            }
+            String resultChannel = jsonInput.has("resultChannel") ? jsonInput.getString("resultChannel") : null;
 
-			String runas = jsonInput.getString("runas");
-			if (runas == null) {
-				runas = "";
-			}
-			
-			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef, dumpLimit, resultChannel);
-			
-		} catch (JSONException e) {
-			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
-					"Error reading json request body.", e);
-		}
-	}
+            String runas = jsonInput.getString("runas");
+            if (runas == null)
+            {
+                runas = "";
+            }
 
-	@Override
-	public String toString() {
-		return "JavascriptConsoleRequest [script=" + script + ", template=" + template + ", spaceNodeRef=" + spaceNodeRef
-				+ ", runas=" + runas + ", useTransaction=" + useTransaction + ", transactionReadOnly=" + transactionReadOnly
-				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + ", dumpLimit=" + dumpLimit + ", resultChannel=" + resultChannel + "]";
-	}
+            return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef, dumpLimit,
+                    resultChannel);
+
+        }
+        catch (JSONException e)
+        {
+            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error reading json request body.", e);
+        }
+    }
+
+    /**
+     */
+    @Override
+    public String toString()
+    {
+        return "JavascriptConsoleRequest [script=" + script + ", template=" + template + ", spaceNodeRef=" + spaceNodeRef + ", runas="
+                + runas + ", useTransaction=" + useTransaction + ", transactionReadOnly=" + transactionReadOnly + ", urlargs=" + urlargs
+                + ", documentNodeRef=" + documentNodeRef + ", dumpLimit=" + dumpLimit + ", resultChannel=" + resultChannel + "]";
+    }
 
 }
