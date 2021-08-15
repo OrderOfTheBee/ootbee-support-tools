@@ -39,7 +39,7 @@ import org.alfresco.util.Pair;
 /**
  * A simple list which transfers entries onto a backing cache in chunks of a defined size. This class is <b>not thread-safe</b>.
  * 
- * @author Axel Faust, <a href="http://www.prodyna.com">PRODYNA AG</a>
+ * @author Axel Faust
  */
 public class CacheBackedChunkedList<K extends Serializable, E extends Serializable> extends AbstractList<E>
 {
@@ -61,6 +61,10 @@ public class CacheBackedChunkedList<K extends Serializable, E extends Serializab
         this.chunkSize = chunkSize;
     }
 
+    /**
+     * 
+     * {@inheritDoc}
+     */
     @Override
     public E get(final int index)
     {
@@ -79,6 +83,10 @@ public class CacheBackedChunkedList<K extends Serializable, E extends Serializab
         return element;
     }
 
+    /**
+     * 
+     * {@inheritDoc}
+     */
     @Override
     public int size()
     {

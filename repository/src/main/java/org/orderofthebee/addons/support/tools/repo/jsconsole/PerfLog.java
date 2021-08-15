@@ -28,10 +28,8 @@
  */
 package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
-import java.text.MessageFormat;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * class for performance monitoring. create your instance via constructor, start
@@ -41,80 +39,120 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author jgoldhammer
  */
-public class PerfLog {
+public class PerfLog
+{
 
-	private static final int DEFAULT_ASSERT_PERFORMANCE = 2000;
-	private Log LOG = LogFactory.getLog(PerfLog.class);
-	private long startTime;
+    private static final int DEFAULT_ASSERT_PERFORMANCE = 2000;
 
-	/**
-	 *
-	 * @param logger
-	 *            the logger to log the performance mesaure
-	 */
-	public PerfLog(Log logger) {
-		if (logger != null) {
-			LOG = logger;
-		}
-	}
+    private final Logger logger;
 
-	/**
-	 * simple timelogger. If you want to log in your own logger instance, use
-	 * {@link #TimeLogger(Log)}.
-	 */
-	public PerfLog() {
-	}
+    private long startTime;
 
-	/**
-	 * start the logging
-	 *
-	 * @param message
-	 * @param params
-	 */
-	public PerfLog start(String message, Object... params) {
-		startTime = System.currentTimeMillis();
-		if (LOG.isInfoEnabled() && message != null && !message.trim().isEmpty()) {
-			LOG.info(MessageFormat.format(message, params));
-		}
-		return this;
-	}
+    /**
+     * Creates a new instance of this class.
+     */
+    public PerfLog()
+    {
+        this.logger = LoggerFactory.getLogger(PerfLog.class);
+    }
 
-	/**
-	 * start the logging
-	 */
-	public PerfLog start() {
-		return start(null, (Object) null);
-	}
+    /**
+     * Creates a new instance of this class.
+     * 
+     * @param logger
+     *     the logger to log the performance measure
+     */
+    public PerfLog(Logger logger)
+    {
+        this.logger = logger;
+    }
 
-	/**
-	 * @param assertPerformanceOf
-	 * @param message
-	 * @param params
-	 * @return the measured time
-	 */
-	public long stop(int assertPerformanceOf, String message, Object... params) {
-		long endTime = System.currentTimeMillis();
-		long neededTime = endTime - startTime;
-		boolean inTime = neededTime < assertPerformanceOf;
-        if (LOG.isInfoEnabled() && inTime) {
-			LOG.info("(OK) " + neededTime + " ms:" + MessageFormat.format(message, params));
-		} else if (LOG.isWarnEnabled() && !inTime) {
-			LOG.warn("(WARNING) " + neededTime + " ms: " + MessageFormat.format(message, params));
-		}
-		return neededTime;
+    /**
+     * Starts the performance measurement
+     *
+     * @param message
+     *     the log message to write to document the performance profiling start
+     * @param params
+     *     the parameters for the log message
+     * @return this instance for chained calls
+     */
+    public PerfLog start(String message, Object... params)
+    {
+        startTime = System.currentTimeMillis();
+        if (message != null && !message.trim().isEmpty())
+        {
+            this.logger.info(message, params);
+        }
+        return this;
+    }
 
-	}
+    /**
+     * Starts the performance measurement
+     * 
+     * @return this instance for chained calls
+     */
+    public PerfLog start()
+    {
+        return start(null, (Object) null);
+    }
 
-	/**
-	 * ends the performance monitoring. Logs a warning if the operation is
-	 * finished after {@value #DEFAULT_ASSERT_PERFORMANCE} milliseconds. To
-	 * specify your own time limit, use {@link #stop(int, String, Object...)}.
-	 *
-	 * @param message
-	 *            the message to log in the log statement.
-	 * @param params
-	 */
-	public long stop(String message, Object... params) {
-		return stop(DEFAULT_ASSERT_PERFORMANCE, message, params);
-	}
+    /**
+     * Stops the performance measurement. Logs a warning if the operation is finished after the specified reference time.
+     * 
+     * @param assertPerformanceOf
+     *     comparison value for the duration in milliseconds that the measured operation is allowed to take at most to be considered "in
+     *     time"
+     * @param message
+     *     the log message addition (appended to a common, static prefix) to write to document the performance profiling start
+     * @param params
+     *     the parameters for the log message
+     * @return the time measured for between start and stop in milliseconds
+     */
+    public long stop(int assertPerformanceOf, String message, Object... params)
+    {
+        long endTime = System.currentTimeMillis();
+        long neededTime = endTime - startTime;
+        boolean inTime = neededTime <= assertPerformanceOf;
+
+        boolean hasMessage = message != null && !message.trim().isEmpty();
+        Object[] effParams = new Object[params.length + 1];
+        System.arraycopy(params, 0, effParams, 1, params.length);
+        effParams[0] = neededTime;
+
+        if (inTime)
+        {
+            String effMessage = "(OK) {} ms";
+            if (hasMessage)
+            {
+                effMessage += ": " + message;
+            }
+            this.logger.info(effMessage, effParams);
+        }
+        else
+        {
+            String effMessage = "(WARNING) {} ms";
+            if (hasMessage)
+            {
+                effMessage += ": " + message;
+            }
+            this.logger.warn(effMessage, effParams);
+        }
+        return neededTime;
+    }
+
+    /**
+     * Stops the performance measurement. Logs a warning if the operation is
+     * finished after {@value #DEFAULT_ASSERT_PERFORMANCE} milliseconds. To
+     * specify your own time limit, use {@link #stop(int, String, Object...)}.
+     *
+     * @param message
+     *     the log message addition (appended to a common, static prefix) to write to document the performance profiling start
+     * @param params
+     *     the parameters for the log message
+     * @return the time measured for between start and stop in milliseconds
+     */
+    public long stop(String message, Object... params)
+    {
+        return stop(DEFAULT_ASSERT_PERFORMANCE, message, params);
+    }
 }

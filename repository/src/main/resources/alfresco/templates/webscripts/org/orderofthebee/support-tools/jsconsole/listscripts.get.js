@@ -27,37 +27,54 @@
  * addon.
  */
 
-var prepareOutput= function prepareOutput(folder) {
-  var scriptlist = [];
+var prepareOutput = function prepareOutput(folder)
+{
+    var scriptList, children, idx, node;
 
-  var children = folder.children;
-  children.sort(function(a,b) {
-	 return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); 
-  });
+    scriptList = [];
 
-  for (c in children) {
-    var node = children[c];
-    
-    if (node.isContainer) {
-       scriptlist.push({text : node.name, submenu : {
-            id: node.properties["sys:node-uuid"], itemdata : prepareOutput(node) 
-       }});
+    children = folder.children;
+    children.sort(function(a, b) {
+        return String(a.name).localeCompare(b.name);
+    });
+
+    for (idx = 0; idx < children.length; idx++)
+    {
+        node = children[idx];
+
+        if (node.isContainer)
+        {
+            scriptList.push({
+                text: node.name,
+                submenu: {
+                    id: node.id,
+                    itemdata: prepareOutput(node)
+                }
+            });
+        }
+        else
+        {
+            scriptList.push({
+                text: node.name,
+                value: node.nodeRef
+            });
+        }
     }
-    else {
-       scriptlist.push({text : node.name, value : node.nodeRef});
+
+    return scriptList;
+};
+
+function findAvailableScripts()
+{
+    var scriptFolder = search.selectNodes('/app:company_home/app:dictionary/app:scripts')[0];
+    if (scriptFolder)
+    {
+        model.scripts = JSON.stringify(prepareOutput(scriptFolder));
     }
-  }
-  
-  return scriptlist;
+    else
+    {
+        model.scripts = '[]';
+    }
 }
-
-var findAvailableScripts = function findAvailableScripts(){
-    var scriptFolder = search.selectNodes("/app:company_home/app:dictionary/app:scripts")[0];
-    if (scriptFolder) {
-    	model.scripts = jsonUtils.toJSONString(prepareOutput(scriptFolder));
-    }
-    else {
-    	model.scripts = "[]";
-    }}
 
 findAvailableScripts();

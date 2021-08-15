@@ -27,9 +27,14 @@
  * addon.
  */
 
-var scriptFolder = companyhome.childrenByXPath("app:dictionary/app:scripts")[0];
-if (scriptFolder) {
-	var scriptNode = scriptFolder.createFile(args.name);
-	scriptNode.content = requestbody.content;
-	scriptNode.mimetype = "application/x-javascript";
+/* global requestbody: false */
+
+var scriptFolder, scriptFile;
+
+scriptFolder = companyhome.childrenByXPath('app:dictionary/app:scripts')[0];
+if (scriptFolder)
+{
+	scriptFile = scriptFolder.createFile(args.name);
+	scriptFile.content = requestbody.content;
+	scriptFile.mimetype = 'text/javascript';
 }
