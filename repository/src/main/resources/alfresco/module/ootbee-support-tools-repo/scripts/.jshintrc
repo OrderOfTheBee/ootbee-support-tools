@@ -53,13 +53,17 @@
         "imap" : false,
         "paging" : false,
         "people" : false,
+        "groups": false,
         "presence" : false,
         "search" : false,
         "slingshotDocLib" : false,
         "utils" : false,
         "webprojects" : false,
         "workflow" : false,
+        "actionTrackingService": false,
         "siteService" : false,
+        "preferenceService" : false,
+        "taggingService" : false,
         
         "Admin" : false
     }
