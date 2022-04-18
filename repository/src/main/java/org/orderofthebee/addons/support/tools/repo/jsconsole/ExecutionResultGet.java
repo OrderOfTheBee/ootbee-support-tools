@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -48,7 +48,7 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
 /**
  * Web script to retrieve the result of a web script execution or - in case the web script has not run to completion yet - the intermediary
  * log output.
- * 
+ *
  * @author Axel Faust
  */
 public class ExecutionResultGet extends AbstractWebScript implements InitializingBean
@@ -59,7 +59,7 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
     private SimpleCache<String, JavascriptConsoleResultBase> resultCache;
 
     /**
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -82,17 +82,17 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
      * @param resultCache
      *     the resultCache to set
      */
-    public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache)
+    public final void setResultCache(final SimpleCache<String, JavascriptConsoleResultBase> resultCache)
     {
         this.resultCache = resultCache;
     }
 
     /**
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
-    public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException
+    public void execute(final WebScriptRequest request, final WebScriptResponse response) throws IOException
     {
         final String resultChannel = request.getServiceMatch().getTemplateVars().get("resultChannel");
 
@@ -100,12 +100,12 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
         {
 
             final JavascriptConsoleResultBase result = this.resultCache.get(resultChannel);
-            final List<String> printOutput = new ArrayList<String>();
+            final List<String> printOutput = new ArrayList<>();
             try
             {
                 for (int chunk = 0; chunk < Integer.MAX_VALUE; chunk++)
                 {
-                    final Pair<String, Integer> chunkKey = new Pair<String, Integer>(resultChannel, Integer.valueOf(chunk));
+                    final Pair<String, Integer> chunkKey = new Pair<>(resultChannel, Integer.valueOf(chunk));
                     final List<String> chunkOutput = this.printOutputCache.get(chunkKey);
                     if (chunkOutput != null)
                     {
@@ -122,7 +122,7 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
             {
                 if (result != null)
                 {
-                    // check for dummy errpr result
+                    // check for dummy error result
                     if (result.equals(new JavascriptConsoleResultBase()))
                     {
                         response.setContentEncoding("UTF-8");
@@ -130,14 +130,14 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
 
                         try
                         {
-                            JSONObject jsonOutput = new JSONObject();
+                            final JSONObject jsonOutput = new JSONObject();
                             jsonOutput.put("printOutput", printOutput);
                             jsonOutput.put("error", Boolean.TRUE);
 
                             response.getWriter().write(jsonOutput.toString());
 
                         }
-                        catch (JSONException e)
+                        catch (final JSONException e)
                         {
                             throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json response.", e);
                         }
@@ -151,7 +151,7 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
                     this.resultCache.remove(resultChannel);
                     for (int chunk = 0; chunk < Integer.MAX_VALUE; chunk++)
                     {
-                        final Pair<String, Integer> chunkKey = new Pair<String, Integer>(resultChannel, Integer.valueOf(chunk));
+                        final Pair<String, Integer> chunkKey = new Pair<>(resultChannel, Integer.valueOf(chunk));
                         if (this.printOutputCache.contains(chunkKey))
                         {
                             this.printOutputCache.remove(chunkKey);
@@ -169,13 +169,13 @@ public class ExecutionResultGet extends AbstractWebScript implements Initializin
 
                     try
                     {
-                        JSONObject jsonOutput = new JSONObject();
+                        final JSONObject jsonOutput = new JSONObject();
                         jsonOutput.put("printOutput", printOutput);
 
                         response.getWriter().write(jsonOutput.toString());
 
                     }
-                    catch (JSONException e)
+                    catch (final JSONException e)
                     {
                         throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json response.", e);
                     }

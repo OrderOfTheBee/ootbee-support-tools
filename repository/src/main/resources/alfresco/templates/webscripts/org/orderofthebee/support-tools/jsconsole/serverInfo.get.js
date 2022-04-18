@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
  * 
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
@@ -27,7 +27,37 @@
  * addon.
  */
  
-var ctx = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+var ctx, globalProperties, placeholderHelper, propertyGetter, nodeService, internalNodeService;
+
+ctx = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+globalProperties = ctx.getBean('global-properties', Packages.java.util.Properties);
+placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+
+propertyGetter = function(propertyName, defaultValue)
+{
+    var propertyValue;
+
+    propertyValue = globalProperties[propertyName];
+    if (propertyValue)
+    {
+        propertyValue = placeholderHelper.replacePlaceholders(propertyValue, globalProperties);
+    }
+
+    // native JS strings are always preferrable
+    if (propertyValue !== undefined && propertyValue !== null)
+    {
+        propertyValue = String(propertyValue);
+    }
+    else if (defaultValue !== undefined)
+    {
+        propertyValue = defaultValue;
+    }
+    
+    return propertyValue;
+};
+
+nodeService = ctx.getBean('NodeService', Packages.org.alfresco.service.cmr.repository.NodeService);
+internalNodeService = ctx.getBean('nodeService', Packages.org.alfresco.service.cmr.repository.NodeService);
 
 function prepareServerAndLicenseDetails()
 {
@@ -42,28 +72,14 @@ function prepareServerAndLicenseDetails()
     model.version = server.version;
 
     licenseService = ctx.getBean('licenseService', Packages.org.alfresco.service.license.LicenseService);
-    model.licenseDaysLeft = licenseService.license.remainingDays;
+    model.licenseDaysLeft = licenseService.license ? licenseService.license.remainingDays : -1;
 }
 
 function prepareModules()
 {
-    var modules, modulesList, moduleCount, moduleDesc, idx, module;
-
-    modules = ctx.getBean('ModuleService', Packages.org.alfresco.service.cmr.module.ModuleService);
-    modulesList = modules.allModules;
-
-    moduleCount = modulesList.size();
-    moduleDesc = '';
-
-    for (idx = 0; idx < moduleCount; idx++) {
-        if (idx !== 0) {
-            moduleDesc += ', ';
-        }
-        module = modulesList.get(idx);
-        moduleDesc += module.id + ' v' + module.version;
-    }
-
-    model.modules = moduleCount + ' (' + moduleDesc + ')';
+    var moduleService = ctx.getBean('ModuleService', Packages.org.alfresco.service.cmr.module.ModuleService);
+    model.installedModuleCount = moduleService.allModules.size();
+    model.missingModuleCount = moduleService.missingModules.size();
 }
 
 function prepareOSDetails()
@@ -74,32 +90,32 @@ function prepareOSDetails()
     model.arch = osMXBean.arch;
     model.osversion = osMXBean.version;
     model.processorCount = osMXBean.availableProcessors;
-    model.systemLoad = osMXBean.systemLoadAverage >= 0 ? osMXBean.systemLoadAverage : 'n/a';
 
-    model.freeMemory = Math.floor(osMXBean.getFreePhysicalMemorySize() / (1024 * 1024),'.');
-    model.totalMemory = Math.floor(osMXBean.getTotalPhysicalMemorySize() / (1024 * 1024),'.');
+    model.freeMemory = Math.floor(osMXBean.getFreePhysicalMemorySize() / (1024 * 1024));
+    model.totalMemory = Math.floor(osMXBean.getTotalPhysicalMemorySize() / (1024 * 1024));
 }
 
 function prepareJVMDetails()
 {
-    var runtimeMXBean, system, idx, dateFormat, uptime;
+    var runtimeMXBean, system, dateFormat, uptime, days, memoryMXBean, heapUsage;
 
     runtimeMXBean = Packages.java.lang.management.ManagementFactory.runtimeMXBean;
     system = Packages.java.lang.System;
 
-    model.java = runtimeMXBean.vmName + ' (version: ' + system.getProperty('java.version') + '- ' + runtimeMXBean.vmVersion+' ,' + runtimeMXBean.name + ', vendor:' + runtimeMXBean.vmVendor;
-
-    model.javaArgs = '';
-    for (idx = 0; idx < runtimeMXBean.inputArguments.size(); idx++)
-    {
-        model.javaArgs += runtimeMXBean.inputArguments.get(idx) + '\n';
-    }
+    model.java = runtimeMXBean.vmName + ' (Java version: ' + system.getProperty('java.version') + ', JVM version: ' + runtimeMXBean.vmVersion + ', ' + runtimeMXBean.name + ', vendor: ' + runtimeMXBean.vmVendor + ')';
 
     dateFormat = new Packages.java.text.SimpleDateFormat('HH\'h\':mm\'min\':ss\'sec\'');
     dateFormat.setTimeZone(Packages.java.util.TimeZone.getTimeZone('UTC'));
     uptime = runtimeMXBean.getUptime();
-    uptime = uptime / (3600 * 1000 * 24);
-    model.javaUptime = Math.floor(uptime) + 'd:' + dateFormat.format(uptime);
+    days = Math.floor(uptime / (3600 * 1000 * 24));
+    model.javaUptime = days + 'd:' + dateFormat.format(uptime);
+
+    memoryMXBean = Packages.java.lang.management.ManagementFactory.memoryMXBean;
+    heapUsage = memoryMXBean.heapMemoryUsage;
+    model.javaHeapInit = Math.floor(heapUsage.init / (1024 * 1024));
+    model.javaHeapMax = Math.floor(heapUsage.max / (1024 * 1024));
+    model.javaHeapCommitted = Math.floor(heapUsage.comitted / (1024 * 1024));
+    model.javaHeapUsed = Math.floor(heapUsage.used / (1024 * 1024));
 
     model.hostUserInfo = system.getProperty('user.name') + ' (' + system.getProperty('user.home') + ')';
 }
@@ -130,78 +146,98 @@ function getSearchCount(query)
     return count;
 }
 
+function findCategoryRoot(categoryAspect)
+{
+    var nodes, idx, categories, categoryRoot;
+
+    nodes = search.query({
+        language: 'fts-alfresco',
+        query: 'TYPE:"cm:category_root"'
+    });
+
+    for (idx = 0; idx < nodes.length; idx++)
+    {
+        categories = nodes[idx].childrenByXPath('./' + categoryAspect);
+        if (categories)
+        {
+            categoryRoot = categories[0];
+            break;
+        }
+    }
+
+    return categoryRoot;
+}
+
+function countWorkflows()
+{
+    var workflowService, bpmEngineRegistry, engineIds, workflowCount, idx, query;
+
+    workflowService = ctx.getBean('WorkflowService', Packages.org.alfresco.service.cmr.workflow.WorfklowService);
+    bpmEngineRegistry = ctx.getBean('bpm_engineRegistry', Packages.org.alfresco.repo.workflow.BPMEngineRegistry);
+    engineIds = bpmEngineRegistry.workflowComponents;
+
+    workflowCount = 0;
+    for (idx = 0; idx < engineIds.length; idx++)
+    {
+        query = new Packages.org.alfresco.service.cmr.workflow.WorkflowInstanceQuery();
+        query.active = true;
+        query.engineId = engineIds[idx];
+
+        workflowCount += workflowService.countWorkflows(query);
+    }
+    return workflowCount;
+}
+
 function prepareJavaScriptDerivedCounts()
 {
-    var definitions, idx, activeInstanceCount;
-    // TODO: configuration property to disable / customise bulk-query based count retrieval
+    var nodeCountsViaSOLR, tagsRoot;
 
-    model.sitesCount = siteService.listSites('', '').length;
-    model.groupsCount = groups.getGroups('', utils.createPaging(100000, 0)).length;
+    nodeCountsViaSOLR = propertyGetter('ootbee-support-tools.js-console.serverInfo.nodeCountsViaSOLR', 'true').toLowerCase() === 'true';
+
     model.groupId = search.selectNodes('/sys:system/sys:authorities')[0].nodeRef;
-    model.peopleCount = people.getPeople('', 100000).length;
+    // using internalNodeService because countChildAssocs is not handled as read-only operation by transaction AOP advice (Alfresco bug)
+    model.groupsCount = internalNodeService.countChildAssocs(model.groupId, true);
     model.peopleId = search.selectNodes('/sys:system/sys:people')[0].nodeRef;
+    model.peopleCount = internalNodeService.countChildAssocs(model.peopleId, true);
+
+    tagsRoot = findCategoryRoot('cm:taggable');
+    model.tagsCount = internalNodeService.countChildAssocs(tagsRoot.nodeRef, true);
+
+    model.workflowDefinitionsCount = workflow.latestDefinitions.length;
+    model.workflowAllDefinitionsCount = workflow.allDefinitions.length;
+    model.workflowCount = countWorkflows();
 
     try
     {
-        model.tagsCount = taggingService.getTags('workspace://SpacesStore').length;
+        model.sitesCount = getSearchCount(nodeCountsViaSOLR ? 'TYPE:"st:site" AND ISNODE:T' : 'TYPE:"st:site"');
+        model.folderCount = getSearchCount(nodeCountsViaSOLR ? 'TYPE:"cm:folder" AND ISNODE:T' : 'TYPE:"cm:folder"');
+        model.docsCount = getSearchCount(nodeCountsViaSOLR ? 'TYPE:"cm:content" AND ISNODE:T' : 'TYPE:"cm:content"');
+        model.checkedOutCount = getSearchCount(nodeCountsViaSOLR ? 'ASPECT:"cm:checkedOut" AND ISNODE:T' : 'ASPECT:"cm:checkedOut"');
     }
     catch(e)
     {
-        // TaggingService is index-dependant via CategoryService, so it may fail without an active index
-        model.tagsCount = -1;
-    }
-
-    model.workflowDefinitions = workflow.latestDefinitions.length;
-    model.workflowAllDefinitions = workflow.allDefinitions.length;
-    
-    definitions = workflow.allDefinitions;
-    activeInstanceCount = 0;
-    for (idx = 0; idx < definitions.length; idx++)
-    {
-        activeInstanceCount += definitions[idx].activeInstances.length;
-    }
-    model.workflowCount = activeInstanceCount;
-
-    try
-    {
-        model.folderCount = getSearchCount('TYPE:"cm:folder"');
-        model.docsCount = getSearchCount('TYPE:"cm:content"');
-        model.checkedOutCount = getSearchCount('ASPECT:"cm:checkedOut"');
-    }
-    catch(e)
-    {
-        // the queries are simple enough to be executed via DB FTS, but that feature may not be available / enabled
+        model.sitesCount = -1;
         model.folderCount = -1;
         model.docsCount = -1;
         model.checkedOutCount = -1;
     }
 
-    model.classifications= classification.allClassificationAspects.length;
-    model.runningActions = actionTrackingService.allExecutingActions.length;
+    model.classificationCount= classification.allClassificationAspects.length;
+    model.runningActionCount = actionTrackingService.allExecutingActions.length;
 }
 
 function prepareJavaDerivedCounts()
 {
-    var scheduler, jobCount, jobDesc, idx, scheduledActions, policyComponent, nodeDAO, tenantDAO, patchService;
+    var scheduler, scheduledActions, policyComponent, nodeDAO, tenantDAO, patchService;
 
     scheduler = ctx.getBean('schedulerFactory', Packages.org.quartz.Scheduler);
-    jobCount = scheduler.currentlyExecutingJobs.size();
-    jobDesc = '';
-
-    for (idx = 0; idx < jobCount; idx++) {
-        if (jobDesc.length > 0) {
-            jobDesc += ', ';
-        }
-        jobDesc += scheduler.currentlyExecutingJobs.get(idx).trigger.fullName;
-    }
-
-    model.runningJobs = jobCount + ' (' + jobDesc + ')';
+    model.runningJobCount = scheduler.currentlyExecutingJobs.size();
 
     scheduledActions = ctx.getBean('scheduledPersistedActionService', Packages.org.alfresco.service.cmr.action.scheduled.ScheduledPersistedActionService);
-    model.scheduledActions = scheduledActions.listSchedules().size();
+    model.scheduledActionCount = scheduledActions.listSchedules().size();
 
     policyComponent = ctx.getBean('policyComponent', Packages.org.alfresco.repo.policy.PolicyComponent);
-    model.registeredPolicies = policyComponent.getRegisteredPolicies().size();
+    model.registeredPolicyCount = policyComponent.getRegisteredPolicies().size();
 
     nodeDAO = ctx.getBean('nodeDAO', Packages.org.alfresco.repo.domain.node.NodeDAO);
     model.transactionsCount = nodeDAO.transactionCount;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -66,32 +66,32 @@ public class JavascriptConsoleResultBase implements Serializable
 
     private int scriptOffset;
 
-    public void setWebscriptPerformance(String webscriptPerformance)
+    public void setWebscriptPerformance(final String webscriptPerformance)
     {
         this.webscriptPerformance = webscriptPerformance;
     }
 
-    public void setScriptPerformance(String scriptPerformance)
+    public void setScriptPerformance(final String scriptPerformance)
     {
         this.scriptPerformance = scriptPerformance;
     }
 
-    public void setFreemarkerPerformance(String freemarkerPerformance)
+    public void setFreemarkerPerformance(final String freemarkerPerformance)
     {
         this.freemarkerPerformance = freemarkerPerformance;
     }
 
-    public void setRenderedTemplate(String renderedTemplate)
+    public void setRenderedTemplate(final String renderedTemplate)
     {
         this.renderedTemplate = renderedTemplate;
     }
 
-    public void setSpaceNodeRef(String spaceNodeRef)
+    public void setSpaceNodeRef(final String spaceNodeRef)
     {
         this.spaceNodeRef = spaceNodeRef;
     }
 
-    public void setSpacePath(String spacePath)
+    public void setSpacePath(final String spacePath)
     {
         this.spacePath = spacePath;
     }
@@ -113,31 +113,32 @@ public class JavascriptConsoleResultBase implements Serializable
 
     public String getRenderedTemplate()
     {
-        return renderedTemplate;
+        return this.renderedTemplate;
     }
 
     public String getSpaceNodeRef()
     {
-        return spaceNodeRef;
+        return this.spaceNodeRef;
     }
 
     public String getSpacePath()
     {
-        return spacePath;
+        return this.spacePath;
     }
 
-    public void writeJson(WebScriptResponse response, List<String> printOutput) throws IOException
+    public void writeJson(final WebScriptResponse response, final List<String> printOutput) throws IOException
     {
         response.setContentEncoding("UTF-8");
         response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
         try
         {
-            JSONObject jsonOutput = new JSONObject();
-            jsonOutput.put("renderedTemplate", getRenderedTemplate());
+            final JSONObject jsonOutput = new JSONObject();
+            jsonOutput.put("renderedTemplate", this.getRenderedTemplate());
             jsonOutput.put("printOutput", printOutput);
-            jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
-            jsonOutput.put("spacePath", getSpacePath());
+            jsonOutput.put("dumpOutput", new JSONArray());
+            jsonOutput.put("spaceNodeRef", this.getSpaceNodeRef());
+            jsonOutput.put("spacePath", this.getSpacePath());
             jsonOutput.put("result", new JSONArray());
             jsonOutput.put("scriptPerf", this.scriptPerformance);
             jsonOutput.put("freemarkerPerf", this.freemarkerPerformance);
@@ -147,7 +148,7 @@ public class JavascriptConsoleResultBase implements Serializable
             response.getWriter().write(jsonOutput.toString());
 
         }
-        catch (JSONException e)
+        catch (final JSONException e)
         {
             throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json response.", e);
         }
@@ -175,7 +176,7 @@ public class JavascriptConsoleResultBase implements Serializable
                 + this.freemarkerPerformance + "]";
     }
 
-    public void setScriptOffset(int scriptOffset)
+    public void setScriptOffset(final int scriptOffset)
     {
         this.scriptOffset = scriptOffset;
     }
@@ -202,7 +203,7 @@ public class JavascriptConsoleResultBase implements Serializable
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (this == obj)
         {
@@ -216,7 +217,7 @@ public class JavascriptConsoleResultBase implements Serializable
         {
             return false;
         }
-        JavascriptConsoleResultBase other = (JavascriptConsoleResultBase) obj;
+        final JavascriptConsoleResultBase other = (JavascriptConsoleResultBase) obj;
         if (this.freemarkerPerformance == null)
         {
             if (other.freemarkerPerformance != null)
