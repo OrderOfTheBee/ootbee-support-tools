@@ -1,5 +1,5 @@
 <#--
-Copyright (C) 2016 - 2021 Order of the Bee
+Copyright (C) 2016 - 2022 Order of the Bee
 
 This file is part of OOTBee Support Tools
 
@@ -18,7 +18,7 @@ along with OOTBee Support Tools. If not, see
 <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005 - 2021 Alfresco Software Limited.
+Copyright (C) 2005 - 2022 Alfresco Software Limited.
  
 This file is part of code forked from the JavaScript Console project
 which was licensed under the Apache License, Version 2.0 at the time.
@@ -39,8 +39,6 @@ addon.
 <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js"></@script>
 
 <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
-<@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/common/map.js"></@script>
-
 
 <!-------------------------->
 <!-- Codemirror-->

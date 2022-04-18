@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -28,14 +28,23 @@
  */
 package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
-public class Dump
+import java.io.Serializable;
+
+/**
+ * Stores output from the dump service.
+ *
+ * @author Jens Goldhammer
+ */
+public class Dump implements Serializable
 {
 
-    private String json;
+    private static final long serialVersionUID = 51455718851086609L;
 
-    private String nodeRef;
+    private final String json;
 
-    public Dump(String nodeRef, String json)
+    private final String nodeRef;
+
+    public Dump(final String nodeRef, final String json)
     {
         this.nodeRef = nodeRef;
         this.json = json;
@@ -43,18 +52,22 @@ public class Dump
 
     public String getNodeRef()
     {
-        return nodeRef;
+        return this.nodeRef;
     }
 
     public String getJson()
     {
-        return json;
+        return this.json;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {
-        return json;
+        return this.json;
     }
 
 }

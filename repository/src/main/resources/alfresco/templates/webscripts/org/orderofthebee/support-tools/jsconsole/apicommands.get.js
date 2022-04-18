@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
  * 
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
@@ -32,7 +32,7 @@
     var hiddenMethods, isValidMethodName, result, objectName, methodName;
 
     hiddenMethods = 'setServiceRegistry getServiceRegistry serviceRegistry exec setPreferenceService setAuthenticationService'
-            + ' setTenantService setAuthorityService setPersonService setNodeDAO equals hashCode class'
+            + ' setTenantService setAuthorityService setPersonService setNodeDAO equals hashCode toString class'
             + ' getClass getExtensionName setExtensionName extensionName notify update wait setScope getScope scope '
             + ' setProcessor';
 
@@ -49,16 +49,19 @@
 
     for (objectName in global)
     {
-        if (typeof global[objectName] !== 'undefined' && global[objectName] !== null)
+        if (global[objectName] !== undefined && global[objectName] !== null)
         {
             result.global.push(objectName);
             result.methods[objectName] = [];
 
             for (methodName in global[objectName])
             {
-                if (typeof global[objectName][methodName] !== 'undefined'
-                    && global[objectName][methodName] !== null && isValidMethodName(methodName))
+                if (global[objectName][methodName] !== undefined
+                    && global[objectName][methodName] !== null
+                    && isValidMethodName(methodName))
                 {
+                    // note: despite its name, "methods" collects any members
+                    // was already the case in original JS Console
                     result.methods[objectName].push(methodName);
                 }
             }
@@ -75,7 +78,6 @@
     result.methods.space = result.methods.companyhome;
 
     // add json for json based webscripts
-    // (http://wiki.alfresco.com/wiki/Web_Scripts#json)
     result.global.push('json');
     result.methods.json = [];
     result.methods.json.push('get(fieldName)');
