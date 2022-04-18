@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
  * 
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
@@ -27,22 +27,25 @@
  * addon.
  */
 
-(function() {
-    YAHOO.Bubbling.fire("registerAction",
+(function()
+{
+    YAHOO.Bubbling.fire('registerAction',
     {
-        actionName: "onActionOpenInOOTBeeJavaScriptConsole",
-        fn: function JSC_onActionOpenInJavascriptConsole(file) {
+        actionName: 'onActionOpenInOOTBeeJavaScriptConsole',
+        fn: function JSC_onActionOpenInJavascriptConsole(file)
+        {
         	window.location = Alfresco.constants.URL_PAGECONTEXT +
-        	    "console/admin-console/ootbee-jsconsole?nodeRef=" + file.nodeRef + "&name=" + file.displayName;
+        	    'console/admin-console/ootbee-jsconsole?nodeRef=' + file.nodeRef + '&name=' + file.displayName;
         }
     });
     
-    YAHOO.Bubbling.fire("registerAction",
+    YAHOO.Bubbling.fire('registerAction',
     {
-        actionName: "onActionDumpInOOTBeeJavaScriptConsole",
-        fn: function JSC_onActionDumpInJavascriptConsole(file) {
+        actionName: 'onActionDumpInOOTBeeJavaScriptConsole',
+        fn: function JSC_onActionDumpInJavascriptConsole(file)
+        {
         	window.location = Alfresco.constants.URL_PAGECONTEXT +
-        	    "console/admin-console/ootbee-jsconsole?nodeRef=" + file.nodeRef + "&name=" + file.displayName+"&dump=true";
+        	    'console/admin-console/ootbee-jsconsole?nodeRef=' + file.nodeRef + '&name=' + file.displayName + '&dump=true';
         }
     });
 })();

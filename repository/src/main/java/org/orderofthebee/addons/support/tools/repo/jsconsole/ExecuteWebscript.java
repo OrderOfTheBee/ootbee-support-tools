@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -51,7 +51,6 @@ import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptUtils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
-import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.scripts.ScriptResourceHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
@@ -98,7 +97,7 @@ public class ExecuteWebscript extends AbstractWebScript
 
     private DumpService dumpService;
 
-    public void setDumpService(DumpService dumpService)
+    public void setDumpService(final DumpService dumpService)
     {
         this.dumpService = dumpService;
     }
@@ -114,18 +113,18 @@ public class ExecuteWebscript extends AbstractWebScript
     private String postRollScriptClasspath;
 
     /**
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
-    public void init(Container container, Description description)
+    public void init(final Container container, final Description description)
     {
         super.init(container, description);
         try
         {
-            postRollScript = readScriptFromClasspath(postRollScriptClasspath);
+            this.postRollScript = this.readScriptFromClasspath(this.postRollScriptClasspath);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             LOGGER.error("Could not read pre-roll script", e);
         }
@@ -139,7 +138,7 @@ public class ExecuteWebscript extends AbstractWebScript
      * org.springframework.extensions.webscripts.WebScriptResponse)
      */
     @Override
-    public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException
+    public void execute(final WebScriptRequest request, final WebScriptResponse response) throws IOException
     {
         int scriptOffset = 0;
 
@@ -147,27 +146,27 @@ public class ExecuteWebscript extends AbstractWebScript
         try
         {
             // this isn't very precise since there is some bit of processing until here that we can't measure
-            PerfLog webscriptPerf = new PerfLog().start();
-            JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
+            final PerfLog webscriptPerf = new PerfLog().start();
+            final JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 
             // Note: Need to use import here so the user-supplied script may also import scripts
-            String script = "<import resource=\"classpath:" + preRollScriptClasspath + "\">\n" + jsreq.script;
+            final String script = "<import resource=\"classpath:" + this.preRollScriptClasspath + "\">\n" + jsreq.script;
 
-            ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
+            final ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
 
-            int providedScriptLength = countScriptLines(jsreq.script, false);
-            int resolvedScriptLength = countScriptLines(script, true);
+            final int providedScriptLength = this.countScriptLines(jsreq.script, false);
+            final int resolvedScriptLength = this.countScriptLines(script, true);
             scriptOffset = providedScriptLength - resolvedScriptLength;
 
             try
             {
-                result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+                result = this.runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
 
                 result.setScriptOffset(scriptOffset);
 
                 // this won't be very precise since there is still some post-processing, but we can't delay it any longer
                 result.setWebscriptPerformance(
-                        String.valueOf(webscriptPerf.stop("Execute Webscript with {} - result: {} ", jsreq, result)));
+                        String.valueOf(webscriptPerf.stop("Took {} ms to execute webscript with {} - result: {} ", jsreq, result)));
 
                 if (!result.isStatusResponseSent())
                 {
@@ -192,17 +191,17 @@ public class ExecuteWebscript extends AbstractWebScript
             }
 
         }
-        catch (WebScriptException e)
+        catch (final WebScriptException e)
         {
             response.setStatus(500);
             response.setContentEncoding("UTF-8");
             response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
-            writeErrorInfosAsJson(response, result, scriptOffset, e);
+            this.writeErrorInfosAsJson(response, result, scriptOffset, e);
         }
     }
 
-    private int countScriptLines(String script, boolean attemptImportResolution)
+    private int countScriptLines(final String script, final boolean attemptImportResolution)
     {
         String scriptSource;
 
@@ -219,7 +218,7 @@ public class ExecuteWebscript extends AbstractWebScript
         }
 
         // EOL is not only dependent on the current system but on the environment of the script author, so check for any known EOL styles
-        String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
+        final String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
         return scriptLines.length;
     }
 
@@ -234,15 +233,15 @@ public class ExecuteWebscript extends AbstractWebScript
      *     the occured exception
      * @throws IOException
      */
-    private void writeErrorInfosAsJson(WebScriptResponse response, JavascriptConsoleResult result, int scriptOffset, WebScriptException e)
-            throws IOException
+    private void writeErrorInfosAsJson(final WebScriptResponse response, final JavascriptConsoleResult result, final int scriptOffset,
+            final WebScriptException e) throws IOException
     {
         try
         {
-            JSONObject jsonOutput = new JSONObject();
+            final JSONObject jsonOutput = new JSONObject();
 
             // set some common stuff like
-            JSONObject status = new JSONObject();
+            final JSONObject status = new JSONObject();
             status.put("code", 500);
             status.put("name", "Internal Error");
             status.put("description", "An error inside the HTTP server which prevented it from fulfilling the request.");
@@ -262,10 +261,10 @@ public class ExecuteWebscript extends AbstractWebScript
             jsonOutput.put("message", errorMessage);
 
             // print the stacktrace into the callstack variable...
-            Writer writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(writer);
+            final Writer writer = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(writer);
             e.printStackTrace(printWriter);
-            String s = writer.toString();
+            final String s = writer.toString();
             jsonOutput.put("callstack", s);
 
             // always print the result into the error stream because we want to have all outputs before the exceptions occurs
@@ -274,15 +273,14 @@ public class ExecuteWebscript extends AbstractWebScript
                 jsonOutput.put("result", result.generateJsonOutput().toString());
             }
 
-            // scriptoffset is useful to determine the correct line in case of
-            // an error (if you use preroll-scripts or imports in javascript
-            // input)
+            // scriptOffset is useful to determine the correct line in case of an error
+            // (if you use preroll-scripts or imports in javascript input)
             jsonOutput.put("scriptOffset", scriptOffset);
 
             response.getWriter().write(jsonOutput.toString(5));
 
         }
-        catch (JSONException ex)
+        catch (final JSONException ex)
         {
             throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json error response.", ex);
         }
@@ -310,19 +308,19 @@ public class ExecuteWebscript extends AbstractWebScript
         return script.toString();
     }
 
-    private JavascriptConsoleResult runScriptWithTransactionAndAuthentication(final WebScriptRequest request, final WebScriptResponse response,
-            final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent)
+    private JavascriptConsoleResult runScriptWithTransactionAndAuthentication(final WebScriptRequest request,
+            final WebScriptResponse response, final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent)
     {
 
         LOGGER.debug("running script as user {}", jsreq.runas);
 
         if (jsreq.runas != null && !jsreq.runas.trim().isEmpty())
         {
-            return AuthenticationUtil.runAs(() -> runWithTransactionIfNeeded(request, response, jsreq, scriptContent), jsreq.runas);
+            return AuthenticationUtil.runAs(() -> this.runWithTransactionIfNeeded(request, response, jsreq, scriptContent), jsreq.runas);
         }
         else
         {
-            return runWithTransactionIfNeeded(request, response, jsreq, scriptContent);
+            return this.runWithTransactionIfNeeded(request, response, jsreq, scriptContent);
         }
     }
 
@@ -351,14 +349,14 @@ public class ExecuteWebscript extends AbstractWebScript
                 {
                     printOutput.clear();
                 }
-                return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+                return this.executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
                         jsreq.documentNodeRef, printOutput);
             }, jsreq.transactionReadOnly);
         }
         else
         {
             LOGGER.debug("Executing script script without transaction");
-            result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+            result = this.executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
                     jsreq.documentNodeRef, printOutput);
         }
         return result;
@@ -370,32 +368,34 @@ public class ExecuteWebscript extends AbstractWebScript
      * @see org.alfresco.web.scripts.WebScript#execute(org.alfresco.web.scripts.
      * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
      */
-    private JavascriptConsoleResult executeScriptContent(WebScriptRequest req, WebScriptResponse res, ScriptContent scriptContent, String template,
-            String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef, List<String> printOutput)
+    private JavascriptConsoleResult executeScriptContent(final WebScriptRequest req, final WebScriptResponse res,
+            final ScriptContent scriptContent, final String template, final String spaceNodeRef, final Map<String, String> urlargs,
+            final String documentNodeRef, final List<String> printOutput)
     {
-        JavascriptConsoleResult output = new JavascriptConsoleResult();
+        final JavascriptConsoleResult output = new JavascriptConsoleResult();
 
         // retrieve requested format
-        String format = req.getFormat();
+        final String format = req.getFormat();
 
         try
         {
             // construct model for script / template
-            Status status = new Status();
-            Cache cache = new Cache(getDescription().getRequiredCache());
-            Map<String, Object> model = new HashMap<String, Object>(8, 1.0f);
+            final Status status = new Status();
+            final Cache cache = new Cache(this.getDescription().getRequiredCache());
+            final Map<String, Object> model = new HashMap<>(8, 1.0f);
             model.put("status", status);
             model.put("cache", cache);
 
-            Map<String, Object> scriptModel = createScriptParameters(req, res, null, model);
+            final Map<String, Object> scriptModel = this.createScriptParameters(req, res, null, model);
 
-            augmentScriptModelArgs(scriptModel, urlargs);
+            this.augmentScriptModelArgs(scriptModel, urlargs);
 
             // add return model allowing script to add items to template model
-            Map<String, Object> returnModel = new HashMap<>(8, 1.0f);
+            final Map<String, Object> returnModel = new HashMap<>(8, 1.0f);
             scriptModel.put("model", returnModel);
 
-            JavascriptConsoleScriptObject javascriptConsole = printOutput == null ? new JavascriptConsoleScriptObject() : new JavascriptConsoleScriptObject(printOutput);
+            final JavascriptConsoleScriptObject javascriptConsole = printOutput == null ? new JavascriptConsoleScriptObject()
+                    : new JavascriptConsoleScriptObject(printOutput);
             scriptModel.put("jsconsole", javascriptConsole);
 
             if (spaceNodeRef != null && !spaceNodeRef.trim().isEmpty())
@@ -404,7 +404,7 @@ public class ExecuteWebscript extends AbstractWebScript
             }
             else
             {
-                Object ch = scriptModel.get("companyhome");
+                final Object ch = scriptModel.get("companyhome");
                 if (ch instanceof NodeRef)
                 {
                     javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(ch.toString()));
@@ -422,51 +422,52 @@ public class ExecuteWebscript extends AbstractWebScript
                 documentNode = this.scriptUtils.getNodeFromString(documentNodeRef);
                 scriptModel.put("document", documentNode);
             }
-            scriptModel.put("dumpService", dumpService);
+            scriptModel.put("dumpService", this.dumpService);
 
-            PerfLog jsPerf = new PerfLog(LOGGER).start();
+            final PerfLog jsPerf = new PerfLog().start();
             try
             {
-                ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessorByExtension("js");
+                final ScriptProcessor scriptProcessor = this.getContainer().getScriptProcessorRegistry()
+                        .getScriptProcessorByExtension("js");
                 scriptProcessor.executeScript(scriptContent, scriptModel);
             }
             finally
             {
                 output.setScriptPerformance(
-                        String.valueOf(jsPerf.stop("Executed the script {} with model {}", scriptContent, scriptModel)));
+                        String.valueOf(jsPerf.stop("Took {} ms to execute script in {} with model {}", scriptContent, scriptModel)));
                 output.setPrintOutput(javascriptConsole.getPrintOutput());
                 if (documentNode != null)
                 {
-                    output.setDumpOutput(dumpService.addDump(documentNode));
+                    output.setDumpOutput(this.dumpService.addDump(documentNode));
                 }
             }
 
-            ScriptNode newSpace = javascriptConsole.getSpace();
+            final ScriptNode newSpace = javascriptConsole.getSpace();
             output.setSpaceNodeRef(newSpace.getNodeRef().toString());
             try
             {
                 output.setSpacePath(newSpace.getDisplayPath() + "/" + newSpace.getName());
             }
-            catch (AccessDeniedException ade)
+            catch (final AccessDeniedException ade)
             {
                 output.setSpacePath("/");
             }
 
-            mergeScriptModelIntoTemplateModel(scriptContent, returnModel, model);
+            this.mergeScriptModelIntoTemplateModel(scriptContent, returnModel, model);
 
             // create model for template rendering
-            Map<String, Object> templateModel = createTemplateParameters(req, res, model);
+            final Map<String, Object> templateModel = this.createTemplateParameters(req, res, model);
 
             // is a redirect to a status specific template required?
             if (status.getRedirect())
             {
-                sendStatus(req, res, status, cache, format, templateModel);
+                this.sendStatus(req, res, status, cache, format, templateModel);
                 output.setStatusResponseSent(true);
             }
             else
             {
                 // apply location
-                String location = status.getLocation();
+                final String location = status.getLocation();
                 if (location != null && location.length() > 0)
                 {
                     LOGGER.debug("Setting location to {}", location);
@@ -475,30 +476,30 @@ public class ExecuteWebscript extends AbstractWebScript
 
                 if (template != null && !template.trim().isEmpty())
                 {
-                    PerfLog freemarkerPerf = new PerfLog(LOGGER).start();
-                    TemplateProcessor templateProcessor = getContainer().getTemplateProcessorRegistry()
+                    final PerfLog freemarkerPerf = new PerfLog().start();
+                    final TemplateProcessor templateProcessor = this.getContainer().getTemplateProcessorRegistry()
                             .getTemplateProcessorByExtension("ftl");
-                    StringWriter sw = new StringWriter();
+                    final StringWriter sw = new StringWriter();
                     templateProcessor.processString(template, templateModel, sw);
-                    String templateResult = sw.toString();
-                    output.setFreemarkerPerformance(String.valueOf(freemarkerPerf
-                            .stop("Executed the template {} with model {} with result {}", template, templateModel, templateResult)));
+                    final String templateResult = sw.toString();
+                    output.setFreemarkerPerformance(String.valueOf(freemarkerPerf.stop(
+                            "Took {} ms to execute template {} with model {} with result {}", template, templateModel, templateResult)));
                     output.setRenderedTemplate(templateResult);
                 }
             }
         }
-        catch (Throwable e)
+        catch (final Exception e)
         {
             LOGGER.debug("Caught exception; decorating with appropriate status template", e);
-            throw createStatusException(e, req, res);
+            throw this.createStatusException(e, req, res);
         }
         return output;
     }
 
-    private void augmentScriptModelArgs(Map<String, Object> scriptModel, Map<String, String> additionalUrlArgs)
+    private void augmentScriptModelArgs(final Map<String, Object> scriptModel, final Map<String, String> additionalUrlArgs)
     {
         @SuppressWarnings("unchecked")
-        Map<String, String> args = (Map<String, String>) scriptModel.get("args");
+        final Map<String, String> args = (Map<String, String>) scriptModel.get("args");
 
         args.putAll(additionalUrlArgs);
     }
@@ -513,18 +514,18 @@ public class ExecuteWebscript extends AbstractWebScript
      * @param templateModel
      *     template model
      */
-    private final void mergeScriptModelIntoTemplateModel(ScriptContent scriptContent, Map<String, Object> scriptModel,
-            Map<String, Object> templateModel)
+    private final void mergeScriptModelIntoTemplateModel(final ScriptContent scriptContent, final Map<String, Object> scriptModel,
+            final Map<String, Object> templateModel)
     {
         // determine script processor
-        ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessor(scriptContent);
+        final ScriptProcessor scriptProcessor = this.getContainer().getScriptProcessorRegistry().getScriptProcessor(scriptContent);
         if (scriptProcessor != null)
         {
-            for (Map.Entry<String, Object> entry : scriptModel.entrySet())
+            for (final Map.Entry<String, Object> entry : scriptModel.entrySet())
             {
                 // retrieve script model value
-                Object value = entry.getValue();
-                Object templateValue = scriptProcessor.unwrapValue(value);
+                final Object value = entry.getValue();
+                final Object templateValue = scriptProcessor.unwrapValue(value);
                 templateModel.put(entry.getKey(), templateValue);
             }
         }
@@ -540,53 +541,53 @@ public class ExecuteWebscript extends AbstractWebScript
      * @param writer
      *     where to output
      */
-    protected final void renderFormatTemplate(String format, Map<String, Object> model, Writer writer)
+    protected final void renderFormatTemplate(String format, final Map<String, Object> model, final Writer writer)
     {
         format = (format == null) ? "" : format;
 
-        String templatePath = getDescription().getId() + "." + format;
+        final String templatePath = this.getDescription().getId() + "." + format;
 
         LOGGER.debug("Rendering template {}", templatePath);
 
-        renderTemplate(templatePath, model, writer);
+        this.renderTemplate(templatePath, model, writer);
     }
 
-    public void setScriptUtils(ScriptUtils scriptUtils)
+    public void setScriptUtils(final ScriptUtils scriptUtils)
     {
         this.scriptUtils = scriptUtils;
     }
 
-    public void setTransactionService(TransactionService transactionService)
+    public void setTransactionService(final TransactionService transactionService)
     {
         this.transactionService = transactionService;
     }
 
-    public void setJsProcessor(org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor)
+    public void setJsProcessor(final org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor)
     {
         this.jsProcessor = jsProcessor;
     }
 
-    public final void setPrintOutputCache(SimpleCache<Pair<String, Integer>, List<String>> printOutputCache)
+    public final void setPrintOutputCache(final SimpleCache<Pair<String, Integer>, List<String>> printOutputCache)
     {
         this.printOutputCache = printOutputCache;
     }
 
-    public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache)
+    public final void setResultCache(final SimpleCache<String, JavascriptConsoleResultBase> resultCache)
     {
         this.resultCache = resultCache;
     }
 
-    public final void setPrintOutputChunkSize(int printOutputChunkSize)
+    public final void setPrintOutputChunkSize(final int printOutputChunkSize)
     {
         this.printOutputChunkSize = printOutputChunkSize;
     }
 
-    public final void setPreRollScriptClasspath(String preRollScriptClasspath)
+    public final void setPreRollScriptClasspath(final String preRollScriptClasspath)
     {
         this.preRollScriptClasspath = preRollScriptClasspath;
     }
 
-    public final void setPostRollScriptClasspath(String postRollScriptClasspath)
+    public final void setPostRollScriptClasspath(final String postRollScriptClasspath)
     {
         this.postRollScriptClasspath = postRollScriptClasspath;
     }
@@ -596,7 +597,7 @@ public class ExecuteWebscript extends AbstractWebScript
 
         private final String content;
 
-        public StringScriptContent(String content)
+        public StringScriptContent(final String content)
         {
             this.content = content;
         }
@@ -604,13 +605,13 @@ public class ExecuteWebscript extends AbstractWebScript
         @Override
         public InputStream getInputStream()
         {
-            return new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+            return new ByteArrayInputStream(this.content.getBytes(Charset.forName("UTF-8")));
         }
 
         @Override
         public String getPath()
         {
-            return MD5.Digest(content.getBytes()) + ".js";
+            return MD5.Digest(this.content.getBytes()) + ".js";
         }
 
         @Override
@@ -622,7 +623,7 @@ public class ExecuteWebscript extends AbstractWebScript
         @Override
         public Reader getReader()
         {
-            return new StringReader(content);
+            return new StringReader(this.content);
         }
 
         @Override

@@ -1,5 +1,5 @@
 <#--
-Copyright (C) 2016 - 2021 Order of the Bee
+Copyright (C) 2016 - 2022 Order of the Bee
 
 This file is part of OOTBee Support Tools
 
@@ -18,7 +18,7 @@ along with OOTBee Support Tools. If not, see
 <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005 - 2021 Alfresco Software Limited.
+Copyright (C) 2005 - 2022 Alfresco Software Limited.
  
 This file is part of code forked from the JavaScript Console project
 which was licensed under the Apache License, Version 2.0 at the time.
@@ -34,33 +34,37 @@ addon.
 	"arch" : "${arch}",
 	"osversion" : "${osversion}",
 	"processorCount" : "${processorCount}",
-	"systemLoad" : "${systemLoad}",
 	"freeMemory" : "${freeMemory}",
 	"totalMemory" : "${totalMemory}",
+	"heapInit": "${javaHeapInit}",
+	"heapMax": "${javaHeapMax}",
+	"heapCommitted": "${javaHeapCommitted}",
+	"heapUsed": "${javaHeapUsed}",
 	"java" : "${java}",
 	"javaUptime" : "${javaUptime}",
 	"hostUserInfo" : "${hostUserInfo}",
 	"threadCount" : "${threadCount}",
-	"deadlockThreads" : "${deadlockThreads}",
+	"deadlockThreads" : "${deadlockedThreadCount}",
 	"serverEdition" : "${edition}",
 	"serverSchema" : "${schema}",
-	"serverVersion" : "${version}",
+	"serverVersion" : "\${version}",
 	"transactionsCount" : "${transactionsCount}",
-	"transactionInfos" : "${transactionInfos}",
 	"tenantCount" : "${tenantCount}",
 	"sitesCount" : "${sitesCount}",
 	"groupsCount" : "${groupsCount}",
 	"peopleCount" : "${peopleCount}",
 	"tagsCount" : "${tagsCount}",
-	"wflDefinitionCount" : "${workflowDefinitions}",
+	"wflDefinitionCount" : "${workflowDefinitionsCount}",
 	"folderCount" : "${folderCount}",
 	"docsCount" : "${docsCount}",
 	"checkedOutCount" : "${checkedOutCount}",
 	"workflowCount" : "${workflowCount}",
-	"classifications" : "${classifications}",
-	"runningActions" : "${runningActions}",
+	"classifications" : "${classificationCount}",
+	"runningActions" : "${runningActionCount}",
 	"patchCount" : "${patchCount}",
-	"runningJobs" : "${runningJobs}",
-	"registeredPolicies" : "${registeredPolicies}",
-	"scheduledActions" : "${scheduledActions}"
+	"installedModuleCount" : "${installedModuleCount}",
+	"missingModuleCount" : "${missingModuleCount}",
+	"runningJobs" : "${runningJobCount}",
+	"registeredPolicies" : "${registeredPolicyCount}",
+	"scheduledActions" : "${scheduledActionCount}"
 }</#escape>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2022 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2021 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2022 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -30,6 +30,7 @@ package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.alfresco.repo.content.MimetypeMap;
@@ -52,33 +53,34 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase
 
     private static final long serialVersionUID = 1988880899541060406L;
 
-    private List<String> printOutput = new ArrayList<String>();
+    private final List<String> printOutput = new ArrayList<>();
 
     private boolean statusResponseSent = false;
 
-    private List<Dump> dumpOutput;
+    private final List<Dump> dumpOutput = new ArrayList<>();
 
-    public void setPrintOutput(List<String> printOutput)
+    public void setPrintOutput(final List<String> printOutput)
     {
-        this.printOutput = printOutput;
+        this.printOutput.clear();
+        this.printOutput.addAll(printOutput);
     }
 
     public List<String> getPrintOutput()
     {
-        return this.printOutput;
+        return Collections.unmodifiableList(this.printOutput);
     }
 
-    public void writeJson(WebScriptResponse response) throws IOException
+    public void writeJson(final WebScriptResponse response) throws IOException
     {
         response.setContentEncoding("UTF-8");
         response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
         try
         {
-            JSONObject jsonOutput = generateJsonOutput();
+            final JSONObject jsonOutput = this.generateJsonOutput();
             response.getWriter().write(jsonOutput.toString());
         }
-        catch (JSONException e)
+        catch (final JSONException e)
         {
             throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json response.", e);
         }
@@ -86,40 +88,94 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase
 
     /**
      * Generates the execution summary / details of the handled JavaScript Console request.
-     * 
+     *
      * @return the JSON object structure of the execution summary / details
      * @throws JSONException
      *     if an error occurs preparing the execution summary / details JSON structure
      */
     public JSONObject generateJsonOutput() throws JSONException
     {
-        JSONObject jsonOutput = new JSONObject();
-        jsonOutput.put("renderedTemplate", getRenderedTemplate());
-        jsonOutput.put("printOutput", getPrintOutput());
-        jsonOutput.put("dumpOutput", this.dumpOutput);
-        jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
-        jsonOutput.put("spacePath", getSpacePath());
+        final JSONObject jsonOutput = new JSONObject();
+        jsonOutput.put("renderedTemplate", this.getRenderedTemplate());
+        jsonOutput.put("printOutput", this.getPrintOutput());
+        jsonOutput.put("dumpOutput", this.getDumpOutput());
+        jsonOutput.put("spaceNodeRef", this.getSpaceNodeRef());
+        jsonOutput.put("spacePath", this.getSpacePath());
         jsonOutput.put("result", new JSONArray());
-        jsonOutput.put("scriptPerf", getScriptPerformance());
-        jsonOutput.put("freemarkerPerf", getFreemarkerPerformance());
-        jsonOutput.put("webscriptPerf", getWebscriptPerformance());
-        jsonOutput.put("scriptOffset", getScriptPerformance());
+        jsonOutput.put("scriptPerf", this.getScriptPerformance());
+        jsonOutput.put("freemarkerPerf", this.getFreemarkerPerformance());
+        jsonOutput.put("webscriptPerf", this.getWebscriptPerformance());
+        jsonOutput.put("scriptOffset", this.getScriptPerformance());
         return jsonOutput;
     }
 
     public boolean isStatusResponseSent()
     {
-        return statusResponseSent;
+        return this.statusResponseSent;
     }
 
-    public void setStatusResponseSent(boolean statusResponseSent)
+    public void setStatusResponseSent(final boolean statusResponseSent)
     {
         this.statusResponseSent = statusResponseSent;
     }
 
-    public void setDumpOutput(List<Dump> dumpOutput)
+    public void setDumpOutput(final List<Dump> dumpOutput)
     {
-        this.dumpOutput = dumpOutput;
+        this.dumpOutput.clear();
+        this.dumpOutput.addAll(dumpOutput);
+    }
+
+    public List<Dump> getDumpOutput()
+    {
+        return Collections.unmodifiableList(this.dumpOutput);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + this.dumpOutput.hashCode();
+        result = prime * result + this.printOutput.hashCode();
+        result = prime * result + (this.statusResponseSent ? 1231 : 1237);
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (!super.equals(obj))
+        {
+            return false;
+        }
+        if (this.getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final JavascriptConsoleResult other = (JavascriptConsoleResult) obj;
+        if (!this.dumpOutput.equals(other.dumpOutput))
+        {
+            return false;
+        }
+        if (!this.printOutput.equals(other.printOutput))
+        {
+            return false;
+        }
+        if (this.statusResponseSent != other.statusResponseSent)
+        {
+            return false;
+        }
+        return true;
     }
 
 }
