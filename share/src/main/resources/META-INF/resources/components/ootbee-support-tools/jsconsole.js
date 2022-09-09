@@ -393,6 +393,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Freemarker', 1);
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Lucene', 2);
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Webscripts', 3);
+            this.widgets.docsMenuButton.getMenu().cfg.setProperty('zIndex', 2);
         },
 
         createOrUpdateScriptsSaveMenu: function JavaScriptConsole_createOrUpdateScriptsSaveMenu(listOfScripts)
@@ -424,6 +425,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     container: this.id + '-scriptsave'
                 });
                 this.widgets.saveMenuButton.getMenu().subscribe('click', this.onSaveScriptClick, this);
+                this.widgets.saveMenuButton.getMenu().cfg.setProperty('zIndex', 2);
             }
         },
 
@@ -456,6 +458,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     container: this.id + '-scriptload'
                 });
                 this.widgets.loadMenuButton.getMenu().subscribe('click', this.onLoadScriptClick, this);
+                this.widgets.loadMenuButton.getMenu().cfg.setProperty('zIndex', 2);
             }
         },
 
@@ -508,6 +511,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             }
 
             this.widgets.themeMenuButton.getMenu().subscribe('click', this.onThemeSelection, this);
+            this.widgets.themeMenuButton.getMenu().cfg.setProperty('zIndex', 2);
         },
 
         /**
@@ -529,6 +533,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                 disabled: false
             });
 
+            this.widgets.dumpDisplayMenu.getMenu().cfg.setProperty('zIndex', 2);
             this.widgets.dumpDisplayMenu.on('appendTo', function ()
             {
                 menu = this.getMenu();
@@ -2215,7 +2220,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                         text: this.msg('error.script.load', o.status + ':' + o.statusText)
                     });
                 },
-                scope: this
+                scope: self
             };
 
             callbackFreemarker = {
@@ -2229,14 +2234,14 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     // can fail as stored freemarker code is optional
                     this.widgets.codeMirrorTemplate.setValue('');
                 },
-                scope: this
+                scope: self
             };
 
             nodeRef = p_aArgs[1].value;
 
             if (nodeRef === 'NEW')
             {
-                this.loadDemoScript();
+                self.loadDemoScript();
             }
             else
             {
@@ -2254,8 +2259,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         onThemeSelection: function JavaScriptConsole_onThemeSelection(p_sType, p_aArgs, self)
         {
             var theme = p_aArgs[1].value;
-            self.widgets.codeMirrorScript.setOption("theme", theme);
-            self.widgets.codeMirrorTemplate.setOption("theme", theme);
+            self.widgets.codeMirrorScript.setOption('theme', theme);
+            self.widgets.codeMirrorTemplate.setOption('theme', theme);
         },
 
         saveAsExistingScript: function JavaScriptConsole_saveAsExistingScript(filename, nodeRef)
@@ -2331,7 +2336,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     text: self.msg('message.save.choose.filename'),
                     input: 'text',
                     callback: {
-                        fn: this.saveAsNewScript,
+                        fn: self.saveAsNewScript,
                         scope: self
                     }
                 });
