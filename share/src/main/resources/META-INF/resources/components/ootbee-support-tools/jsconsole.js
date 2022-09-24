@@ -109,6 +109,9 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         this.name = 'OOTBee.JavaScriptConsole';
         OOTBee.JavaScriptConsole.superclass.constructor.call(this, htmlId);
 
+        // ensure high-enough zIndex to overlay anything from editors
+        Alfresco.util.PopupManager.zIndex = 30;
+
         Alfresco.util.ComponentManager.register(this);
         Alfresco.util.YUILoaderHelper.require(['button', 'container', 'datasource', 'datatable',  'paginator', 'json', 'history', 'tabview'], this.onComponentsLoaded, this);
 
@@ -1150,10 +1153,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         {
             // Read the Alfresco Data Dictionary for code completion (types and
             // aspects)
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + 'api/classes',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback:
                 {
                     fn: function(res)
@@ -1170,10 +1171,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             });
 
             // Read the Alfresco workflow definitions for code completion (types and  aspects)
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + 'api/workflow-definitions',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback: {
                     fn: function(res)
                     {
@@ -1188,10 +1187,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             });
 
             // Read the Alfresco workflow definitions for code completion (types and aspects)
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + 'api/actiondefinitions',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback: {
                     fn: function(res)
                     {
@@ -1209,10 +1206,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         loadRepoScriptList: function JavaScriptConsole_loadRepoScriptList()
         {
             // Load Scripts from Repository
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/listscripts.json',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback:
                 {
                     fn: function(res)
@@ -1358,10 +1353,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.widgets.repoInfoOutput.innerHTML = 'Loading ...';
 
             // Read Javascript API Commands for code completion
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/serverInfo',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback: {
                     fn: function(res)
                     {
@@ -1446,11 +1439,9 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.executeStartTime = new Date();
             rq.resultChannel = String(this.executeStartTime.getTime());
 
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/execute',
-                method: Alfresco.util.Ajax.POST,
                 dataObj: rq,
-                requestContentType: Alfresco.util.Ajax.JSON,
                 successCallback: {
                     fn: function JavaScriptConsole_onExecuteClick_success(res)
                     {
@@ -2242,14 +2233,12 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
         saveAsExistingScript: function JavaScriptConsole_saveAsExistingScript(filename, nodeRef)
         {
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonPut({
                 url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(filename) + '&isUpdate=true',
-                method: Alfresco.util.Ajax.PUT,
-                dataStr: YAHOO.lang.JSON.stringify({
+                dataObj: {
                     jsScript: this.widgets.codeMirrorScript.getValue(),
                     fmScript: this.widgets.codeMirrorTemplate.getValue()
-                }),
-                requestContentType: 'application/json; charset=utf-8',
+                },
                 successCallback: {
                     fn: function(res)
                     {
@@ -2261,20 +2250,30 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     },
                     scope: this
                 },
-                failureMessage: this.msg('error.script.save', filename)
+                failureCallback: {
+                    fn: function(res)
+                    {
+                        Alfresco.util.PopupManager.displayPrompt(
+                        {
+                            title: this.msg('message.failure'),
+                            text: res.json && res.json.message ? res.json.message : this.msg('error.script.save', filename),
+                            zIndex: 5 // added to internal default - high enough offset to ensure it should overlay any part of editor
+                        });
+                        
+                    },
+                    scope: this
+                }
             });
         },
 
         saveAsNewScript: function JavaScriptConsole_saveAsNewScript(filename)
         {
-            Alfresco.util.Ajax.request({
+            Alfresco.util.Ajax.jsonPut({
                 url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(filename) + '&isUpdate=false',
-                method: Alfresco.util.Ajax.PUT,
-                dataStr: YAHOO.lang.JSON.stringify({
+                dataObj: {
                     jsScript: this.widgets.codeMirrorScript.getValue(),
                     fmScript: this.widgets.codeMirrorTemplate.getValue()
-                }),
-                requestContentType: 'application/json; charset=utf-8',
+                },
                 successCallback: {
                     fn: function(res)
                     {
@@ -2286,7 +2285,19 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     },
                     scope: this
                 },
-                failureMessage: this.msg('error.script.save', filename)
+                failureCallback: {
+                    fn: function(res)
+                    {
+                        Alfresco.util.PopupManager.displayPrompt(
+                        {
+                            title: this.msg('message.failure'),
+                            text: res.json && res.json.message ? res.json.message : this.msg('error.script.save', filename),
+                            zIndex: 5 // added to internal default - high enough offset to ensure it should overlay any part of editor
+                        });
+                        
+                    },
+                    scope: this
+                }
             });
         },
 
