@@ -1148,29 +1148,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
         loadRepoDefinitions: function JavaScriptConsole_loadRepoDefinitions()
         {
-            // Read Javascript API Commands for code completion
-            Alfresco.util.Ajax.request({
-                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/apicommands.json',
-                method: Alfresco.util.Ajax.GET,
-                requestContentType: Alfresco.util.Ajax.JSON,
-                successCallback:
-                {
-                    fn: function(res)
-                    {
-                        var i;
-
-                        this.javascriptCommands = res.json;
-                        this.javascriptCommands.globalMap = {};
-
-                        for (i = 0; i < this.javascriptCommands.global.length; i++)
-                        {
-                            this.javascriptCommands.globalMap[this.javascriptCommands.global[i]] = false;
-                        }
-                    },
-                    scope: this
-                }
-            });
-
             // Read the Alfresco Data Dictionary for code completion (types and
             // aspects)
             Alfresco.util.Ajax.request({

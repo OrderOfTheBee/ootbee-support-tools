@@ -27,6 +27,23 @@ is now being licensed under the LGPL as part of the OOTBee Support Tools
 addon.
 
  -->
+<#macro renderJsScriptElement jsScript>
+    <#escape x as jsonUtils.encodeJSONString(x)>{
+        "text": "${jsScript.item.name}",
+        <#if jsScript.children??>
+            "submenu": {
+                "id": "${jsScript.item.id}",
+                "itemdata": [<#list jsScript.children as child>
+                    <@renderJsScriptElement child />
+                <#if child_has_next>,</#if></#list>]
+            }
+        <#else>
+        "value": "${jsScript.item.nodeRef}"
+        </#if>
+    }</#escape>
+</#macro>
 {
-	"scripts" : ${scripts}
+	"scripts" : [<#list scripts as jsScript>
+	   <@renderJsScriptElement jsScript /><#if jsScript_has_next>,</#if>
+	</#list>]
 }

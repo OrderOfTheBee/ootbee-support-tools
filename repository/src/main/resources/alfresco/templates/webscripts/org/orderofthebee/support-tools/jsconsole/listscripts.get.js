@@ -45,18 +45,14 @@ var prepareOutput = function prepareOutput(folder)
         if (node.isContainer)
         {
             scriptList.push({
-                text: node.name,
-                submenu: {
-                    id: node.id,
-                    itemdata: prepareOutput(node)
-                }
+                item: node,
+                children: prepareOutput(node)
             });
         }
         else
         {
             scriptList.push({
-                text: node.name,
-                value: node.nodeRef
+                item: node
             });
         }
     }
@@ -69,11 +65,11 @@ function findAvailableScripts()
     var scriptFolder = search.selectNodes('/app:company_home/app:dictionary/app:scripts')[0];
     if (scriptFolder)
     {
-        model.scripts = JSON.stringify(prepareOutput(scriptFolder));
+        model.scripts = prepareOutput(scriptFolder);
     }
     else
     {
-        model.scripts = '[]';
+        model.scripts = [];
     }
 }
 
