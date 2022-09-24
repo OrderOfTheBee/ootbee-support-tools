@@ -108,6 +108,7 @@ This addon contains / packages the following, unaltered open source libraries in
 - [js-beautifier](https://beautifier.io/), MIT License
 - [Tern](https://ternjs.net/), MIT License
 - [jsonlint](https://github.com/zaach/jsonlint), MIT License
+- [jquery](https://jquery.com/), MIT License
 
 The Contributor Covenant is released under [Creative Commons Attribution 4.0 International Public License](https://github.com/ContributorCovenant/contributor_covenant/blob/master/LICENSE.md).
 
