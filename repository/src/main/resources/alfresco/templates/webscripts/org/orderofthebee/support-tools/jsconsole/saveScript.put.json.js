@@ -89,7 +89,18 @@ function saveScript()
         }
         else
         {
-            scriptFile = scriptFolder.createFile(args.name);
+            try
+            {
+                scriptFile = scriptFolder.createFile(args.name);
+            }
+            catch (e)
+            {
+                if (e.message && e.message.indexOf('FileExistsException'))
+                {
+                    e.code = 409;
+                }
+                throw e;
+            }
         }
         scriptFile.content = json.get('jsScript');
         scriptFile.properties['jsc:freemarkerScript'].content=json.get('fmScript');
