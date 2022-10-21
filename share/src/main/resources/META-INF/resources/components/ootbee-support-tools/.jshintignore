@@ -1,0 +1,6 @@
+# never check any of the included open source library files
+beautify.js
+codemirror/
+codemirror-ui/
+jsonlint/
+ternjs/

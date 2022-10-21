@@ -1,3 +1,5 @@
 This redundant folder / web script sub-package is unfortunately required due to how the lookup for Admin Tools console web scripts works in ```console.js``` (Alfresco out-of-the-box code). This path segment is required to provide the tool group ID and by extension the grouping in the UI. It would have been great if a property of the web script descriptor could be used for that instead, but let's not dream too much...
 
 Additionally, this folder should have had the path ```org/orderofthebee/support-tools/pages/console/support-tools``` but due to some path-evaluation hard-coding in ```console.js``` (Alfresco out-of-the-box code) we were forced to drop one layer, and both ```console``` and ```support-tools``` are required.
+
+Lastly, the JS Console tool is included via the script name `ootbee-jsconsole.get.<xy>` where the `ootbee-` prefix could be considered redundant, but it is actually used to ensure our global localisation key do not clash with the original JS Console addon in case both are installed into Share at the same time.

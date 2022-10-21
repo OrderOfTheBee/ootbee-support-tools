@@ -9,4 +9,44 @@
             </dojo-pages>
         </web-framework>
     </config>
+
+    <config evaluator="string-compare" condition="DocLibCustom">
+        <dependencies>
+            <js src="components/ootbee-support-tools/jsconsole-actions.js" />
+        </dependencies>
+    </config>
+
+    <config evaluator="string-compare" condition="DocLibActions">
+        <actions>
+            <action id="ootbee-jsconsole-open-in-jsconsole" type="javascript"
+                label="ootbee-jsconsole.action.open.in.jsconsole" icon="ootbee-open-in-jsconsole">
+                <param name="function">onActionOpenInOOTBeeJavaScriptConsole</param>
+                <evaluator>ootbee-support-tools.doclib.evaluator.isAdmin</evaluator>
+            </action>
+            <action id="ootbee-jsconsole-dump-in-jsconsole" type="javascript"
+                label="ootbee-jsconsole.action.dump.in.jsconsole" icon="ootbee-dump-in-jsconsole">
+                <param name="function">onActionDumpInOOTBeeJavaScriptConsole</param>
+                <evaluator>ootbee-support-tools.doclib.evaluator.isAdmin</evaluator>
+            </action>
+        </actions>
+
+        <actionGroups>
+            <actionGroup id="document-browse">
+                <action index="400" id="ootbee-jsconsole-open-in-jsconsole" />
+                <action index="401" id="ootbee-jsconsole-dump-in-jsconsole" />
+            </actionGroup>
+            <actionGroup id="document-details">
+                <action index="400" id="ootbee-jsconsole-open-in-jsconsole" />
+                <action index="401" id="ootbee-jsconsole-dump-in-jsconsole" />
+            </actionGroup>
+            <actionGroup id="folder-browse">
+                <action index="400" id="ootbee-jsconsole-open-in-jsconsole" />
+                <action index="401" id="ootbee-jsconsole-dump-in-jsconsole" />
+            </actionGroup>
+            <actionGroup id="folder-details">
+                <action index="400" id="ootbee-jsconsole-open-in-jsconsole" />
+                <action index="401" id="ootbee-jsconsole-dump-in-jsconsole" />
+            </actionGroup>
+        </actionGroups>
+    </config>
 </alfresco-config>

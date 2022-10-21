@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Transformations</shortname>
+    <description>Inspect supported transformations</description>
+    <url>/ootbee/admin/transform</url>
+    <family>AdminConsole</family>
+    <family>OOTBee Support Tools</family>
+    <format default="html"/>
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readonly">required</transaction>
+</webscript>

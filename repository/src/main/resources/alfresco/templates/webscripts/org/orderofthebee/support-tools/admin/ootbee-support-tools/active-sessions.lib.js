@@ -33,11 +33,11 @@ function buildConnectionPoolData()
     connectionPoolData = {
         initialSize : dataSource.initialSize,
         numActive : dataSource.numActive,
-        maxActive : dataSource.maxActive,
+        maxActive : dataSource.maxActive || dataSource.maxTotal, // dbcp2 renamed the property
         minIdle : dataSource.minIdle,
         numIdle : dataSource.numIdle,
         maxIdle : dataSource.maxIdle,
-        maxWait : dataSource.maxWait,
+        maxWait : dataSource.maxWait || dataSource.maxWaitMillis, // dbcp2 renamed the property
         url : dataSource.url,
         driverClassName : dataSource.driverClassName
     };

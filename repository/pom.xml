@@ -70,13 +70,21 @@
                   <groupId>org.codehaus.groovy</groupId>
                   <artifactId>*</artifactId>
                </exclusion>
+               <exclusion>
+                  <groupId>commons-lang</groupId>
+                  <artifactId>commons-lang</artifactId>
+               </exclusion>
+               <exclusion>
+                  <groupId>commons-io</groupId>
+                  <artifactId>commons-io</artifactId>
+               </exclusion>
             </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.cronutils</groupId>
             <artifactId>cron-utils</artifactId>
-            <version>5.0.3</version>
+            <version>9.1.6</version>
             <exclusions>
                 <!-- already packaged with Alfresco -->
                 <exclusion>
@@ -86,18 +94,16 @@
             </exclusions>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.time4j/time4j-core -->
         <dependency>
             <groupId>net.time4j</groupId>
             <artifactId>time4j-core</artifactId>
-            <version>3.23</version>
+            <version>3.50</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.time4j/time4j-i18n -->
         <dependency>
             <groupId>net.time4j</groupId>
             <artifactId>time4j-i18n</artifactId>
-            <version>3.23</version>
+            <version>3.50</version>
         </dependency>   
     </dependencies>
 

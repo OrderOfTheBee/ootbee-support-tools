@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>JSConsole store new Javascript</shortname>
+    <url>/ootbee/jsconsole/createscript?name={name}</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <lifecycle>internal</lifecycle>
+    <transaction allow="readwrite">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>
