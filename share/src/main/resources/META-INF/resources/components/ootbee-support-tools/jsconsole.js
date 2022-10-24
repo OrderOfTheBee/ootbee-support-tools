@@ -363,11 +363,14 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                 [
                     { text: 'Mozilla Javascript Reference', url: 'https://developer.mozilla.org/en/JavaScript/Reference', target: '_blank'},
                     { text: 'W3Schools Javascript Reference', url: 'http://www.w3schools.com/jsref/default.asp', target: '_blank'},
-                    { text: 'Repository JavaScript Root Objects', url: 'https://docs.alfresco.com/content-services/community/develop/reference/repo-root-objects-ref/', target:'_blank' }
+                    { text: 'Repository JavaScript Root Objects', url: 'https://docs.alfresco.com/content-services/latest/develop/reference/repo-root-objects-ref/', target:'_blank' },
+                    { text: 'JavaScript API Cookbook (old Alfresco wiki, now obsolete Hub page)', url: 'https://hub.alfresco.com/t5/alfresco-content-services-hub/javascript-api-cookbook/ba-p/293260', target:'_blank' },
+                    { text: '5.0 JavaScript API (old Alfresco wiki, now obsolete Hub page)', url: 'https://hub.alfresco.com/t5/alfresco-content-services-hub/5-0-javascript-api/ba-p/289568', target:'_blank' },
+                    { text: '5.0 JavaScript Services API (old Alfresco wiki, now obsolete Hub page)', url: 'https://hub.alfresco.com/t5/alfresco-content-services-hub/5-0-javascript-services-api/ba-p/289295', target:'_blank' }
                 ],
                 [
                     { text: 'Freemarker Manual', url: 'https://freemarker.apache.org/docs/index.html', target:'_blank'},
-                    { text: 'Repository Freemarker Root Objects', url: 'https://docs.alfresco.com/content-services/community/develop/reference/freemarker-ref/', target:'_blank'}
+                    { text: 'Repository Freemarker Root Objects', url: 'https://docs.alfresco.com/content-services/latest/develop/reference/freemarker-ref/', target:'_blank'}
                 ],
                 [
                     { text: 'Full Text Search reference (Alfresco Search Services)', url: 'https://docs.alfresco.com/search-services/latest/using/', target:'_blank' },
