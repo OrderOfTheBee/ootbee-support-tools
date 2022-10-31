@@ -32,7 +32,7 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                 "listInstances",
                 "\t${msg("ootbee-support-tools.command-console.subsystems.listInstances.description")}",
                 "",
-                "listProperties <instanceId>",
+                "listProperties <instanceId> (withSensitiveValues)?",
                 "\t${msg("ootbee-support-tools.command-console.subsystems.listProperties.description")}",
                 "",
                 "setProperty <instanceId> <key>=<value>",
