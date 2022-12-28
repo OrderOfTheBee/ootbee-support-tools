@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.cache.SimpleCache;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
@@ -53,6 +54,8 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.scripts.ScriptResourceHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
 import org.alfresco.util.Pair;
@@ -90,6 +93,10 @@ public class ExecuteWebscript extends AbstractWebScript
     private ScriptUtils scriptUtils;
 
     private TransactionService transactionService;
+
+    private NodeService nodeService;
+
+    private PermissionService permissionService;
 
     private String postRollScript = "";
 
@@ -443,10 +450,12 @@ public class ExecuteWebscript extends AbstractWebScript
             }
 
             final ScriptNode newSpace = javascriptConsole.getSpace();
-            output.setSpaceNodeRef(newSpace.getNodeRef().toString());
+            final NodeRef newSpaceRef = newSpace.getNodeRef();
+            output.setSpaceNodeRef(newSpaceRef.toString());
             try
             {
-                output.setSpacePath(newSpace.getDisplayPath() + "/" + newSpace.getName());
+                output.setSpacePath(this.nodeService.getPath(newSpaceRef).toDisplayPath(this.nodeService, this.permissionService) + "/"
+                        + this.nodeService.getProperty(newSpaceRef, ContentModel.PROP_NAME));
             }
             catch (final AccessDeniedException ade)
             {
@@ -560,6 +569,16 @@ public class ExecuteWebscript extends AbstractWebScript
     public void setTransactionService(final TransactionService transactionService)
     {
         this.transactionService = transactionService;
+    }
+
+    public void setNodeService(final NodeService nodeService)
+    {
+        this.nodeService = nodeService;
+    }
+
+    public void setPermissionService(final PermissionService permissionService)
+    {
+        this.permissionService = permissionService;
     }
 
     public void setJsProcessor(final org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor)

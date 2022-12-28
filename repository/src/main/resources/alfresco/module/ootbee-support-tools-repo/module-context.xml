@@ -93,6 +93,8 @@
         class="org.orderofthebee.addons.support.tools.repo.jsconsole.ExecuteWebscript" parent="webscript">
         <property name="scriptUtils" ref="utilsScript" />
         <property name="transactionService" ref="TransactionService" />
+        <property name="nodeService" ref="NodeService" />
+        <property name="permissionService" ref="PermissionService" />
         <property name="jsProcessor" ref="javaScriptProcessor" />
         <property name="printOutputCache" ref="jsConsoleOutput" />
         <property name="resultCache" ref="jsConsoleResult" />
