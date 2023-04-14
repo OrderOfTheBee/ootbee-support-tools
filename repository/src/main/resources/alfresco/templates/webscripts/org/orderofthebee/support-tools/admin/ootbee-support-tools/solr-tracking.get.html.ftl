@@ -65,6 +65,28 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
                     <@field value="${iecBinaryUnitSize(trackingStatus[coreName]['index']['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.memory.usage.title") description=msg("solr-tracking.section.memory.usage.description")/>
                 </#if>
             </div>
+
         </div>
+
+    <div class="column-full">
+        <@section label=msg("solr-tracking.section.detail.title") />
+        <div class="column-left">
+            <@field value="${trackingSummary[coreName]['MetadataTracker Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.metadata.title") description=msg("solr-tracking.section.detail.metadata.description")/>
+            <@field value="${trackingSummary[coreName]['ContentTracker Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.content.title") description=msg("solr-tracking.section.detail.content.description")/>
+            <@field value="${trackingSummary[coreName]['AclTracker Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.acl.title") description=msg("solr-tracking.section.detail.acl.description")/>
+            <@field value="${(cascadeTracker[coreName]['numFound'] > 0)?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.cascade.title") description=msg("solr-tracking.section.detail.cascade.description")/>
+        </div>
+        <div class="column-right">
+            <@field value="${trackingSummary[coreName]['Approx transactions remaining']?c}" label=msg("solr-tracking.section.detail.metadata.count.title") description=msg("solr-tracking.section.detail.metadata.count.description") />
+            <#if trackingSummary[coreName]['FTS']['Node count whose content needs to be updated']?has_content>
+                <@field value="${trackingSummary[coreName]['FTS']['Node count whose content needs to be updated']?c}" label=msg("solr-tracking.section.detail.content.count.title") description=msg("solr-tracking.section.detail.content.count.description")/>
+            <#else>
+                <@field value="${(trackingSummary[coreName]['FTS']['Node count with FTSStatus New'] + trackingSummary[coreName]['FTS']['Node count with FTSStatus Dirty'])?c}" label=msg("solr-tracking.section.detail.content.count.title") description=msg("solr-tracking.section.detail.content.count.description")/>
+            </#if>
+            <@field value="${trackingSummary[coreName]['Approx change sets remaining']?c}" label=msg("solr-tracking.section.detail.acl.count.title") description=msg("solr-tracking.section.detail.acl.count.description") />
+            <@field value="${cascadeTracker[coreName]['numFound']?c}" label=msg("solr-tracking.section.detail.cascade.count.title") description=msg("solr-tracking.section.detail.cascade.count.description") />
+        </div>
+    </div>
+
     </#list>
 </@page>
