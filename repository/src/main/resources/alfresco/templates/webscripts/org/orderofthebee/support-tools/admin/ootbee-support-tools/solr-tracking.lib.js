@@ -92,6 +92,28 @@ function loadSolrSummaryAndStatus()
             return a.localeCompare(b);
         });
         model.coreNames = coreNames;
+
+        if (/^solr([6])?$/.test(indexSubsystem)) {
+
+			model.cascadeTracker = [];
+
+            for (var i in coreNames) {
+                if (i) {
+                    var solrHttpClientFactory = solrContext.getBean('solrHttpClientFactory', Packages.org.alfresco.httpclient.HttpClientFactory);
+                    var getMethod =
+                        new Packages.org.apache.commons.httpclient.methods.GetMethod(
+                            solrHttpClientFactory.getHttpClient().getHostConfiguration().getHostURL() +
+                            '/solr/' + coreNames[i] + '/select?' +
+                            '?fl=' + encodeURIComponent('*,[cached]') +
+                            '&q=' + encodeURIComponent('{!term f=int@s_@cascade}1') +
+                            '&wt=json');
+                    solrHttpClientFactory.getHttpClient().executeMethod(getMethod);
+                    model.cascadeTracker[coreNames[i]] = JSON.parse(getMethod.getResponseBodyAsString()).response;
+                }
+            }
+
+        }
+
     }
     else
     {
