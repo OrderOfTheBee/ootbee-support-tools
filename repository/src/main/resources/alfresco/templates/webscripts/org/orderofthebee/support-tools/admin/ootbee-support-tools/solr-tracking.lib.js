@@ -57,7 +57,7 @@ function buildPropertyGetter(ctxt)
 /* exported loadSolrSummaryAndStatus */
 function loadSolrSummaryAndStatus()
 {
-    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus, coreNames;
+    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, solrAdminNativeClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus, coreNames;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     propertyGetter = buildPropertyGetter(ctxt);
@@ -93,11 +93,15 @@ function loadSolrSummaryAndStatus()
         });
         model.coreNames = coreNames;
 
-        var solrAdminConsole = solrContext.getBean('solrAdminConsole', Packages.org.orderofthebee.addons.support.tools.repo.search.SolrAdminConsole);
-        model.cascadeTracker = [];
-        for (var i in coreNames) {
-            if (i) {
-                model.cascadeTracker[coreNames[i]] = solrAdminConsole.getCascadeTrackerPendingCount(coreNames[i]);
+        if (/^solr([6])?$/.test(indexSubsystem))
+        {
+            solrAdminNativeClient = solrContext
+                    .getBean('solrAdminNativeClient', Packages.org.orderofthebee.addons.support.tools.repo.search.SolrAdminNativeClient);
+            model.cascadeTracker = [];
+            for (var i in coreNames) {
+                if (i) {
+                    model.cascadeTracker[coreNames[i]] = solrAdminNativeClient.getCascadeTrackerPendingCount(coreNames[i]);
+                }
             }
         }
 

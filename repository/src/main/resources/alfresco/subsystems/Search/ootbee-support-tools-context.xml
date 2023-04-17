@@ -4,16 +4,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="solrAdminConsole.proxy" class="org.alfresco.repo.management.subsystems.SubsystemProxyFactory">
+    <bean id="solrAdminNativeClient.proxy" class="org.alfresco.repo.management.subsystems.SubsystemProxyFactory">
         <property name="sourceApplicationContextFactory">
-            <ref bean="solrAdminConsole.subsystem.search" />
+            <ref bean="solrAdminNativeClient.subsystem.search" />
         </property>
         <property name="sourceBeanName">
-            <value>solrAdminConsole</value>
+            <value>solrAdminNativeClient</value>
         </property>
         <property name="interfaces">
             <list>
-                <value>org.orderofthebee.addons.support.tools.repo.search.SolrAdminConsole</value>
+                <value>org.orderofthebee.addons.support.tools.repo.search.SolrAdminNativeClient</value>
             </list>
         </property>
     </bean>
