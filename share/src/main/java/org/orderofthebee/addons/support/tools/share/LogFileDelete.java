@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 package org.orderofthebee.addons.support.tools.share;
 
@@ -32,7 +32,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
- * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
+ * @author Axel Faust
  */
 public class LogFileDelete extends AbstractLogFileWebScript
 {
@@ -44,9 +44,7 @@ public class LogFileDelete extends AbstractLogFileWebScript
     @Override
     public void execute(final WebScriptRequest req, final WebScriptResponse res) throws IOException
     {
-        final String servicePath = req.getServicePath();
-        final String matchPath = req.getServiceMatch().getPath();
-        final String filePath = servicePath.substring(servicePath.indexOf(matchPath) + matchPath.length());
+        final String filePath = LogFileHandler.getFilePath(req);
 
         final File file = LogFileHandler.validateFilePath(filePath);
         if (file.delete())

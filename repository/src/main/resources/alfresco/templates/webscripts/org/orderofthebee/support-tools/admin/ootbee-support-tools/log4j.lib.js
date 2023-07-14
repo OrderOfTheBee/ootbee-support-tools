@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,36 +18,30 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
-
-/* global logSettingTracker: false */
 
 function buildLoggerState(logger)
 {
-    var RootLogger, loggerState, allAppenders, appender;
-
-    RootLogger = Packages.org.apache.log4j.spi.RootLogger;
+    var loggerState, appenderNames, idx;
 
     loggerState = {
         name : logger.name,
-        isRoot : logger instanceof RootLogger,
-        parent : logger.parent !== null ? logger.parent.name : null,
-        parentIsRoot : logger.parent instanceof RootLogger,
-        level : logger.level !== null ? String(logger.level) : null,
-        effectiveLevel : String(logger.effectiveLevel),
+        isRoot : logger.root,
+        parent : logger.parentName,
+        parentIsRoot : logger.parentRoot,
+        level : logger.level,
+        effectiveLevel : logger.effectiveLevel,
         additivity : logger.additivity,
-        canBeReset : logSettingTracker.canBeReset(logger),
+        canBeReset : Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.canBeReset(logger.name),
         appenders : []
     };
 
-    allAppenders = logger.allAppenders;
-    while (allAppenders.hasMoreElements())
+    appenderNames = logger.appenderNames;
+    for (idx = 0; idx < appenderNames.size(); idx++)
     {
-        appender = allAppenders.nextElement();
-
         loggerState.appenders.push({
-            name : appender.name
+            name : appenderNames.get(idx)
         });
     }
 
@@ -57,42 +51,21 @@ function buildLoggerState(logger)
 /* exported buildLoggerStates */
 function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern, skipCount, maxItems)
 {
-    var loggerRepository, loggerStates, loggerState, currentLoggers, effectiveLoggerNamePattern, logger;
+    var loggers, loggerStates, idx, loggerState;
 
-    loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
-
+    loggers = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.getLoggers(loggerNamePattern, showUnconfiguredLoggers);
     loggerStates = [];
 
-    currentLoggers = loggerRepository.currentLoggers;
-    
-    effectiveLoggerNamePattern = null;
-    if (loggerNamePattern !== null && String(loggerNamePattern) !== '')
+    for (idx = 0; idx < loggers.size(); idx++)
     {
-        effectiveLoggerNamePattern = new RegExp(String(loggerNamePattern).replace(/\./g, '\\.').replace(/\*/g, '.+'), 'i');
-    }
-    
-    while (currentLoggers.hasMoreElements())
-    {
-        logger = currentLoggers.nextElement();
-
-        if ((effectiveLoggerNamePattern === null || effectiveLoggerNamePattern.test(logger.name))
-                && (logger.level !== null || showUnconfiguredLoggers))
-        {
-            loggerState = buildLoggerState(logger);
-            loggerStates.push(loggerState);
-        }
+        loggerState = buildLoggerState(loggers.get(idx));
+        loggerStates.push(loggerState);
     }
 
     loggerStates.sort(function(a, b)
     {
         return a.name.localeCompare(b.name);
     });
-
-    if (effectiveLoggerNamePattern === null)
-    {
-        loggerState = buildLoggerState(loggerRepository.rootLogger);
-        loggerStates.splice(0, 0, loggerState);
-    }
     
     model.totalRecords = loggerStates.length;
     model.startIndex = 0;
@@ -112,15 +85,12 @@ function buildLoggerStates(showUnconfiguredLoggers, loggerNamePattern, skipCount
 
 function changeLoggerState(loggerName, level)
 {
-    var logger, newLevel;
+    var effectiveLoggerName, newLevel;
 
+    effectiveLoggerName = loggerName;
     if (loggerName === '-root-')
     {
-        logger = Packages.org.apache.log4j.Logger.getRootLogger();
-    }
-    else
-    {
-        logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+        effectiveLoggerName = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.rootLoggerName;
     }
 
     if (String(level) === '' || String(level) === 'UNSET')
@@ -129,11 +99,10 @@ function changeLoggerState(loggerName, level)
     }
     else
     {
-        newLevel = Packages.org.apache.log4j.Level.toLevel(level);
+        newLevel = String(level);
     }
-    
-    logSettingTracker.recordChange(logger, logger.level, newLevel);
-    logger.level = newLevel;
+
+    Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.setLevel(effectiveLoggerName, newLevel);
 }
 
 /* exported processLoggerStateChangeFromJSONData */
@@ -158,64 +127,52 @@ function processLoggerStateChangeFromJSONData(loggerName)
 /* exported resetLoggerSetting */
 function resetLoggerSetting(loggerName)
 {
-    var logger;
+    var effectiveLoggerName;
     
     if (loggerName !== undefined && loggerName !== null)
     {
         if (String(loggerName) === '-root-')
         {
-            logger = Packages.org.apache.log4j.Logger.getRootLogger();
+            effectiveLoggerName = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.rootLoggerName;
         }
         else
         {
-            logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+            effectiveLoggerName = String(loggerName);
         }
     }
     
-    if (logger === undefined)
+    if (effectiveLoggerName === undefined)
     {
-        logSettingTracker.resetToDefault();
+        Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.resetToDefault();
     }
     else
     {
-        logSettingTracker.resetToDefault(logger);
+        Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.resetToDefault(effectiveLoggerName);
     }
 }
 
 /* exported registerTailingAppender */
-function registerTailingAppender(uuidParam)
+function registerTailingAppender()
 {
-    var uuid, appender, rootLogger;
+    var uuid;
 
-    uuid = uuidParam || String(Packages.java.util.UUID.randomUUID());
-    appender = new Packages.org.orderofthebee.addons.support.tools.repo.LimitedListAppender(uuid, 10000);
-    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
-    appender.registerAsAppender(rootLogger);
-
+    uuid = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.createTailingAppender();
     model.uuid = uuid;
 
-    return appender;
+    return uuid;
 }
 
 /* exported retrieveTailingEvents */
 function retrieveTailingEvents()
 {
-    var uuid, rootLogger, appender;
+    var uuid;
 
-    uuid = String(args.uuid || '');
-    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
-    appender = rootLogger.getAppender(uuid);
-
-    if (appender === null)
-    {
-        appender = registerTailingAppender(uuid);
-    }
-
-    model.events = appender.retrieveLogEvents();
+    uuid = args.uuid ? String(args.uuid) : registerTailingAppender();
+    model.events = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.retrieveTailingAppenderEvents(uuid);
 }
 
 /**
- * Builds a generic script model from a logger-/appender-related Java object.
+ * Builds a generic script model from an appender-related Java object.
  *
  * @param javaObject
  *            the javaObject to transform into a script model
@@ -245,8 +202,8 @@ function buildGenericJavaObjectModel(javaObject)
             if (key !== 'name' && key !== 'class')
             {
                 value = javaObject[key];
-                // TODO Add cases for other "expected" complex Java types for recursion
-                if (value instanceof Packages.org.apache.log4j.Layout)
+                // TODO Add cases for other "expected" complex config properties for recursion
+                if (key === 'layout' || key === 'manager')
                 {
                     model[key] = buildGenericJavaObjectModel(value);
                 }
@@ -263,33 +220,40 @@ function buildGenericJavaObjectModel(javaObject)
 
 function buidAppenderModelsForLogger(logger, appenders)
 {
-    var allAppenders;
+    var parentLogger, appenderNames, idx, appender;
 
-    if (logger.additivity && logger.parent !== null)
+    if (logger.additivity && logger.parentName !== null && !logger.root)
     {
-        buidAppenderModelsForLogger(logger.parent, appenders);
+        parentLogger = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.getLogger(logger.parentName);
+        buidAppenderModelsForLogger(parentLogger, appenders);
     }
 
-    allAppenders = logger.allAppenders;
-    while (allAppenders.hasMoreElements())
+    appenderNames = logger.appenderNames;
+    for (idx = 0; idx < appenderNames.size(); idx++)
     {
-        appenders.push(buildGenericJavaObjectModel(allAppenders.nextElement()));
+        appender = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.getAppender(appenderNames.get(idx), logger.name);
+        if (appender !== null)
+        {
+            appenders.push(buildGenericJavaObjectModel(appender));
+        }
     }
 }
 
 /* exported buildAppenderModel */
 function buildAppenderModel(loggerName)
 {
-    var logger, appenders;
+    var effectiveLoggerName, appenders, logger;
 
-    if (loggerName === '-root-')
+
+    if (String(loggerName) === '-root-')
     {
-        logger = Packages.org.apache.log4j.Logger.getRootLogger();
+        effectiveLoggerName = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.rootLoggerName;
     }
     else
     {
-        logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
+        effectiveLoggerName = String(loggerName);
     }
+    logger = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.getLogger(effectiveLoggerName);
 
     appenders = [];
     buidAppenderModelsForLogger(logger, appenders);
@@ -298,133 +262,40 @@ function buildAppenderModel(loggerName)
     model.appenders = appenders;
 }
 
-function collectLogFilePatterns(allLoggerAppenders, logFilePatterns)
-{
-    var loggerRepository, loggers, logger, allAppenders, appender;
-    
-    if (allLoggerAppenders)
-    {
-        loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
-        loggers = loggerRepository.currentLoggers;
-        while (loggers.hasMoreElements())
-        {
-            logger = loggers.nextElement();
-            allAppenders = logger.allAppenders;
-            while (allAppenders.hasMoreElements())
-            {
-                appender = allAppenders.nextElement();
-                if (appender.file !== undefined && appender.file !== null)
-                {
-                    logFilePatterns[String(appender.file)] = true;
-                }
-            }
-        }
-    }
-    
-    // root logger is not container in currentLoggers for some reason
-    logger = Packages.org.apache.log4j.Logger.getRootLogger();
-    allAppenders = logger.allAppenders;
-    while (allAppenders.hasMoreElements())
-    {
-        appender = allAppenders.nextElement();
-        if (appender.file !== undefined && appender.file !== null)
-        {
-            logFilePatterns[String(appender.file)] = true;
-        }
-    }
-}
-
 /* exported buildLogFilesModel */
 function buildLogFilesModel(useAllLoggerAppenders)
 {
-    var filePatterns, logFiles, matcherFn, filePattern, path, file, dirStream;
+    var logFiles, filePaths, idx, filePath, file;
 
-    filePatterns = {};
     logFiles = [];
+    filePaths = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.collectLogFilePaths(useAllLoggerAppenders);
 
-    collectLogFilePatterns(useAllLoggerAppenders, filePatterns);
-
-    matcherFn = function(path)
+    for (idx = 0; idx < filePaths.size(); idx++)
     {
-        var logFileCandidate = path.toFile();
-        if (logFileCandidate.isFile())
-        {
-            logFiles.push({
-                name : String(logFileCandidate.name),
-                // standardize paths
-                directoryPath : String(logFileCandidate.parentFile.toPath()).replace(/\\/g, '/'),
-                path : String(logFileCandidate.toPath()).replace(/\\/g, '/'),
-                size : logFileCandidate.length(),
-                lastModified : logFileCandidate.lastModified()
-            });
-        }
-    };
-
-    for (filePattern in filePatterns)
-    {
-        if (filePatterns.hasOwnProperty(filePattern) && filePatterns[filePattern] === true)
-        {
-            file = new Packages.java.io.File(filePattern);
-            path = Packages.java.nio.file.Paths.get(file.toURI()).getParent();
-            dirStream = Packages.java.nio.file.Files
-                    .newDirectoryStream(path, filePattern.substring(filePattern.lastIndexOf('/') + 1) + '*');
-            // Rhino does not support conversion of function to SAM type
-            dirStream.forEach({
-                accept : matcherFn
-            });
-        }
+        filePath = filePaths.get(idx);
+        file = filePath.toFile();
+        logFiles.push({
+            name : String(file.name),
+            // standardize paths
+            directoryPath : String(file.parentFile.toPath()).replace(/\\/g, '/'),
+            path : String(filePath).replace(/\\/g, '/'),
+            size : file.length(),
+            lastModified : file.lastModified()
+        });
     }
 
     model.logFiles = logFiles;
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }
 
-function getLoggersToSnapshot()
-{
-    var logger, loggers, currentLoggers, loggerRepository;
-    
-    logger = Packages.org.apache.log4j.Logger.getRootLogger();
-    loggers = [logger];
-    
-    loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
-    currentLoggers = loggerRepository.currentLoggers;
-    while (currentLoggers.hasMoreElements())
-    {
-    	logger = currentLoggers.nextElement();
-    	if (!logger.additivity)
-    	{
-    		loggers.push(logger);
-    	}
-    }
-    return loggers;
-}
-
-/* exported createSnapshot */
-function createSnapshot()
-{
-	var snapshotAppender, loggers;
-	
-	snapshotAppender = new Packages.org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender('ootbee-support-tools-snapshot-');
-	loggers = getLoggersToSnapshot();
-	loggers.forEach(
-	    function createSnapshot_connectLoggerAndAppender(logger)
-        {
-            snapshotAppender.registerAsAppender(logger);
-	    }
-    );
-	
-	return snapshotAppender.appenderUUID;
-}
-
 /* exported logSnapshotLapMessage */
-function logSnapshotLapMessage(message) {
-    var lapLogger, level;
+function logSnapshotLapMessage(message)
+{
+    var lapLogger;
 
     // Fake logger that does not correspond to any class-based logger
-    lapLogger = Packages.org.apache.log4j.Logger.getLogger('org.orderofthebee.addons.support.tools.repo.logSnapshotLap');
+    Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.setLevel('org.orderofthebee.addons.support.tools.repo.logSnapshotLap', 'INFO');
 
-    // ensure level is enabled (in case someone reconfigured logger) and log
-    level = Packages.org.apache.log4j.Level.INFO;
-    lapLogger.setLevel(level);
-    lapLogger.log(level, message);
+    lapLogger = Packages.org.slf4j.LoggerFactory.getLogger('org.orderofthebee.addons.support.tools.repo.logSnapshotLap');
+    lapLogger.info(message);
 }

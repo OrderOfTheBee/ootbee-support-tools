@@ -1,4 +1,4 @@
-FROM ${docker.share.image}:${alfresco.share.version}
+FROM ${docker.share.image}:${alfresco.docker.share.version}
 
 ARG TOMCAT_DIR=/usr/local/tomcat
 
@@ -12,4 +12,4 @@ RUN java -jar $TOMCAT_DIR/alfresco-mmt/alfresco-mmt*.jar install \
 
 COPY share-config-custom.xml $TOMCAT_DIR/shared/classes/alfresco/web-extension
 
-COPY log4j.properties $TOMCAT_DIR/webapps/share/WEB-INF/classes
+COPY log4j*.properties $TOMCAT_DIR/webapps/share/WEB-INF/classes

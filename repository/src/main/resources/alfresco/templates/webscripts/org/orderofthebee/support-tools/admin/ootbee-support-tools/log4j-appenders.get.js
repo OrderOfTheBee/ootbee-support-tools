@@ -1,7 +1,7 @@
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/log4j.lib.js">
 
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -20,7 +20,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 
-buildAppenderModel(args.logger);
+buildAppenderModel(String(args.logger).replace(/%dot%/g, '.'));
