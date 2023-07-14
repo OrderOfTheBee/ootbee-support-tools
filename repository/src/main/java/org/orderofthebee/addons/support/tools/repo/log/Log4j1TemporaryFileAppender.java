@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,9 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
-package org.orderofthebee.addons.support.tools.repo;
+package org.orderofthebee.addons.support.tools.repo.log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import org.apache.log4j.spi.LoggingEvent;
  *
  * @author Bindu Wavell <a href="mailto:bindu@ziaconsulting.com">bindu@ziaconsulting.com</a>
  */
-public class TemporaryFileAppender extends FileAppender
+public class Log4j1TemporaryFileAppender extends FileAppender
 {
 
     // 20 minutes after logger is created, we assume the UI lost access and automatically deregister this appender
@@ -64,26 +64,9 @@ public class TemporaryFileAppender extends FileAppender
      * @throws IOException
      *             if the parent class constructor fails to create a file for the temporary file path
      */
-    public TemporaryFileAppender() throws IOException
+    public Log4j1TemporaryFileAppender() throws IOException
     {
-        this(new PatternLayout("%d{ISO8601} %-5p [%c] [%t] %m%n"),
-                TempFileProvider.createTempFile("ootbee-support-tools-", ".log").getPath());
-    }
-
-    /**
-     * This constructor initialises the appender to use a specific file name prefix for the log file path provided by
-     * the Alfresco {@link TempFileProvider}. The log pattern is transparently initialised with the default log pattern in the
-     * Alfresco-provided {@code log4j.properties} configuration.
-     *
-     *
-     * @param fileNamePrefix
-     *            the file name prefix for the log file
-     * @throws IOException
-     *             if the parent class constructor fails to create a file for the temporary file path
-     */
-    public TemporaryFileAppender(final String fileNamePrefix) throws IOException
-    {
-        this(new PatternLayout("%d{ISO8601} %-5p [%c] [%t] %m%n"), fileNamePrefix);
+        this(new PatternLayout("%d{ISO8601} %-5p [%c] [%t] %m%n"), "ootbee-support-tools-snapshot-");
     }
 
     /**
@@ -98,9 +81,10 @@ public class TemporaryFileAppender extends FileAppender
      * @throws IOException
      *             if the parent class constructor fails to create a file for the temporary file path
      */
-    public TemporaryFileAppender(final Layout layout, final String fileNamePrefix) throws IOException
+    public Log4j1TemporaryFileAppender(final Layout layout, final String fileNamePrefix) throws IOException
     {
         super(layout, TempFileProvider.createTempFile(fileNamePrefix, ".log").getPath());
+        this.setName(this.appenderUUID);
         this.creationTimestamp = System.currentTimeMillis();
     }
 

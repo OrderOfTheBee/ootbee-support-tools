@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 package org.orderofthebee.addons.support.tools.share;
 
@@ -38,19 +38,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.extensions.surf.util.URLEncoder;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
- * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
+ * @author Axel Faust
  */
 public class ContentStreamer
 {
 
-    private static final Logger LOGGER = Logger.getLogger(ContentStreamer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContentStreamer.class);
 
     // copied from Repository-tier contentStreamer
     private static final String HEADER_CONTENT_RANGE = "Content-Range";
@@ -78,7 +79,7 @@ public class ContentStreamer
     protected static ThreadLocal<SimpleDateFormat> s_dateFormat = new ThreadLocal<>();
 
     // Request/Response abstractions to simplify our code
-    protected static interface Request
+    protected interface Request
     {
 
         /**
@@ -103,7 +104,7 @@ public class ContentStreamer
         String getHeader(String name);
     }
 
-    protected static interface Response
+    protected interface Response
     {
 
         /**

@@ -1,5 +1,7 @@
+<import resource="classpath:alfresco/site-webscripts/org/orderofthebee/support-tools/services/console/log4j.lib.js">
+
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,86 +20,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
-
-function collectLogFilePatterns(allLoggerAppenders, logFilePatterns)
-{
-    var loggerRepository, loggers, logger, allAppenders, appender;
-    
-    if (allLoggerAppenders)
-    {
-        loggerRepository = Packages.org.apache.log4j.LogManager.getLoggerRepository();
-        loggers = loggerRepository.currentLoggers;
-        while (loggers.hasMoreElements())
-        {
-            logger = loggers.nextElement();
-            allAppenders = logger.allAppenders;
-            while (allAppenders.hasMoreElements())
-            {
-                appender = allAppenders.nextElement();
-                if (appender.file !== undefined && appender.file !== null)
-                {
-                    logFilePatterns[String(appender.file)] = true;
-                }
-            }
-        }
-    }
-    
-    // root logger is not container in currentLoggers for some reason
-    logger = Packages.org.apache.log4j.Logger.getRootLogger();
-    allAppenders = logger.allAppenders;
-    while (allAppenders.hasMoreElements())
-    {
-        appender = allAppenders.nextElement();
-        if (appender.file !== undefined && appender.file !== null)
-        {
-            logFilePatterns[String(appender.file)] = true;
-        }
-    }
-}
-
-function buildLogFilesModel(useAllLoggerAppenders)
-{
-    var filePatterns, logFiles, matcherFn, filePattern, path, file, dirStream;
-
-    filePatterns = {};
-    logFiles = [];
-
-    collectLogFilePatterns(useAllLoggerAppenders, filePatterns);
-
-    matcherFn = function(path)
-    {
-        var logFileCandidate = path.toFile();
-        if (logFileCandidate.isFile())
-        {
-            logFiles.push({
-                name : String(logFileCandidate.name),
-                // standardize paths
-                directoryPath : String(logFileCandidate.parentFile.toPath()).replace(/\\/g, '/'),
-                path : String(logFileCandidate.toPath()).replace(/\\/g, '/'),
-                size : logFileCandidate.length(),
-                lastModified : logFileCandidate.lastModified()
-            });
-        }
-    };
-
-    for (filePattern in filePatterns)
-    {
-        if (filePatterns.hasOwnProperty(filePattern) && filePatterns[filePattern] === true)
-        {
-            file = new Packages.java.io.File(filePattern);
-            path = Packages.java.nio.file.Paths.get(file.toURI()).getParent();
-            dirStream = Packages.java.nio.file.Files
-                    .newDirectoryStream(path, filePattern.substring(filePattern.lastIndexOf('/') + 1) + '*');
-            // Rhino does not support conversion of function to SAM type
-            dirStream.forEach({
-                accept : matcherFn
-            });
-        }
-    }
-
-    model.logFiles = logFiles;
-}
 
 buildLogFilesModel(args.allLoggerAppenders !== null && String(args.allLoggerAppenders) === 'true');

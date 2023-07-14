@@ -24,15 +24,6 @@
         <property name="logFileHandler" ref="ootbee-support-tools.logFileHandler" />
     </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-loggers.get" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-loggers.post" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-logger.put" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
-        parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-logger.delete" class="org.orderofthebee.addons.support.tools.share.LogStateWebScript"
-        parent="webscript" />
-
     <bean id="webscript.org.orderofthebee.support-tools.services.console.log4j-log-file.get" class="org.orderofthebee.addons.support.tools.share.LogFileGet"
         parent="ootbee-support-tools.abstractLogFileWebScript" />
 

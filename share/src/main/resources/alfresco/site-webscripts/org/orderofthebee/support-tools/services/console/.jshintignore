@@ -1,0 +1,4 @@
+log4j*.get.js
+log4j*.delete.js
+log4j*.post.json.js
+log4j*.put.json.js

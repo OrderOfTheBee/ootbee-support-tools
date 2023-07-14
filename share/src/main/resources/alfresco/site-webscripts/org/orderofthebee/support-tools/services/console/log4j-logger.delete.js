@@ -1,5 +1,7 @@
+<import resource="classpath:alfresco/site-webscripts/org/orderofthebee/support-tools/services/console/log4j.lib.js">
+
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,42 +20,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 
-/* global logSettingTracker: false */
-
-function resetLoggerSetting(loggerName)
-{
-    var logger;
-    
-    if (loggerName !== undefined && loggerName !== null)
-    {
-        if (String(loggerName) === '-root-')
-        {
-            logger = Packages.org.apache.log4j.Logger.getRootLogger();
-        }
-        else
-        {
-            logger = Packages.org.apache.log4j.Logger.getLogger(loggerName);
-        }
-    }
-    
-    if (logger === undefined)
-    {
-        logSettingTracker.resetToDefault();
-    }
-    else
-    {
-        logSettingTracker.resetToDefault(logger);
-    }
-}
-
-if (url.templateArgs.logger !== null)
-{
-    resetLoggerSetting(String(url.templateArgs.logger).replace(/%dot%/g, '.'));
-}
-else
-{
-    resetLoggerSetting();
-}
+resetLoggerSetting();

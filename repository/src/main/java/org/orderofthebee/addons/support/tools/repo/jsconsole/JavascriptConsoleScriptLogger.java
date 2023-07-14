@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2022 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2022 Alfresco Software Limited.
- * 
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
+ *
  * This file is part of code forked from the JavaScript Console project
  * which was licensed under the Apache License, Version 2.0 at the time.
  * In accordance with that license, the modifications / derivative work
@@ -29,7 +29,7 @@
 package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import org.alfresco.repo.jscript.ScriptLogger;
-import org.apache.log4j.Level;
+import org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.extensions.webscripts.annotation.ScriptClass;
@@ -41,10 +41,11 @@ import org.springframework.extensions.webscripts.annotation.ScriptParameter;
  * This class is based upon {@link ScriptLogger the default Repository-tier script logger} and its
  * {@link org.springframework.extensions.webscripts.ScriptLogger web-scripts clone} and has been modified to allow printing of messages to
  * the JavaScript Console result.
- * 
+ *
  * @author Kevin Roast
  * @author davidc
  * @author Florian Maul (fme AG)
+ * @author Axel Faust
  */
 @ScriptClass(help = "Provides functions to aid debugging of scripts.", code = "logger.log(\"Command Processor: isEmailed=\" + isEmailed);", types = {
         ScriptClassType.JavaScriptRootObject })
@@ -58,7 +59,7 @@ public final class JavascriptConsoleScriptLogger
 
     private final JavascriptConsoleScriptObject jsConsole;
 
-    public JavascriptConsoleScriptLogger(JavascriptConsoleScriptObject jsConsole)
+    public JavascriptConsoleScriptLogger(final JavascriptConsoleScriptObject jsConsole)
     {
         this.jsConsole = jsConsole;
     }
@@ -70,10 +71,10 @@ public final class JavascriptConsoleScriptLogger
     }
 
     @ScriptMethod(help = "Logs a message")
-    public void log(@ScriptParameter(help = "Message to log") String str)
+    public void log(@ScriptParameter(help = "Message to log") final String str)
     {
         logger.debug(str);
-        jsConsole.print("DEBUG - " + str);
+        this.jsConsole.print("DEBUG - " + str);
     }
 
     @ScriptMethod(help = "Returns true if debug logging is enabled.", code = "var loggerStatus = logger.isDebugEnabled();", output = "true if debug logging is enabled")
@@ -83,10 +84,10 @@ public final class JavascriptConsoleScriptLogger
     }
 
     @ScriptMethod(help = "Logs a debug message")
-    public void debug(@ScriptParameter(help = "Message to log") String str)
+    public void debug(@ScriptParameter(help = "Message to log") final String str)
     {
         logger.debug(str);
-        jsConsole.print("DEBUG - " + str);
+        this.jsConsole.print("DEBUG - " + str);
     }
 
     @ScriptMethod(help = "Returns true if info logging is enabled.", code = "var loggerStatus = logger.isInfoEnabled();", output = "true if info logging is enabled")
@@ -96,10 +97,10 @@ public final class JavascriptConsoleScriptLogger
     }
 
     @ScriptMethod(help = "Logs an info message")
-    public void info(@ScriptParameter(help = "Message to log") String str)
+    public void info(@ScriptParameter(help = "Message to log") final String str)
     {
         logger.info(str);
-        jsConsole.print(str);
+        this.jsConsole.print(str);
     }
 
     @ScriptMethod(help = "Returns true if warn logging is enabled.", code = "var loggerStatus = logger.isWarnLoggingEnabled();", output = "true if warn logging is enabled")
@@ -109,10 +110,10 @@ public final class JavascriptConsoleScriptLogger
     }
 
     @ScriptMethod(help = "Logs a warning message")
-    public void warn(@ScriptParameter(help = "Message to log") String str)
+    public void warn(@ScriptParameter(help = "Message to log") final String str)
     {
         logger.warn(str);
-        jsConsole.print("WARN - " + str);
+        this.jsConsole.print("WARN - " + str);
     }
 
     @ScriptMethod(help = "Returns true if error logging is enabled.", code = "var loggerStatus = logger.isErrorLoggingEnabled();", output = "true if error logging is enabled")
@@ -122,36 +123,34 @@ public final class JavascriptConsoleScriptLogger
     }
 
     @ScriptMethod(help = "Logs an error message")
-    public void error(@ScriptParameter(help = "Message to log") String str)
+    public void error(@ScriptParameter(help = "Message to log") final String str)
     {
         logger.error(str);
-        jsConsole.print("ERROR - " + str);
+        this.jsConsole.print("ERROR - " + str);
     }
 
     public SystemOut getSystem()
     {
-        return systemOut;
+        return this.systemOut;
     }
 
     public class SystemOut
     {
 
-        public void out(String str)
+        public void out(final String str)
         {
             System.out.println(str);
-            jsConsole.print(str);
+            JavascriptConsoleScriptLogger.this.jsConsole.print(str);
         }
     }
 
-    public void setLevel(String loggerName, String level)
+    public void setLevel(final String loggerName, final String level)
     {
-        org.apache.log4j.Logger underlyingLogger = org.apache.log4j.Logger.getLogger(loggerName);
-        Level logLevel = Level.toLevel(level);
-        underlyingLogger.setLevel(logLevel);
+        Log4jCompatibilityUtils.LOG4J_HELPER.setLevel(loggerName, level);
     }
 
-    public String getLevel(String loggerName)
+    public String getLevel(final String loggerName)
     {
-        return org.apache.log4j.Logger.getLogger(loggerName).getLevel().toString();
+        return Log4jCompatibilityUtils.LOG4J_HELPER.getLevel(loggerName);
     }
 }
