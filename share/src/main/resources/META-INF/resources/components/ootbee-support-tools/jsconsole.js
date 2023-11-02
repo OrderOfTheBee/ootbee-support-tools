@@ -402,6 +402,15 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.widgets.docsMenuButton.getMenu().cfg.setProperty('zIndex', 10);
         },
 
+        initSubmenuIds: function (entry, suffix) {
+            if (entry.submenu) {
+                entry.submenu.id = entry.submenu.id + suffix;
+                entry.submenu.itemdata.forEach(function (f) {
+                    this.initSubmenuIds(f, suffix);
+                }.bind(this));
+            }
+        },
+
         createOrUpdateScriptsSaveMenu: function JavaScriptConsole_createOrUpdateScriptsSaveMenu(listOfScripts)
         {
             var saveMenuItems = [{
@@ -411,7 +420,12 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
             if (listOfScripts)
             {
-                saveMenuItems.push(listOfScripts);
+                var scripts = JSON.parse(JSON.stringify(listOfScripts));
+                scripts.forEach(function(e) {
+                    this.initSubmenuIds.call(this, e, "-scriptsave");
+                }.bind(this));
+
+                saveMenuItems.push(scripts);
             }
 
             if (this.widgets.saveMenuButton)
@@ -444,7 +458,12 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
             if (listOfScripts)
             {
-                loadMenuItems.push(listOfScripts);
+                var scripts = JSON.parse(JSON.stringify(listOfScripts));
+                scripts.forEach(function(e) {
+                    this.initSubmenuIds.call(this, e, "-scriptload");
+                }.bind(this));
+
+                loadMenuItems.push(scripts);
             }
 
             if (this.widgets.loadMenuButton)
@@ -2237,7 +2256,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         saveAsExistingScript: function JavaScriptConsole_saveAsExistingScript(filename, nodeRef)
         {
             Alfresco.util.Ajax.jsonPut({
-                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(filename) + '&isUpdate=true',
+                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(nodeRef) + '&isUpdate=true',
                 dataObj: {
                     jsScript: this.widgets.codeMirrorScript.getValue(),
                     fmScript: this.widgets.codeMirrorTemplate.getValue()

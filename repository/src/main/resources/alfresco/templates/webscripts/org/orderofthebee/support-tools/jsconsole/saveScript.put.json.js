@@ -74,6 +74,14 @@ function findAvailableScripts()
     }
 }
 
+var createFile = function createFile(parent, path) {
+    var name = path.shift();
+    if (path.length > 0) {
+        return createFile(parent.childByNamePath(name) || parent.createFolder(name), path);
+    }
+    return parent.createFile(name);
+};
+
 function saveScript()
 {
     var scriptFolder, scriptFile, isUpdate;
@@ -85,13 +93,17 @@ function saveScript()
     {
         if (isUpdate)
         {
-            scriptFile = scriptFolder.childByNamePath(args.name);
+            if (args.name.indexOf("workspace://") === 0) {
+                scriptFile = search.findNode(args.name);
+            }else{
+                scriptFile = scriptFolder.childByNamePath(args.name);
+            }
         }
         else
         {
             try
             {
-                scriptFile = scriptFolder.createFile(args.name);
+                scriptFile = createFile(scriptFolder, ('' + args.name).split(/\//));
             }
             catch (e)
             {
