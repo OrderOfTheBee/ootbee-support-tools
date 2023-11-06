@@ -399,7 +399,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Freemarker', 1);
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Lucene', 2);
             this.widgets.docsMenuButton.getMenu().setItemGroupTitle('Webscripts', 3);
-            this.widgets.docsMenuButton.getMenu().cfg.setProperty('zIndex', 2);
+            this.widgets.docsMenuButton.getMenu().cfg.setProperty('zIndex', 10);
         },
 
         createOrUpdateScriptsSaveMenu: function JavaScriptConsole_createOrUpdateScriptsSaveMenu(listOfScripts)
@@ -431,7 +431,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     container: this.id + '-scriptsave'
                 });
                 this.widgets.saveMenuButton.getMenu().subscribe('click', this.onSaveScriptClick, this);
-                this.widgets.saveMenuButton.getMenu().cfg.setProperty('zIndex', 2);
+                this.widgets.saveMenuButton.getMenu().cfg.setProperty('zIndex', 10);
             }
         },
 
@@ -464,7 +464,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     container: this.id + '-scriptload'
                 });
                 this.widgets.loadMenuButton.getMenu().subscribe('click', this.onLoadScriptClick, this);
-                this.widgets.loadMenuButton.getMenu().cfg.setProperty('zIndex', 2);
+                this.widgets.loadMenuButton.getMenu().cfg.setProperty('zIndex', 10);
             }
         },
 
@@ -517,7 +517,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             }
 
             this.widgets.themeMenuButton.getMenu().subscribe('click', this.onThemeSelection, this);
-            this.widgets.themeMenuButton.getMenu().cfg.setProperty('zIndex', 2);
+            this.widgets.themeMenuButton.getMenu().cfg.setProperty('zIndex', 10);
         },
 
         /**
@@ -539,7 +539,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                 disabled: false
             });
 
-            this.widgets.dumpDisplayMenu.getMenu().cfg.setProperty('zIndex', 2);
+            this.widgets.dumpDisplayMenu.getMenu().cfg.setProperty('zIndex', 10);
             this.widgets.dumpDisplayMenu.on('appendTo', function ()
             {
                 menu = this.getMenu();
