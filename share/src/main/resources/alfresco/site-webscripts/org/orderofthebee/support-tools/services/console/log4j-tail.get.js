@@ -1,5 +1,7 @@
+<import resource="classpath:alfresco/site-webscripts/org/orderofthebee/support-tools/services/console/log4j.lib.js">
+
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,37 +20,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 
-function registerTailingAppender(uuidParam)
-{
-    var uuid, appender, rootLogger;
-
-    uuid = uuidParam || String(Packages.java.util.UUID.randomUUID());
-    appender = new Packages.org.orderofthebee.addons.support.tools.share.LimitedListAppender(uuid, 10000);
-    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
-    appender.registerAsAppender(rootLogger);
-
-    model.uuid = uuid;
-    
-    return appender;
-}
-
-function retrieveTailingEvents()
-{
-    var uuid, rootLogger, appender;
-
-    uuid = String(args.uuid || '');
-    rootLogger = Packages.org.apache.log4j.Logger.getRootLogger();
-    appender = rootLogger.getAppender(uuid);
-
-    if (appender === null)
-    {
-        appender = registerTailingAppender(uuid);
-    }
-
-    model.events = appender.retrieveLogEvents();
-}
-
-retrieveTailingEvents();
+registerTailingAppender();

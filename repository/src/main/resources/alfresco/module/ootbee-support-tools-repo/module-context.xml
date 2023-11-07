@@ -58,19 +58,6 @@
             value="${ootbee-support-tools.propertyBackedBeanPersister.processLegacyJmxKeysOnRemoveProperties}" />
     </bean>
 
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.get"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.post"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.post"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.put"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-loggers.delete"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-    <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-logger.delete"
-        class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogStateWebScript" parent="webscript" />
-
     <bean id="webscript.org.orderofthebee.support-tools.admin.ootbee-support-tools.log4j-log-file.get"
         class="org.orderofthebee.addons.support.tools.repo.web.scripts.LogFileGet" parent="webscript">
         <property name="delegate" ref="webscript.content.streamer" />
@@ -93,6 +80,8 @@
         class="org.orderofthebee.addons.support.tools.repo.jsconsole.ExecuteWebscript" parent="webscript">
         <property name="scriptUtils" ref="utilsScript" />
         <property name="transactionService" ref="TransactionService" />
+        <property name="nodeService" ref="NodeService" />
+        <property name="permissionService" ref="PermissionService" />
         <property name="jsProcessor" ref="javaScriptProcessor" />
         <property name="printOutputCache" ref="jsConsoleOutput" />
         <property name="resultCache" ref="jsConsoleResult" />

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,22 +18,20 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
 package org.orderofthebee.addons.support.tools.repo.web.scripts;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Enumeration;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.alfresco.repo.web.scripts.content.ContentStreamer;
-import org.alfresco.util.EqualsHelper;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.orderofthebee.addons.support.tools.repo.TemporaryFileAppender;
+import org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
@@ -41,7 +39,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
- * This web script uses the UUID of a {@link TemporaryFileAppender} created with the log4j-snapshot-create webscript to locate said
+ * This web script uses the UUID of a temporary file appender created with the log4j-snapshot-create webscript to locate said
  * instance, deregisters it from all loggers it was registered with, and closes it. The contents of the associated log file will be streamed
  * as the response to the caller. If the UUID does not match any of the appenders, this web script will fail accordingly with a
  * {@link WebScriptException}.
@@ -86,41 +84,19 @@ public class LogSnapshotComplete extends AbstractLogFileWebScript
         final String attachParam = req.getParameter("a");
         final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
-        @SuppressWarnings("unchecked") // Log4J API is old and unaware of generics
-        final Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        TemporaryFileAppender snapshotAppender = null;
-
-        // Find the TemporaryFileAppender that writes to this file
-        while (appenders.hasMoreElements())
-        {
-            final Appender appender = appenders.nextElement();
-            if (appender instanceof TemporaryFileAppender)
-            {
-                final TemporaryFileAppender fileAppender = (TemporaryFileAppender) appender;
-                if (EqualsHelper.nullSafeEquals(snapshotUUID, fileAppender.getAppenderUUID()))
-                {
-                    snapshotAppender = fileAppender;
-                    break;
-                }
-            }
-        }
-
-        if (snapshotAppender == null)
+        final Optional<Path> logFilePathOpt = Log4jCompatibilityUtils.LOG4J_HELPER.closeSnapshotAppender(snapshotUUID);
+        if (!logFilePathOpt.isPresent())
         {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "No snapshot Log4J appender found for UUID " + snapshotUUID);
         }
-
-        final File file = Paths.get(snapshotAppender.getFile()).toFile();
-        if (!file.exists())
+        final Path logFilePath = logFilePathOpt.get();
+        if (!Files.exists(logFilePath) || !Files.isRegularFile(logFilePath))
         {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Log file missing for snapshot Log4J appender with UUID " + snapshotUUID);
         }
 
-        // Remove the appender from all loggers and close it
-        snapshotAppender.removeAppenderFromLoggers();
-        snapshotAppender.close();
-
         // stream the contents - log file will be automatically deleted by Alfresco's temporary file mechanisms
+        final File file = logFilePath.toFile();
         this.delegate.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model);
     }
 }

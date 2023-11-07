@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - 2020 Order of the Bee
+ * Copyright (C) 2016 - 2023 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
@@ -18,23 +18,26 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Linked to Alfresco
- * Copyright (C) 2005 - 2020 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2023 Alfresco Software Limited.
  */
-package org.orderofthebee.addons.support.tools.repo;
+package org.orderofthebee.addons.support.tools.share.log;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
- * @author Axel Faust, <a href="http://acosix.de">Acosix GmbH</a>
+ * @author Axel Faust
  */
-public class LimitedListAppender extends AppenderSkeleton
+public class Log4j1LimitedListAppender extends AppenderSkeleton
 {
 
     // 20 minutes after last retrieval we assume tail is no longer active and automatically deregister this appender
@@ -44,11 +47,13 @@ public class LimitedListAppender extends AppenderSkeleton
 
     protected final List<Logger> appendedToLoggers = new ArrayList<>();
 
+    protected final Lock closingLock = new ReentrantLock();
+
     protected final int eventCountLimit;
 
     protected long lastRetrievalTimestamp = System.currentTimeMillis();
 
-    public LimitedListAppender(final String uuid, final int eventCountLimit)
+    public Log4j1LimitedListAppender(final String uuid, final int eventCountLimit)
     {
         ParameterCheck.mandatory("uuid", uuid);
         this.setName(uuid);
@@ -61,20 +66,35 @@ public class LimitedListAppender extends AppenderSkeleton
         this.eventCountLimit = eventCountLimit;
     }
 
+    /**
+     * Add this appender to a logger and then remember the logger so we can remove ourselves from
+     * all registered loggers when we are done.
+     *
+     * @param logger
+     *     the logger to which to append this appender
+     */
     public void registerAsAppender(final Logger logger)
     {
-        logger.addAppender(this);
-        this.appendedToLoggers.add(logger);
+        synchronized (this.appendedToLoggers)
+        {
+            logger.addAppender(this);
+            this.appendedToLoggers.add(logger);
+        }
     }
 
     /**
-     *
-     * {@inheritDoc}
+     * Makes sure appender is removed from all loggers where it was previously registered.
      */
-    @Override
-    public void close()
+    public void removeAppenderFromLoggers()
     {
-        // NO-OP
+        synchronized (this.appendedToLoggers)
+        {
+            for (final Logger logger : this.appendedToLoggers)
+            {
+                logger.removeAppender(this);
+            }
+            this.appendedToLoggers.clear();
+        }
     }
 
     /**
@@ -105,10 +125,23 @@ public class LimitedListAppender extends AppenderSkeleton
      * {@inheritDoc}
      */
     @Override
+    public synchronized void close()
+    {
+        if (this.closed)
+        {
+            return;
+        }
+        this.closed = true;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
     protected void append(final LoggingEvent event)
     {
-
-        final boolean active = (System.currentTimeMillis() - this.lastRetrievalTimestamp) < AUTO_DEREGISTRATION_TIMEOUT;
+        final boolean active = !this.closed && (System.currentTimeMillis() - this.lastRetrievalTimestamp) < AUTO_DEREGISTRATION_TIMEOUT;
         if (active)
         {
             synchronized (this.storedEvents)
@@ -121,15 +154,33 @@ public class LimitedListAppender extends AppenderSkeleton
                 }
             }
         }
-        // make sure we clear the data to avoid retaining memory
-        else if (!this.storedEvents.isEmpty())
+        else
         {
-            synchronized (this.storedEvents)
+            if (!this.closed)
             {
-                this.storedEvents.clear();
+                if (this.closingLock.tryLock())
+                {
+                    try
+                    {
+                        LogLog.warn("Automatically deregistering limited list appender after timeout exceeded.");
+                        this.removeAppenderFromLoggers();
+                        this.close();
+                    }
+                    finally
+                    {
+                        this.closingLock.unlock();
+                    }
+                }
+            }
+
+            // make sure we clear the data to avoid retaining memory
+            if (!this.storedEvents.isEmpty())
+            {
+                synchronized (this.storedEvents)
+                {
+                    this.storedEvents.clear();
+                }
             }
         }
-
-        // TODO Need a asynchronous removal (Log4J implementation can't handle concurrent remove)
     }
 }

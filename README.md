@@ -123,3 +123,4 @@ Maintainers:
 - [Axel Faust](https://github.com/AFaust), Acosix / Order of the Bee
 - [Bindu Wavell](https://github.com/binduwavell), Zia / Order of the Bee
 - [Younes Regaieg](https://github.com/yregaieg), Order of the Bee
+- [Robrecht Vanhuysse](https://github.com/RVanhuysseXenit), Xenit Solutions nv / Order of the Bee

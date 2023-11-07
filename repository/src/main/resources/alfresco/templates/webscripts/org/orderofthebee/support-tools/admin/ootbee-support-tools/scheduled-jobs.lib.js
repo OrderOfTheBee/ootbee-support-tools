@@ -132,6 +132,17 @@ function buildScheduledJobsData()
         }
     }
 
+    jobTriggers.sort(function(a, b)
+    {
+        var res;
+        res = a.triggerGroup.localeCompare(b.triggerGroup);
+        if (res === 0)
+        {
+            res = a.triggerName.localeCompare(b.triggerName);
+        }
+        return res;
+    });
+
     model.jobTriggers = jobTriggers;
     model.locale = Packages.org.springframework.extensions.surf.util.I18NUtil.getLocale().toString();
 }

@@ -1,7 +1,7 @@
 <#compress>
 <#escape x as jsonUtils.encodeJSONString(x)>
 <#-- 
-Copyright (C) 2016 - 2020 Order of the Bee
+Copyright (C) 2016 - 2023 Order of the Bee
 
 This file is part of OOTBee Support Tools
 
@@ -19,7 +19,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with OOTBee Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005 - 2020 Alfresco Software Limited.
+Copyright (C) 2005 - 2023 Alfresco Software Limited.
  
   -->
 
@@ -30,12 +30,21 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
             "loggerName" : "${event.loggerName}",
             "loggerSimpleName" : "${event.loggerName?substring(event.loggerName?last_index_of(".") + 1)}",
             "loggerCompressedName" : "${compressName(event.loggerName)}",
-            "message": "${event.renderedMessage}",
-            "timestamp" : {
-                "raw" : "${event.timeStamp?c}",
-                "iso8601" : "${xmldate(event.timeStamp?number_to_datetime)}",
-                "nice" : "${event.timeStamp?number_to_datetime?string("yyyy-MM-dd HH:mm:ss:SSS")}"
-            }
+            <#if event.renderedMessage??>
+                "message": "${event.renderedMessage}",
+                "timestamp" : {
+                    "raw" : "${event.timeStamp?c}",
+                    "iso8601" : "${xmldate(event.timeStamp?number_to_datetime)}",
+                    "nice" : "${event.timeStamp?number_to_datetime?string("yyyy-MM-dd HH:mm:ss:SSS")}"
+                }
+            <#else>
+                "message": "${event.message.formattedMessage}",
+                "timestamp" : {
+                    "raw" : "${event.timeMillis?c}",
+                    "iso8601" : "${xmldate(event.timeMillis?number_to_datetime)}",
+                    "nice" : "${event.timeMillis?number_to_datetime?string("yyyy-MM-dd HH:mm:ss:SSS")}"
+                }
+            </#if>
         }<#if event_has_next>,</#if>
         </#list></#if>
     ]
