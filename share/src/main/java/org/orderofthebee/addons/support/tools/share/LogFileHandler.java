@@ -25,13 +25,12 @@ package org.orderofthebee.addons.support.tools.share;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.function.Supplier;
 
 import org.alfresco.util.ParameterCheck;
 import org.alfresco.util.TempFileProvider;
@@ -43,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
  * This class is used to consolidate the log file handling logic that may need to be shared between web script and servlet based log file
@@ -178,17 +176,8 @@ public class LogFileHandler
         this.contentStreamer = contentStreamer;
     }
 
-    protected void handleLogFileRequest(final String filePath, final boolean attach, final WebScriptRequest req,
-            final WebScriptResponse res, final Map<String, Object> model) throws IOException
-    {
-        final File file = validateFilePath(filePath);
-
-        final String mimetype = determineMimetypeFromFileName(file);
-        this.contentStreamer.streamContent(req, res, file, file.lastModified(), attach, file.getName(), model, mimetype);
-    }
-
-    protected void handleLogFileRequest(final String filePath, final boolean attach, final HttpServletRequest req,
-            final HttpServletResponse res, final Map<String, Object> model) throws IOException
+    protected void handleLogFileRequest(final String filePath, final boolean attach, final Supplier<Request> req,
+            final Supplier<Response> res, final Map<String, Object> model) throws IOException
     {
         try
         {
@@ -199,41 +188,24 @@ public class LogFileHandler
         }
         catch (final WebScriptException wsex)
         {
-            if (!res.isCommitted())
+            Response rres = res.get();
+            if (!rres.isCommitted())
             {
-                res.reset();
-                res.sendError(wsex.getStatus(), wsex.getMessage());
+                rres.reset();
+                rres.sendError(wsex.getStatus(), wsex.getMessage());
             }
-            else
+            else if (!(rres instanceof WebScriptResponseWrapper))
             {
                 LOGGER.info("Could not send error via committed response", wsex);
             }
-        }
-    }
-
-    protected void handleLogZipRequest(final List<String> filePaths, final WebScriptRequest req, final WebScriptResponse res,
-            final Map<String, Object> model) throws IOException
-    {
-        final List<File> files = LogFileHandler.validateFilePaths(filePaths);
-        final File logFileZip = TempFileProvider.createTempFile("ootbee-support-tools-logFiles", "zip");
-        try
-        {
-            this.createZip(files, logFileZip);
-
-            this.contentStreamer.streamContent(req, res, logFileZip, logFileZip.lastModified(), false, "log-files.zip", model,
-                    "application/zip");
-        }
-        finally
-        {
-            // eager cleanup
-            if (!logFileZip.delete())
+            else
             {
-                logFileZip.deleteOnExit();
+                throw wsex;
             }
         }
     }
 
-    protected void handleLogZipRequest(final List<String> filePaths, final HttpServletRequest req, final HttpServletResponse res,
+    protected void handleLogZipRequest(final List<String> filePaths, final Supplier<Request> req, final Supplier<Response> res,
             final Map<String, Object> model) throws IOException
     {
         try
@@ -250,7 +222,7 @@ public class LogFileHandler
             finally
             {
                 // eager cleanup
-                if (!logFileZip.delete())
+                if (!Files.deleteIfExists(logFileZip.toPath()))
                 {
                     logFileZip.deleteOnExit();
                 }
@@ -258,14 +230,19 @@ public class LogFileHandler
         }
         catch (final WebScriptException wsex)
         {
-            if (!res.isCommitted())
+            Response rres = res.get();
+            if (!rres.isCommitted())
             {
-                res.reset();
-                res.sendError(wsex.getStatus(), wsex.getMessage());
+                rres.reset();
+                rres.sendError(wsex.getStatus(), wsex.getMessage());
+            }
+            else if (!(rres instanceof WebScriptResponseWrapper))
+            {
+                LOGGER.info("Could not send error via committed response", wsex);
             }
             else
             {
-                LOGGER.info("Could not send error via committed response", wsex);
+                throw wsex;
             }
         }
     }

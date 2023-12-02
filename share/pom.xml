@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.orderofthebee.support-tools</groupId>
         <artifactId>support-tools-parent</artifactId>
-        <version>1.2.1.0</version>
+        <version>1.2.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>support-tools-share</artifactId>
@@ -40,6 +40,14 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>3.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- used since ACS 23.1 -->
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>5.0.0</version>
                 <scope>provided</scope>
             </dependency>
             
@@ -77,6 +85,11 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
 
         <dependency>

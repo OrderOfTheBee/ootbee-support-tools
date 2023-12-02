@@ -66,7 +66,9 @@ public class LogFilesZIPPost extends AbstractLogFileWebScript
         final String[] paths = rqData.getParameters().get("paths");
         filePaths.addAll(Arrays.asList(paths));
 
-        this.logFileHandler.handleLogZipRequest(filePaths, req, res, model);
+        final WebScriptRequestWrapper reqW = new WebScriptRequestWrapper(req);
+        final WebScriptResponseWrapper resW = new WebScriptResponseWrapper(res);
+        this.logFileHandler.handleLogZipRequest(filePaths, () -> reqW, () -> resW, model);
     }
 
 }

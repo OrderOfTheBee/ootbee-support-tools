@@ -55,6 +55,8 @@ public class LogFileGet extends AbstractLogFileWebScript
         final String attachParam = req.getParameter("a");
         final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
-        this.logFileHandler.handleLogFileRequest(filePath, attach, req, res, model);
+        final WebScriptRequestWrapper reqW = new WebScriptRequestWrapper(req);
+        final WebScriptResponseWrapper resW = new WebScriptResponseWrapper(res);
+        this.logFileHandler.handleLogFileRequest(filePath, attach, () -> reqW, () -> resW, model);
     }
 }

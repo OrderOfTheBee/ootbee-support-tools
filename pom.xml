@@ -5,7 +5,7 @@
 
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
-    <version>1.2.1.0</version>
+    <version>1.2.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OOTBee Support Tools - Parent</name>
@@ -697,6 +697,29 @@
                         <groupId>org.apache.activemq</groupId>
                         <artifactId>activemq-broker</artifactId>
                         <version>5.17.4</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+        <profile>
+            <id>acs-docker-23.1</id>
+
+            <properties>
+                <alfresco.docker.platform.version>23.1.0</alfresco.docker.platform.version>
+                <alfresco.docker.share.version>23.1.0</alfresco.docker.share.version>
+                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
+                <docker.acs.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=/usr/local/tomcat/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</docker.acs.opts>
+                <alfresco.search.version>2.0.8.2</alfresco.search.version>
+                <docker.search.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</docker.search.opts>
+            </properties>
+
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activemq-broker</artifactId>
+                        <version>5.18.3</version>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
