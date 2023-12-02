@@ -23,13 +23,11 @@
 package org.orderofthebee.addons.support.tools.share;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,19 +41,20 @@ import org.springframework.extensions.surf.UserFactory;
 import org.springframework.extensions.surf.WebFrameworkServiceRegistry;
 import org.springframework.extensions.surf.exception.UserFactoryException;
 import org.springframework.extensions.surf.support.ServletRequestContext;
+import org.springframework.extensions.surf.util.URLDecoder;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.connector.User;
-import org.springframework.extensions.webscripts.servlet.FormData;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author Axel Faust
  */
-public class LogFilesZIPPostServlet extends HttpServlet
+@WebServlet(name = "OOTBee Support Tools - Log File Download", urlPatterns = { "/ootbee-support-tools/log4j-log-file/*" })
+public class LegacyLogFileGetServlet extends HttpServlet
 {
 
-    private static final long serialVersionUID = 6594146886154738251L;
+    private static final long serialVersionUID = 5162376729083905078L;
 
     protected LogFileHandler logFileHandler;
 
@@ -87,7 +86,7 @@ public class LogFilesZIPPostServlet extends HttpServlet
      * {@inheritDoc}
      */
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse res) throws ServletException, IOException
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse res) throws ServletException, IOException
     {
         if (req.getCharacterEncoding() == null)
         {
@@ -109,6 +108,13 @@ public class LogFilesZIPPostServlet extends HttpServlet
 
         if (user != null && user.isAdmin())
         {
+            final String requestURI = req.getRequestURI();
+            String filePath = URLDecoder.decode(requestURI.substring(req.getContextPath().length() + req.getServletPath().length() + 1));
+            if (!filePath.startsWith("/"))
+            {
+                filePath = "/" + filePath;
+            }
+
             final Map<String, Object> model = new HashMap<>();
             final Status status = new Status();
             final Cache cache = new Cache();
@@ -116,12 +122,12 @@ public class LogFilesZIPPostServlet extends HttpServlet
             model.put("status", status);
             model.put("cache", cache);
 
-            final FormData rqData = new FormData(req);
-            final List<String> filePaths = new ArrayList<>();
-            final String[] paths = rqData.getParameters().get("paths");
-            filePaths.addAll(Arrays.asList(paths));
+            final String attachParam = req.getParameter("a");
+            final boolean attach = attachParam != null && Boolean.parseBoolean(attachParam);
 
-            this.logFileHandler.handleLogZipRequest(filePaths, req, res, model);
+            final LegacyHttpServletRequestWrapper reqW = new LegacyHttpServletRequestWrapper(req);
+            final LegacyHttpServletResponseWrapper resW = new LegacyHttpServletResponseWrapper(res);
+            this.logFileHandler.handleLogFileRequest(filePath, attach, () -> reqW, () -> resW, model);
         }
         else
         {

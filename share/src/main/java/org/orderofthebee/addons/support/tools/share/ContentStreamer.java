@@ -32,18 +32,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.function.Supplier;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.extensions.surf.util.URLEncoder;
 import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.Status;
 
 /**
  * @author Axel Faust
@@ -78,391 +74,11 @@ public class ContentStreamer
 
     protected static ThreadLocal<SimpleDateFormat> s_dateFormat = new ThreadLocal<>();
 
-    // Request/Response abstractions to simplify our code
-    protected interface Request
-    {
-
-        /**
-         * Returns the value of the specified request header as a <code>String</code>. If the request did not include a header of the
-         * specified name, this method returns <code>null</code>. If there are multiple headers with the same name, this method returns the
-         * first head in the request. The header name is case insensitive. You can use this method with any request header.
-         *
-         * @param name
-         *            a <code>String</code> specifying the
-         *            header name
-         *
-         * @return a <code>String</code> containing the
-         *         value of the requested
-         *         header, or <code>null</code>
-         *         if the request does not
-         *         have a header of that name
-         *
-         * @see HttpServletRequest#getHeader(String)
-         * @see WebScriptRequest#getHeader(String)
-         *
-         */
-        String getHeader(String name);
-    }
-
-    protected interface Response
-    {
-
-        /**
-         * <p>
-         * Sets the status code for this response. This method is used to set the return status code when there is no error (for example,
-         * for the status codes SC_OK or SC_MOVED_TEMPORARILY). If there is an error, and the caller wishes to invoke an error-page defined
-         * in the web application, the <code>sendError</code> method should be used instead.
-         * </p>
-         *
-         * <p>
-         * The container clears the buffer and sets the Location header, preserving cookies and other headers.
-         * </p>
-         *
-         * @param status
-         *            the status code
-         *
-         * @see HttpServletResponse#setStatus(int)
-         * @see WebScriptResponse#setStatus(int)
-         */
-        void setStatus(int status);
-
-        /**
-         * Sets a response header with the given name and value.If the header had already been set, the new value overwrites the previous
-         * one. The <code>containsHeader</code> method can be used to test for the presence of a header before setting its value.
-         *
-         * @param name
-         *            the name of the header
-         * @param value
-         *            the header value If it contains octet string,
-         *            it should be encoded according to RFC 2047
-         *            (http://www.ietf.org/rfc/rfc2047.txt)
-         *
-         * @see HttpServletResponse#setHeader(String, String)
-         * @see WebScriptResponse#setHeader(String, String)
-         *
-         */
-        void setHeader(String name, String value);
-
-        /**
-         * Sets the Content Type
-         *
-         * @param contentType
-         *            String
-         *
-         * @see HttpServletResponse#setContentType(String)
-         * @see WebScriptResponse#setContentType(String)
-         */
-        void setContentType(String contentType);
-
-        /**
-         * Sets the Content Encoding
-         *
-         * @param contentEncoding
-         *            String
-         *
-         * @see WebScriptResponse#setContentEncoding(String)
-         */
-        void setContentEncoding(String contentEncoding);
-
-        /**
-         * Sets the Cache control
-         *
-         * @param cache
-         *            cache control
-         *
-         * @see WebScriptResponse#setCache(Cache)
-         */
-        void setCache(Cache cache);
-
-        /**
-         * Returns a {@link OutputStream} suitable for writing binary data in the response. The servlet container does not encode the binary
-         * data.
-         *
-         * @return a {@link OutputStream} for writing binary data
-         *
-         * @exception IOException
-         *                if an input or output exception occurred
-         *
-         * @see HttpServletResponse#getOutputStream()
-         * @see WebScriptResponse#getOutputStream()
-         */
-        OutputStream getOutputStream() throws IOException;
-    }
-
-    protected static class WebScriptRequestWrapper implements Request
-    {
-
-        protected final WebScriptRequest req;
-
-        protected WebScriptRequestWrapper(final WebScriptRequest req)
-        {
-            this.req = req;
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public String getHeader(final String name)
-        {
-            return this.req.getHeader(name);
-        }
-    }
-
-    protected static class HttpServletRequestWrapper implements Request
-    {
-
-        protected final HttpServletRequest req;
-
-        protected HttpServletRequestWrapper(final HttpServletRequest req)
-        {
-            this.req = req;
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public String getHeader(final String name)
-        {
-            return this.req.getHeader(name);
-        }
-    }
-
-    protected static class WebScriptResponseWrapper implements Response
-    {
-
-        protected final WebScriptResponse res;
-
-        protected WebScriptResponseWrapper(final WebScriptResponse res)
-        {
-            this.res = res;
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setStatus(final int status)
-        {
-            this.res.setStatus(status);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setHeader(final String name, final String value)
-        {
-            this.res.setHeader(name, value);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setContentType(final String contentType)
-        {
-            this.res.setContentType(contentType);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setContentEncoding(final String contentEncoding)
-        {
-            this.res.setContentEncoding(contentEncoding);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setCache(final Cache cache)
-        {
-            this.res.setCache(cache);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public OutputStream getOutputStream() throws IOException
-        {
-            return this.res.getOutputStream();
-        }
-
-    }
-
-    protected static class HttpServletResponseWrapper implements Response
-    {
-
-        protected final HttpServletResponse res;
-
-        protected HttpServletResponseWrapper(final HttpServletResponse res)
-        {
-            this.res = res;
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setStatus(final int status)
-        {
-            this.res.setStatus(status);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setHeader(final String name, final String value)
-        {
-            this.res.setHeader(name, value);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setContentType(final String contentType)
-        {
-            this.res.setContentType(contentType);
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public void setContentEncoding(final String contentEncoding)
-        {
-            this.res.setCharacterEncoding(contentEncoding);
-        }
-
-        @Override
-        public void setCache(final Cache cache)
-        {
-            // copied from WebScriptServletResponseImpl and adapted to avoid +-concatenation
-            // set Cache-Control
-            final StringBuilder cacheControl = new StringBuilder(64);
-            String pragma = "";
-            if (cache.getIsPublic())
-            {
-                cacheControl.append("public");
-            }
-            if (cache.getNeverCache())
-            {
-                if (cacheControl.length() > 0)
-                {
-                    cacheControl.append(", ");
-                }
-                cacheControl.append(NO_CACHE);
-                pragma = NO_CACHE;
-            }
-            if (cache.getMaxAge() != null && cache.getNeverCache() == false)
-            {
-                if (cacheControl.length() > 0)
-                {
-                    cacheControl.append(", ");
-                }
-                cacheControl.append("max-age=").append(cache.getMaxAge());
-            }
-            if (cache.getMustRevalidate() && cache.getNeverCache() == false)
-            {
-                if (cacheControl.length() > 0)
-                {
-                    cacheControl.append(", ");
-                }
-                cacheControl.append("must-revalidate");
-            }
-            if (cacheControl.length() > 0)
-            {
-                final String cacheControlValue = cacheControl.toString();
-                this.res.setHeader("Cache-Control", cacheControlValue);
-                if (LOGGER.isDebugEnabled())
-                {
-                    LOGGER.debug("Cache - set response header Cache-Control: " + cacheControl);
-                }
-                // special case for IE Ajax request handling
-                if (NO_CACHE.equals(cacheControlValue))
-                {
-                    this.res.setHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT");
-                }
-            }
-            if (pragma.length() > 0)
-            {
-                this.res.setHeader("Pragma", pragma);
-                if (LOGGER.isDebugEnabled())
-                {
-                    LOGGER.debug("Cache - set response header Pragma: " + pragma);
-                }
-            }
-
-            // set ETag
-            if (cache.getETag() != null)
-            {
-                final String eTag = "\"" + cache.getETag() + "\"";
-                this.res.setHeader("ETag", eTag);
-                if (LOGGER.isDebugEnabled())
-                {
-                    LOGGER.debug("Cache - set response header ETag: " + eTag);
-                }
-            }
-
-            // set Last Modified
-            if (cache.getLastModified() != null)
-            {
-                this.res.setDateHeader("Last-Modified", cache.getLastModified().getTime());
-                if (LOGGER.isDebugEnabled())
-                {
-                    final SimpleDateFormat formatter = getHTTPDateFormat();
-                    final String lastModified = formatter.format(cache.getLastModified());
-                    LOGGER.debug("Cache - set response header Last-Modified: " + lastModified);
-                }
-            }
-        }
-
-        /**
-         *
-         * {@inheritDoc}
-         */
-        @Override
-        public OutputStream getOutputStream() throws IOException
-        {
-            return this.res.getOutputStream();
-        }
-
-    }
-
     // provide method variants for specific request / response types
-    protected void streamContent(final WebScriptRequest req, final WebScriptResponse res, final File file, final Long modifiedTime,
+    protected void streamContent(final Supplier<Request> req, final Supplier<Response> res, final File file, final Long modifiedTime,
             final boolean attach, final String attachFileName, final Map<String, Object> model, final String mimetype) throws IOException
     {
-        final WebScriptRequestWrapper reqWrapper = new WebScriptRequestWrapper(req);
-        final WebScriptResponseWrapper resWrapper = new WebScriptResponseWrapper(res);
-        this.streamContent(reqWrapper, resWrapper, file, modifiedTime, attach, attachFileName, model, mimetype);
-    }
-
-    protected void streamContent(final HttpServletRequest req, final HttpServletResponse res, final File file, final Long modifiedTime,
-            final boolean attach, final String attachFileName, final Map<String, Object> model, final String mimetype) throws IOException
-    {
-        final HttpServletRequestWrapper reqWrapper = new HttpServletRequestWrapper(req);
-        final HttpServletResponseWrapper resWrapper = new HttpServletResponseWrapper(res);
-        this.streamContent(reqWrapper, resWrapper, file, modifiedTime, attach, attachFileName, model, mimetype);
+        this.streamContent(req.get(), res.get(), file, modifiedTime, attach, attachFileName, model, mimetype);
     }
 
     // copied from Repo-tier ContentStreamer and base classes since they aren't available in Share
@@ -650,7 +266,7 @@ public class ContentStreamer
                 LOGGER.debug("Failed to parse range header - returning 416 status code: " + err.getMessage());
             }
 
-            res.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+            res.setStatus(Status.STATUS_REQUESTED_RANGE_NOT_SATISFIABLE);
             res.setHeader(HEADER_CONTENT_RANGE, "\"*\"");
             res.getOutputStream().close();
             return true;
@@ -659,7 +275,7 @@ public class ContentStreamer
         // set Partial Content status and range headers
         final String contentRange = "bytes " + Long.toString(r.start) + "-" + Long.toString(r.end) + "/" + Long.toString(file.length());
 
-        res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        res.setStatus(Status.STATUS_PARTIAL_CONTENT);
         res.setContentType(mimetype);
         res.setHeader(HEADER_CONTENT_RANGE, contentRange);
         res.setHeader(HEADER_CONTENT_LENGTH, Long.toString((r.end - r.start) + 1L));
@@ -777,13 +393,13 @@ public class ContentStreamer
          * Constructor
          *
          * @param contentType
-         *            Mimetype of the range content
+         *     Mimetype of the range content
          * @param start
-         *            Start position in the parent entity
+         *     Start position in the parent entity
          * @param end
-         *            End position in the parent entity
+         *     End position in the parent entity
          * @param entityLength
-         *            Length of the parent entity
+         *     Length of the parent entity
          */
         Range(final String contentType, final long start, final long end, final long entityLength)
         {
@@ -797,16 +413,16 @@ public class ContentStreamer
          * Factory method to construct a byte range from a range header value.
          *
          * @param range
-         *            Range header value
+         *     Range header value
          * @param contentType
-         *            Mimetype of the range
+         *     Mimetype of the range
          * @param entityLength
-         *            Length of the parent entity
+         *     Length of the parent entity
          *
          * @return Range
          *
          * @throws IllegalArgumentException
-         *             for an invalid range
+         *     for an invalid range
          */
         static Range constructRange(String range, final String contentType, final long entityLength)
         {
@@ -856,19 +472,6 @@ public class ContentStreamer
         }
 
         /**
-         * Output the header bytes for a multi-part byte range header
-         */
-        void outputHeader(final ServletOutputStream os) throws IOException
-        {
-            // output multi-part boundry separator
-            os.println(MULTIPART_BYTERANGES_BOUNDRY_SEP);
-            // output content type and range size sub-header for this part
-            os.println(this.contentType);
-            os.println(this.getContentRange());
-            os.println();
-        }
-
-        /**
          * @return the length in bytes of the byte range content including the header bytes
          */
         int getLength()
@@ -908,12 +511,12 @@ public class ContentStreamer
     }
 
     // copied from Repo-tier WebDAVHelper
-    protected final static String encodeURL(final String s)
+    protected static final String encodeURL(final String s)
     {
         return encodeURL(s, null);
     }
 
-    protected final static String encodeURL(final String s, final String userAgent)
+    protected static final String encodeURL(final String s, final String userAgent)
     {
         return URLEncoder.encode(s);
     }
