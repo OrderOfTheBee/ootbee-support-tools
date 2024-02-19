@@ -2260,7 +2260,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                         {
                             title: this.msg('message.failure'),
                             text: res.json && res.json.message ? res.json.message : this.msg('error.script.save', filename),
-                            zIndex: 5 // added to internal default - high enough offset to ensure it should overlay any part of editor
+                            zIndex: 10 // added to internal default - high enough offset to ensure it should overlay any part of editor
                         });
                         
                     },
@@ -2295,7 +2295,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                         {
                             title: this.msg('message.failure'),
                             text: res.json && res.json.message ? res.json.message : this.msg('error.script.save', filename),
-                            zIndex: 5 // added to internal default - high enough offset to ensure it should overlay any part of editor
+                            zIndex: 10 // added to internal default - high enough offset to ensure it should overlay any part of editor
                         });
                         
                     },
@@ -2352,7 +2352,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                             this.destroy();
                         },
                         isDefault: true
-                    }]
+                    }],
+                    zIndex: 10 // added to internal default - high enough offset to ensure it should overlay any part of editor
                 });
             }
         },
