@@ -49,28 +49,28 @@ Copyright (C) 2005 - 2020 Alfresco Software Limited.
             <@section label=coreLabel />
             <div class="column-left">
                 <@field value="${trackingStatus[coreName]['index']['numDocs']?c}"  label=msg("solr-tracking.section.numdocs.title") description=msg("solr-tracking.section.numdocs.description") />  
-                <@field value="${trackingSummary[coreName]['Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.indexing.title") description=msg("solr-tracking.section.indexing.description") />  
-                <@field value="${trackingSummary[coreName]['Id for last TX in index']?c}" label=msg("solr-tracking.section.last.transaction.title") description=msg("solr-tracking.section.last.transaction.description") />  
-                <@field value="${trackingSummary[coreName]['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.approx.time.title") description=msg("solr-tracking.section.approx.time.description") />  
+                <@field value="${trackingStatus[coreName]['index']['deletedDocs']?c}" label=msg("solr-tracking.section.deleted.title") description=msg("solr-tracking.section.deleted.description") />  
+                <@field value="${trackingSummary[coreName]['TX Lag']}" label=msg("solr-tracking.section.index.lag.title") description=msg("solr-tracking.section.index.lag.description")/> 
                 <@field value="${iecBinaryUnitSize(trackingStatus[coreName]['index']['sizeInBytes'])}" label=msg("solr-tracking.section.disk.usage.title") description=msg("solr-tracking.section.disk.usage.description") />  
             </div>
            
             <div class="column-right">   
                 <@field value="${trackingStatus[coreName]['index']['maxDoc']?c}"  label=msg("solr-tracking.section.maxdocs.title") description=msg("solr-tracking.section.maxdocs.description") />  
-                <@field value="${trackingStatus[coreName]['index']['deletedDocs']?c}" label=msg("solr-tracking.section.deleted.title") description=msg("solr-tracking.section.deleted.description") />  
-                <@field value="${trackingSummary[coreName]['TX Lag']}" label=msg("solr-tracking.section.index.lag.title") description=msg("solr-tracking.section.index.lag.description")/> 
-                <@field value="${trackingSummary[coreName]['Approx transactions remaining']?c}" label=msg("solr-tracking.section.approx.transaction.title") description=msg("solr-tracking.section.approx.transaction.description")/>  
+                <@field value="${trackingSummary[coreName]['Id for last TX in index']?c}" label=msg("solr-tracking.section.last.transaction.title") description=msg("solr-tracking.section.last.transaction.description") />  
+                <@field value="${trackingSummary[coreName]['Approx transaction indexing time remaining']}" label=msg("solr-tracking.section.approx.time.title") description=msg("solr-tracking.section.approx.time.description") />  
         
                 <#if trackingStatus[coreName]['index']['indexHeapUsageBytes'] != -1>
                     <@field value="${iecBinaryUnitSize(trackingStatus[coreName]['index']['indexHeapUsageBytes'])}" label=msg("solr-tracking.section.memory.usage.title") description=msg("solr-tracking.section.memory.usage.description")/>
                 </#if>
             </div>
-
         </div>
 
         <div class="column-full">
-
-            <@section label=msg("solr-tracking.section.detail.title") />
+            <#assign coreDetailLabel= msg("solr-tracking.section." + coreName + ".detail.title") />
+            <#if coreDetailLabel == "solr-tracking.section." + coreName + ".detail.title">
+                <#assign coreDetailLabel= msg("solr-tracking.section.genericCore.detail.title", coreName) />
+            </#if>
+            <@section label=coreDetailLabel />
             <div class="column-left">
                 <@field value="${trackingSummary[coreName]['MetadataTracker Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.metadata.title") description=msg("solr-tracking.section.detail.metadata.description")/>
                 <@field value="${trackingSummary[coreName]['ContentTracker Active']?string(msg('solr-tracking.true'), msg('solr-tracking.false'))}" label=msg("solr-tracking.section.detail.content.title") description=msg("solr-tracking.section.detail.content.description")/>
