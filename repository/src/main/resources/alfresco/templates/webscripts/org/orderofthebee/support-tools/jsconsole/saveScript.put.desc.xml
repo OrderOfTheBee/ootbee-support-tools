@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <webscript>
     <shortname>JSConsole store new Javascript</shortname>
-    <url>/ootbee/jsconsole/savescript?name={name}</url>
+    <url>/ootbee/jsconsole/savescript?namePath={namePath?}&amp;nodeRef={nodeRef?}</url>
     <authentication>admin</authentication>
     <format default="json">extension</format>
     <lifecycle>internal</lifecycle>

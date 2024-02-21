@@ -402,7 +402,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             this.widgets.docsMenuButton.getMenu().cfg.setProperty('zIndex', 10);
         },
 
-        initSubmenuIds: function (entry, suffix) {
+        initSubmenuIds: function JavaScriptConsole_initSubmenuIds(entry, suffix) {
             if (entry.submenu) {
                 entry.submenu.id = entry.submenu.id + suffix;
                 entry.submenu.itemdata.forEach(function (f) {
@@ -413,14 +413,16 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
         createOrUpdateScriptsSaveMenu: function JavaScriptConsole_createOrUpdateScriptsSaveMenu(listOfScripts)
         {
-            var saveMenuItems = [{
+            var scripts, saveMenuItems;
+
+            saveMenuItems = [{
                 text: this.msg('button.save.create.new'),
                 value: 'NEW'
             }];
 
             if (listOfScripts)
             {
-                var scripts = JSON.parse(JSON.stringify(listOfScripts));
+                scripts = JSON.parse(JSON.stringify(listOfScripts));
                 scripts.forEach(function(e) {
                     this.initSubmenuIds.call(this, e, "-scriptsave");
                 }.bind(this));
@@ -451,14 +453,16 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
         createOrUpdateScriptsLoadMenu: function JavaScriptConsole_createOrUpdateScriptsLoadMenu(listOfScripts)
         {
-            var loadMenuItems = [{
+            var scripts, loadMenuItems;
+
+            loadMenuItems = [{
                 text: this.msg('button.load.create.new'),
                 value: 'NEW'
             }];
 
             if (listOfScripts)
             {
-                var scripts = JSON.parse(JSON.stringify(listOfScripts));
+                scripts = JSON.parse(JSON.stringify(listOfScripts));
                 scripts.forEach(function(e) {
                     this.initSubmenuIds.call(this, e, "-scriptload");
                 }.bind(this));
@@ -2256,7 +2260,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         saveAsExistingScript: function JavaScriptConsole_saveAsExistingScript(filename, nodeRef)
         {
             Alfresco.util.Ajax.jsonPut({
-                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(nodeRef) + '&isUpdate=true',
+                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?nodeRef=' + encodeURIComponent(nodeRef),
                 dataObj: {
                     jsScript: this.widgets.codeMirrorScript.getValue(),
                     fmScript: this.widgets.codeMirrorTemplate.getValue()
@@ -2288,10 +2292,14 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             });
         },
 
+        /**
+         *
+         * @param filename either file name or path relative from scripts folder
+         */
         saveAsNewScript: function JavaScriptConsole_saveAsNewScript(filename)
         {
             Alfresco.util.Ajax.jsonPut({
-                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?name=' + encodeURIComponent(filename) + '&isUpdate=false',
+                url: Alfresco.constants.PROXY_URI + 'ootbee/jsconsole/savescript.json?namePath=' + encodeURIComponent(filename),
                 dataObj: {
                     jsScript: this.widgets.codeMirrorScript.getValue(),
                     fmScript: this.widgets.codeMirrorTemplate.getValue()
