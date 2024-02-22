@@ -57,7 +57,7 @@ function buildPropertyGetter(ctxt)
 /* exported loadSolrSummaryAndStatus */
 function loadSolrSummaryAndStatus()
 {
-    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus, coreNames;
+    var ctxt, propertyGetter, indexSubsystem, solrContextFactory, solrContext, solrAdminClient, solrAdminNativeClient, args, trackingSummaryResponse, trackingSummary, trackingStatusResponse, trackingStatus, coreNames, idx;
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     propertyGetter = buildPropertyGetter(ctxt);
@@ -92,6 +92,17 @@ function loadSolrSummaryAndStatus()
             return a.localeCompare(b);
         });
         model.coreNames = coreNames;
+
+        if (/^solr([6])?$/.test(indexSubsystem))
+        {
+            solrAdminNativeClient = solrContext
+                    .getBean('solrAdminNativeClient', Packages.org.orderofthebee.addons.support.tools.repo.search.SolrAdminNativeClient);
+            model.cascadeTracker = [];
+            for (idx = 0; idx < coreNames.length; idx++) {
+                model.cascadeTracker[coreNames[idx]] = solrAdminNativeClient.getCascadeTrackerPendingCount(coreNames[idx]);
+            }
+        }
+
     }
     else
     {

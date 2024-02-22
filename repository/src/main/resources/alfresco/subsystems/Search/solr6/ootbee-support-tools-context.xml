@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="solrAdminNativeClient" class="org.orderofthebee.addons.support.tools.repo.search.solr6.SolrAdminNativeClientImpl">
+        <property name="httpClient">
+            <bean factory-bean="solrHttpClientFactory" factory-method="getHttpClient" />
+        </property>
+        <property name="baseUrl" value="${solr.baseUrl}" />
+    </bean>
+
+</beans>

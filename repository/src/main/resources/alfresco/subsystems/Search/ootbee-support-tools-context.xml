@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="solrAdminNativeClient.proxy" class="org.alfresco.repo.management.subsystems.SubsystemProxyFactory">
+        <property name="sourceApplicationContextFactory">
+            <ref bean="solrAdminNativeClient.subsystem.search" />
+        </property>
+        <property name="sourceBeanName">
+            <value>solrAdminNativeClient</value>
+        </property>
+        <property name="interfaces">
+            <list>
+                <value>org.orderofthebee.addons.support.tools.repo.search.SolrAdminNativeClient</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
