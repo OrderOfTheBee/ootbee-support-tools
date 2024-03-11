@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<webscript>
+    <shortname>JavaScript Console - Tern Type Definitions for Alfresco Script API</shortname>
+    <url>/ootbee/jsconsole/tern-definitions/alfresco-script-api</url>
+    <format default="json" />
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <family>OOTBee Support Tools</family>
+</webscript>
