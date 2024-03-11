@@ -129,6 +129,8 @@ addon.
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-webscripts-tern.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-batchprocessing-tern.js"></@script>
 
+<!-- dynamic tern definitions for alfresco -->
+<@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-json-dynamic.js"></@script>
 
 <!-- codemirror ui-->
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror-ui/js/codemirror-ui.js"></@script>
