@@ -111,4 +111,27 @@
         <property name="printOutputCache" ref="jsConsoleOutput" />
         <property name="resultCache" ref="jsConsoleResult" />
     </bean>
+
+    <bean id="webscript.org.orderofthebee.support-tools.jsconsole.tern.alfresco-script-api.get" class="org.orderofthebee.addons.support.tools.repo.jsconsole.AlfrescoScriptAPITernGet" parent="webscript">
+        <property name="namespaceService" ref="NamespaceService" />
+        <property name="dictionaryService" ref="DictionaryService" />
+        <property name="scriptService" ref="ScriptService" />
+        <property name="personService" ref="PersonService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="scriptProcessor" ref="javaScriptProcessor" />
+        <property name="properties">
+            <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+                <property name="locations">
+                    <list>
+                        <value>classpath*:alfresco/module/*/jsconsole-tern.properties</value>
+                        <value>classpath*:alfresco/extension/jsconsole-tern.properties</value>
+                    </list>
+                </property>
+                <property name="propertiesPersister">
+                    <bean class="org.alfresco.config.AlfrescoPropertiesPersister"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
 </beans>
