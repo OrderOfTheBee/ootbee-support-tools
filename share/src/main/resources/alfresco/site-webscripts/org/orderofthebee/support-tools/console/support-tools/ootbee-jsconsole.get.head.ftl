@@ -123,11 +123,8 @@ addon.
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/tern-hover.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/tern-hyperlink.js"></@script>
 
-<!-- tern definitions for ecma5 and alfresco-->
+<!-- tern definitions for ecma5 -->
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/ecma5.json.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-json.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-webscripts-tern.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-batchprocessing-tern.js"></@script>
 
 <!-- dynamic tern definitions for alfresco -->
 <@script type="text/javascript" src="${page.url.context}/res/components/ootbee-support-tools/codemirror/addon/tern/defs/alfresco-json-dynamic.js"></@script>

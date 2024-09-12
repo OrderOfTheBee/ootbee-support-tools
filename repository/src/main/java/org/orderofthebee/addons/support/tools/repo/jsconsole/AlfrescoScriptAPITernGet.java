@@ -26,11 +26,6 @@
  * is now being licensed under the LGPL as part of the OOTBee Support Tools
  * addon.
  */
-
- /**
-  * forked from https://github.com/AFaust/js-console
-  */
-  
 package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import java.lang.reflect.Method;
@@ -39,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +50,6 @@ import org.alfresco.processor.ProcessorExtension;
 import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.repo.jscript.NativeMap;
 import org.alfresco.repo.jscript.Scopeable;
-import org.alfresco.repo.jscript.ScriptLogger;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptableHashMap;
 import org.alfresco.repo.jscript.ScriptableQNameMap;
@@ -79,6 +72,8 @@ import org.alfresco.util.Pair;
 import org.alfresco.util.PropertyCheck;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContextAware;
@@ -99,8 +94,8 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements InitializingBean
 {
 
-    private static final Collection<Class<?>> PRIMITIVE_NUMBER_CLASSES = Collections.unmodifiableList(Arrays.<Class<?>> asList(byte.class,
-            short.class, int.class, long.class, float.class, double.class));
+    private static final Collection<Class<?>> PRIMITIVE_NUMBER_CLASSES = Collections
+            .unmodifiableList(Arrays.<Class<?>> asList(byte.class, short.class, int.class, long.class, float.class, double.class));
 
     private static final Collection<Class<?>> CUTOFF_CLASSES = Collections.unmodifiableList(Arrays.<Class<?>> asList(Object.class,
             Scriptable.class, org.springframework.extensions.webscripts.processor.BaseProcessorExtension.class,
@@ -110,10 +105,12 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             ProcessorExtension.class, org.springframework.extensions.surf.core.processor.ProcessorExtension.class, Scopeable.class,
             ApplicationContextAware.class, InitializingBean.class, DisposableBean.class));
 
-    private static final Collection<String> INIT_METHOD_NAMES = Collections.unmodifiableSet(new HashSet<String>(Arrays.<String> asList(
-            "init", "register")));
+    private static final Collection<String> INIT_METHOD_NAMES = Collections
+            .unmodifiableSet(new HashSet<String>(Arrays.<String> asList("init", "register")));
 
     private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlfrescoScriptAPITernGet.class);
 
     protected NamespaceService namespaceService;
 
@@ -147,7 +144,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param namespaceService
-     *            the namespaceService to set
+     *     the namespaceService to set
      */
     public void setNamespaceService(final NamespaceService namespaceService)
     {
@@ -156,7 +153,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param dictionaryService
-     *            the dictionaryService to set
+     *     the dictionaryService to set
      */
     public void setDictionaryService(final DictionaryService dictionaryService)
     {
@@ -165,7 +162,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param scriptService
-     *            the scriptService to set
+     *     the scriptService to set
      */
     public void setScriptService(final ScriptService scriptService)
     {
@@ -174,7 +171,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param personService
-     *            the personService to set
+     *     the personService to set
      */
     public void setPersonService(final PersonService personService)
     {
@@ -183,7 +180,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param serviceRegistry
-     *            the serviceRegistry to set
+     *     the serviceRegistry to set
      */
     public void setServiceRegistry(final ServiceRegistry serviceRegistry)
     {
@@ -192,7 +189,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param scriptProcessor
-     *            the scriptProcessor to set
+     *     the scriptProcessor to set
      */
     public void setScriptProcessor(final BaseProcessor scriptProcessor)
     {
@@ -201,7 +198,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     /**
      * @param properties
-     *            the properties to set
+     *     the properties to set
      */
     public void setProperties(final Properties properties)
     {
@@ -214,15 +211,15 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     @Override
     protected Map<String, Object> executeImpl(final WebScriptRequest req, final Status status, final Cache cache)
     {
-        final Map<String, Object> model = new HashMap<String, Object>();
+        final Map<String, Object> model = new HashMap<>();
 
         this.prepareCoreScriptAPIJavaTypeDefinitions(model);
-        this.prepareCoreScriptAPIGlobalDefinitions(model);
+        final Map<String, Object> coreScriptModel = this.prepareCoreScriptAPIGlobalDefinitions(model);
         this.preparePropertyDefinitions(model);
         // TODO Process action definitions + parameters
 
-        this.prepareWebScriptAPIJavaTypeDefinitions(req, model);
-        this.prepareWebScriptAPIGlobalDefinitions(req, model);
+        this.prepareWebScriptAPIJavaTypeDefinitions(req, model, coreScriptModel);
+        this.prepareWebScriptAPIGlobalDefinitions(req, model, coreScriptModel);
 
         return model;
     }
@@ -231,7 +228,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Prepares the type definitions for the core script API of Alfresco (common across all use cases)
      *
      * @param model
-     *            the current web script model into which to insert the definitions
+     *     the current web script model into which to insert the definitions
      */
     protected void prepareCoreScriptAPIJavaTypeDefinitions(final Map<String, Object> model)
     {
@@ -243,16 +240,19 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Prepares the type definitions for the script API specific to Alfresco web scripts
      *
      * @param req
-     *            the current web script request
+     *     the current web script request
      * @param model
-     *            the current web script model into which to insert the definitions
+     *     the current web script model into which to insert the definitions
+     * @param coreScriptModel
+     *     the core script API model in order to detect / avoid duplicate root object definitions
      */
-    protected void prepareWebScriptAPIJavaTypeDefinitions(final WebScriptRequest req, final Map<String, Object> model)
+    protected void prepareWebScriptAPIJavaTypeDefinitions(final WebScriptRequest req, final Map<String, Object> model,
+            final Map<String, Object> coreScriptModel)
     {
         final ScriptDetails script = this.getExecuteScript(req.getContentType());
         final Map<String, Object> scriptModel = this.createScriptParameters(req, null, script, Collections.<String, Object> emptyMap());
 
-        this.removeCoreScriptAPIGlobalsFromWebScriptAPI(scriptModel);
+        this.removeCoreScriptAPIGlobalsFromWebScriptAPI(scriptModel, coreScriptModel);
 
         model.put("webScriptAPIJavaTypeDefinitions", this.prepareJavaTypeDefinitions(scriptModel));
     }
@@ -261,17 +261,21 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Removes core script API globals from a script model specific to web script execution
      *
      * @param scriptModel
-     *            the script model of a web script
+     *     the script model of a web script
+     * @param coreScriptModel
+     *     the core script API model in order to detect / avoid duplicate root object definitions
      */
-    protected void removeCoreScriptAPIGlobalsFromWebScriptAPI(final Map<String, Object> scriptModel)
+    protected void removeCoreScriptAPIGlobalsFromWebScriptAPI(final Map<String, Object> scriptModel,
+            final Map<String, Object> coreScriptModel)
     {
         // avoid unnecessary overlap between web script and standard script API model
-        // remove well known types handled in core script API
-        final Collection<String> keysToRemove = new HashSet<String>();
+        // remove identical key-value pairs handled by core script API
+        final Collection<String> keysToRemove = new HashSet<>();
         for (final Entry<String, Object> entry : scriptModel.entrySet())
         {
+            final String key = entry.getKey();
             final Object value = entry.getValue();
-            if (value instanceof ScriptNode || value instanceof NodeRef || value instanceof ScriptLogger)
+            if (coreScriptModel.containsKey(key) && value.getClass().equals(scriptModel.get(key).getClass()))
             {
                 keysToRemove.add(entry.getKey());
             }
@@ -282,15 +286,15 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Prepares the type definitions for Java classes found in a specific model.
      *
      * @param model
-     *            the model containing objects exposed to scripts
+     *     the model containing objects exposed to scripts
      * @return the list of models for each type found directly or transitively (via public properties / methods) in the model elements
      */
     protected List<Map<String, Object>> prepareJavaTypeDefinitions(final Map<String, Object> model)
     {
-        final List<Map<String, Object>> typeDefinitions = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> typeDefinitions = new ArrayList<>();
 
-        final Collection<Class<?>> classesToDescribe = new HashSet<Class<?>>();
-        final Collection<Class<?>> classesDescribed = new HashSet<Class<?>>();
+        final Collection<Class<?>> classesToDescribe = new HashSet<>();
+        final Collection<Class<?>> classesDescribed = new HashSet<>();
 
         for (final Entry<String, Object> modelEntry : model.entrySet())
         {
@@ -346,28 +350,34 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Prepares the definitions for global / root scope objects found in the core script API model (common across all use cases)
      *
      * @param model
-     *            the model into which to insert the global definitions
+     *     the model into which to insert the global definitions
+     * @return the scriptModel
      */
-    protected void prepareCoreScriptAPIGlobalDefinitions(final Map<String, Object> model)
+    protected Map<String, Object> prepareCoreScriptAPIGlobalDefinitions(final Map<String, Object> model)
     {
         final Map<String, Object> scriptModel = this.buildScriptAPIModel();
         model.put("scriptAPIGlobalDefinitions", this.prepareGlobalDefinitions(scriptModel));
+
+        return scriptModel;
     }
 
     /**
      * Prepares the definitions for global / root scope objects found in the script API model specific to Alfresco web scripts
      *
      * @param req
-     *            the current web script request
+     *     the current web script request
      * @param model
-     *            the model into which to insert the global definitions
+     *     the model into which to insert the global definitions
+     * @param coreScriptModel
+     *     the core script API model in order to detect / avoid duplicate root object definitions
      */
-    protected void prepareWebScriptAPIGlobalDefinitions(final WebScriptRequest req, final Map<String, Object> model)
+    protected void prepareWebScriptAPIGlobalDefinitions(final WebScriptRequest req, final Map<String, Object> model,
+            final Map<String, Object> coreScriptModel)
     {
         final ScriptDetails script = this.getExecuteScript(req.getContentType());
         final Map<String, Object> scriptModel = this.createScriptParameters(req, null, script, Collections.<String, Object> emptyMap());
 
-        this.removeCoreScriptAPIGlobalsFromWebScriptAPI(scriptModel);
+        this.removeCoreScriptAPIGlobalsFromWebScriptAPI(scriptModel, coreScriptModel);
 
         model.put("webScriptAPIGlobalDefinitions", this.prepareGlobalDefinitions(scriptModel));
     }
@@ -376,12 +386,12 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * Prepares the global definitions for Java objects found in a specific model.
      *
      * @param model
-     *            the model containing objects exposed to scripts
+     *     the model containing objects exposed to scripts
      * @return the list of models for each global value
      */
     protected List<Map<String, Object>> prepareGlobalDefinitions(final Map<String, Object> model)
     {
-        final List<Map<String, Object>> globalDefinitions = new ArrayList<Map<String, Object>>();
+        final List<Map<String, Object>> globalDefinitions = new ArrayList<>();
 
         for (final Entry<String, Object> modelEntry : model.entrySet())
         {
@@ -400,7 +410,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             final String skip = this.properties.getProperty(globalPrefix + ".skip");
             if (skip == null || skip.isEmpty() || !Boolean.parseBoolean(skip))
             {
-                final Map<String, Object> globalDefinition = new HashMap<String, Object>();
+                final Map<String, Object> globalDefinition = new HashMap<>();
                 globalDefinition.put("name", globalEntry.getKey());
 
                 final Object value = globalEntry.getValue();
@@ -449,7 +459,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     protected Collection<Class<?>> fillClassTypeDefinition(final Class<?> cls, final Map<String, Object> typeDefinition)
     {
-        final Collection<Class<?>> relatedClasses = new HashSet<Class<?>>();
+        final Collection<Class<?>> relatedClasses = new HashSet<>();
 
         final String clsName = cls.getName();
         final String commonPrefix = "type." + clsName;
@@ -474,12 +484,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             typeDefinition.put("doc", ternDoc);
         }
 
-        String ternUrl = this.properties.getProperty(commonPrefix + ".ternUrl");
-        if ((ternUrl == null || ternUrl.isEmpty()) && clsName.startsWith("org.alfresco."))
-        {
-            ternUrl = "http://dev.alfresco.com/resource/docs/java/" + clsName.replace('.', '/') + ".html";
-        }
-
+        final String ternUrl = this.properties.getProperty(commonPrefix + ".ternUrl");
         if (ternUrl != null && !ternUrl.isEmpty())
         {
             typeDefinition.put("url", ternUrl);
@@ -588,13 +593,13 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     protected List<Method> collectDocumentableMethods(final Class<?> cls)
     {
         // collect classes in hierarchy from base to special
-        final List<Class<?>> classHierarchy = new LinkedList<Class<?>>();
+        final List<Class<?>> classHierarchy = new LinkedList<>();
         Class<?> curCls = cls;
         while (curCls != null)
         {
             classHierarchy.add(0, curCls);
 
-            final Collection<Class<?>> interfaces = new HashSet<Class<?>>(Arrays.asList(curCls.getInterfaces()));
+            final Collection<Class<?>> interfaces = new HashSet<>(Arrays.asList(curCls.getInterfaces()));
 
             // interfaces are the collection of superclasses for an interface
             if (curCls.isInterface())
@@ -634,7 +639,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         }
 
         // collect declared public methods (other than cls.getMethods we don't want overriden methods, only initial implementations)
-        final Map<Pair<String, List<Class<?>>>, Method> methodsByNameAndParameterTypes = new HashMap<Pair<String, List<Class<?>>>, Method>();
+        final Map<Pair<String, List<Class<?>>>, Method> methodsByNameAndParameterTypes = new HashMap<>();
         while (!classHierarchy.isEmpty())
         {
             curCls = classHierarchy.remove(0);
@@ -645,8 +650,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
                 if (Modifier.isPublic(declaredMethod.getModifiers()) && !Modifier.isStatic(declaredMethod.getModifiers()))
                 {
-                    final Pair<String, List<Class<?>>> key = new Pair<String, List<Class<?>>>(methodName, Arrays.asList(declaredMethod
-                            .getParameterTypes()));
+                    final Pair<String, List<Class<?>>> key = new Pair<>(methodName, Arrays.asList(declaredMethod.getParameterTypes()));
                     if (!methodsByNameAndParameterTypes.containsKey(key))
                     {
                         methodsByNameAndParameterTypes.put(key, declaredMethod);
@@ -664,10 +668,10 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             {
                 // ignore potential initialization setters / methods
                 final String methodName = method.getName();
-                if ((BaseProcessorExtension.class.isAssignableFrom(method.getDeclaringClass()) || WebScript.class.isAssignableFrom(method
-                        .getDeclaringClass()))
-                        && (INIT_METHOD_NAMES.contains(methodName) || methodName.matches("^[sg]et[A-Z].+Service$") || (methodName
-                                .matches("^set[A-Z].+$") && method.getParameterTypes().length == 1)))
+                if ((BaseProcessorExtension.class.isAssignableFrom(method.getDeclaringClass())
+                        || WebScript.class.isAssignableFrom(method.getDeclaringClass()))
+                        && (INIT_METHOD_NAMES.contains(methodName) || methodName.matches("^[sg]et[A-Z].+Service$")
+                                || (methodName.matches("^set[A-Z].+$") && method.getParameterTypes().length == 1)))
                 {
                     // skip
                     continue;
@@ -677,33 +681,23 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             }
         }
 
-        Collections.sort(documentableMethods, new Comparator<Method>()
-        {
+        Collections.sort(documentableMethods, (a, b) -> {
+            final String aName = a.getName();
+            final String bName = b.getName();
 
-            /**
-             *
-             * {@inheritDoc}
-             */
-            @Override
-            public int compare(final Method a, final Method b)
+            int result = aName.compareTo(bName);
+            if (result == 0)
             {
-                final String aName = a.getName();
-                final String bName = b.getName();
+                final int aArgLength = a.getParameterTypes().length;
+                final int bArgLength = b.getParameterTypes().length;
 
-                int result = aName.compareTo(bName);
-                if (result == 0)
+                if (aArgLength != bArgLength)
                 {
-                    final int aArgLength = a.getParameterTypes().length;
-                    final int bArgLength = b.getParameterTypes().length;
-
-                    if (aArgLength != bArgLength)
-                    {
-                        result = aArgLength - bArgLength;
-                    }
+                    result = aArgLength - bArgLength;
                 }
-
-                return result;
             }
+
+            return result;
         });
 
         return documentableMethods;
@@ -731,7 +725,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         if (skip == null || skip.isEmpty() || !Boolean.parseBoolean(skip))
         {
-            memberDefinition = new HashMap<String, Object>();
+            memberDefinition = new HashMap<>();
             effectiveReturnType = this.determineEffectiveType(realReturnType, effectiveReturnType, methodPrefix);
             final Class<?> returnType = this.determineType(effectiveReturnType, relatedClasses);
 
@@ -786,7 +780,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         if (skip == null || skip.isEmpty() || !Boolean.parseBoolean(skip))
         {
-            memberDefinition = new HashMap<String, Object>();
+            memberDefinition = new HashMap<>();
             effectiveReturnType = this.determineEffectiveType(realReturnType, effectiveReturnType, propertyPrefix);
             final Class<?> returnType = this.determineType(effectiveReturnType, relatedClasses);
 
@@ -876,7 +870,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
                 }
                 catch (final ClassNotFoundException cnfex)
                 {
-                    // TODO log
+                    LOGGER.warn("Failed to find class {} configured as replacement for {}", typeClassName, realType);
                 }
             }
         }
@@ -939,30 +933,30 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             }
             else
             {
-	            if (PRIMITIVE_NUMBER_CLASSES.contains(type) || Number.class.isAssignableFrom(type))
-	            {
-	                type = Number.class;
-	            }
-	            else if (boolean.class.equals(type))
-	            {
-	                type = Boolean.class;
-	            }
-	            else if (char.class.equals(type))
-	            {
-	                type = Character.class;
-	            }
-	            else if (Date.class.isAssignableFrom(type))
-	            {
-	                type = Date.class;
-	            }
-	            else if (CharSequence.class.equals(type))
-	            {
-	                type = String.class;
-	            }
-	            else
-	            {
-	                relatedClasses.add(type);
-	            }
+                if (PRIMITIVE_NUMBER_CLASSES.contains(type) || Number.class.isAssignableFrom(type))
+                {
+                    type = Number.class;
+                }
+                else if (boolean.class.equals(type))
+                {
+                    type = Boolean.class;
+                }
+                else if (char.class.equals(type))
+                {
+                    type = Character.class;
+                }
+                else if (Date.class.isAssignableFrom(type))
+                {
+                    type = Date.class;
+                }
+                else if (CharSequence.class.equals(type))
+                {
+                    type = String.class;
+                }
+                else
+                {
+                    relatedClasses.add(type);
+                }
             }
         }
         else if (Map.class.isAssignableFrom(type) && !Scriptable.class.isAssignableFrom(type))
@@ -1099,24 +1093,21 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
                 returnTypeName = "+" + returnTypeName;
             }
 
-            final String propertyTypeTernName = this.properties.getProperty(methodPrefix + ".returnTypeTernName");
-            if (propertyTypeTernName != null && !propertyTypeTernName.isEmpty())
-            {
-                returnTypeName = propertyTypeTernName;
-            }
-            else
+            String returnTypeTernName = this.properties.getProperty(methodPrefix + ".returnTypeTernName");
+            if (returnTypeTernName == null || returnTypeTernName.isEmpty())
             {
                 final String returnTypeClsName = returnType.getName();
                 final String returnTypePrefix = "type." + returnTypeClsName;
-                String returnTypeTernName = this.properties.getProperty(returnTypePrefix + ".returnTypeTernName");
+                returnTypeTernName = this.properties.getProperty(returnTypePrefix + ".returnTypeTernName");
+
                 if (returnTypeTernName == null || returnTypeName.isEmpty())
                 {
                     returnTypeTernName = this.properties.getProperty(returnTypePrefix + ".ternName");
                 }
-                if (returnTypeTernName != null && !returnTypeTernName.isEmpty())
-                {
-                    returnTypeName = returnTypeTernName;
-                }
+            }
+            if (returnTypeTernName != null && !returnTypeTernName.isEmpty())
+            {
+                returnTypeName = returnTypeTernName;
             }
 
             if (effectiveReturnType.isArray() && !(returnTypeName.startsWith("[") && returnTypeName.endsWith("[")))
@@ -1154,7 +1145,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
      * (authentication / tenant)
      *
      * @param model
-     *            the model into which to insert the definitions
+     *     the model into which to insert the definitions
      */
     protected void preparePropertyDefinitions(final Map<String, Object> model)
     {
@@ -1164,7 +1155,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         model.put("taskProperties", this.buildPropertyDefinitions(taskTypes, taskAspects));
 
         // though task types could technically be used for nodes (task derives from cm:content) they rarely are
-        final Collection<QName> nodeTypes = new HashSet<QName>(this.dictionaryService.getAllTypes());
+        final Collection<QName> nodeTypes = new HashSet<>(this.dictionaryService.getAllTypes());
         nodeTypes.removeAll(nodeTypes);
         final Collection<QName> nodeAspects = this.dictionaryService.getAllAspects();
 
@@ -1175,7 +1166,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     {
         final List<PropertyDefinition> propertyDefinitions = new ArrayList<PropertyDefinition>();
 
-        final Collection<QName> allClasses = new HashSet<QName>();
+        final Collection<QName> allClasses = new HashSet<>();
         allClasses.addAll(types);
         allClasses.addAll(aspects);
 
@@ -1192,10 +1183,11 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         final ClassDefinition classDefinition = this.dictionaryService.getClass(cls);
 
         final Map<QName, PropertyDefinition> properties = classDefinition.getProperties();
-        final Map<QName, PropertyDefinition> parentProperties = classDefinition.getParentName() != null ? classDefinition
-                .getParentClassDefinition().getProperties() : Collections.<QName, PropertyDefinition> emptyMap();
+        final Map<QName, PropertyDefinition> parentProperties = classDefinition.getParentName() != null
+                ? classDefinition.getParentClassDefinition().getProperties()
+                : Collections.<QName, PropertyDefinition> emptyMap();
 
-        final List<PropertyDefinition> propertyDefinitions = new ArrayList<PropertyDefinition>();
+        final List<PropertyDefinition> propertyDefinitions = new ArrayList<>();
 
         for (final Entry<QName, PropertyDefinition> propertyEntry : properties.entrySet())
         {
@@ -1210,7 +1202,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     protected Collection<QName> collectTaskAspects(final Collection<QName> taskTypes)
     {
-        final Collection<QName> taskAspects = new HashSet<QName>();
+        final Collection<QName> taskAspects = new HashSet<>();
         for (final QName taskType : taskTypes)
         {
             final TypeDefinition type = this.dictionaryService.getType(taskType);
