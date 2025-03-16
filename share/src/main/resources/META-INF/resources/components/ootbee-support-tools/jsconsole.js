@@ -1750,7 +1750,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
             stats = Dom.get(this.id + '-executionStatsSimple');
             now = new Date();
-            nowAsString = now.getFullYear() + '-' + (now.getMonth() <= 10 ? '0' : '') + (now.getMonth() + 1) + '-' + (now.getDate() < 10 ? '0' : '') + now.getDate() + ' ' + (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' + (now.getSeconds() < 10 ? '0' : '') + now.getSeconds();
+            nowAsString = now.getFullYear() + '-' + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '-' + (now.getDate() < 10 ? '0' : '') + now.getDate() + ' ' + (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ':' + (now.getSeconds() < 10 ? '0' : '') + now.getSeconds();
             text = ' - ' + this.msg('label.stats.executed.last') + ' ' + (overallPerf) + 'ms (' + nowAsString + ')';
             stats.innerHTML = '';
             stats.appendChild(document.createTextNode(text));
