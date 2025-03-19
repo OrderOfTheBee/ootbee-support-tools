@@ -158,7 +158,7 @@ Admin.addEventListener(window, 'load', function()
 
     AdminTD.showTab = function showTab(tabName)
     {
-        var allTabs, i, selectors;
+        var allTabs, i, selectors, copyCurrentEl;
 
         allTabs = document.getElementsByClassName('thread');
         for (i = 0; i < allTabs.length; i++)
@@ -180,7 +180,11 @@ Admin.addEventListener(window, 'load', function()
             if (selectors[i].id === 's' + tabName)
             {
                 Admin.addClass(selectors[i], 'selected');
-                el('copycurrent').setAttribute('onclick', 'AdminTD.copyToClipboard("' + tabName + '");');
+                copyCurrentEl = el('copycurrent');
+                if (copyCurrentEl)
+                {
+                    copyCurrentEl.setAttribute('onclick', 'AdminTD.copyToClipboard("' + tabName + '");');
+                }
                 el('savecurrent').setAttribute('onclick', 'AdminTD.saveTextAsFile("' + tabName + '");');
             }
             else
