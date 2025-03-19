@@ -1,7 +1,7 @@
 <#compress>
 <#--
 Copyright (C) 2017 Cesar Capillas
-Copyright (C) 2016 - 2020 Order of the Bee
+Copyright (C) 2016 - 2025 Order of the Bee
 
 This file is part of OOTBee Support Tools
 
@@ -19,7 +19,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with OOTBee Support Tools. If not, see <http://www.gnu.org/licenses/>.
 
 Linked to Alfresco
-Copyright (C) 2005 - 2020 Alfresco Software Limited.
+Copyright (C) 2005 - 2025 Alfresco Software Limited.
 
 -->
 

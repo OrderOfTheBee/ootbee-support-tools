@@ -1,7 +1,7 @@
 <import resource="classpath:alfresco/templates/webscripts/org/alfresco/repository/admin/admin-common.lib.js">
 <import resource="classpath:alfresco/templates/webscripts/org/orderofthebee/support-tools/admin/ootbee-support-tools/rendition-service2-transform.lib.js">
 /**
- * Copyright (C) 2016 - 2021 Order of the Bee
+ * Copyright (C) 2016 - 2025 Order of the Bee
  *
  * This file is part of OOTBee Support Tools
  *
