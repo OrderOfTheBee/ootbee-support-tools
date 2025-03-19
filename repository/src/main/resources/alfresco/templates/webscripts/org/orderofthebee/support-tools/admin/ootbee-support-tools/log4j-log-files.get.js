@@ -20,7 +20,7 @@
  */
 /*
  * Linked to Alfresco
- * Copyright (C) 2005 - 2023 Alfresco Software Limited.
+ * Copyright (C) 2005 - 2025 Alfresco Software Limited.
  */
 
 buildLogFilesModel(args.allLoggerAppenders !== null && String(args.allLoggerAppenders) === 'true');
