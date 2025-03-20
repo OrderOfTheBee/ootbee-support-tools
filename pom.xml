@@ -69,15 +69,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Java 7 is out of support - everything will be built for Java 8 by default even if Alfresco up to 5.0 officially supports Java 7 -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- Everything will be built for Java JDK 8 by default to support ACS 6.x versions.
+             see: Supported Platforms documentation for JDK details to your ACS version -->
+        <java.version>8</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <maven.enforcer.version>3.0.0-M3</maven.enforcer.version>
         <maven.clean.version>3.1.0</maven.clean.version>
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.dependency.version>3.1.1</maven.dependency.version>
-        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.compiler.version>3.14.0</maven.compiler.version>
         <maven.source.version>3.2.1</maven.source.version>
         <maven.javadoc.version>3.1.1</maven.javadoc.version>
         <maven.jar.version>3.2.0</maven.jar.version>
