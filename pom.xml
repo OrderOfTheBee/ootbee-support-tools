@@ -69,10 +69,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Everything will be built for Java JDK 8 by default to support ACS 6.x versions.
-             see: Supported Platforms documentation for JDK details to your ACS version -->
+        <!-- Everything will be built for Java 8 by default -->
         <java.version>8</java.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <maven.enforcer.version>3.0.0-M3</maven.enforcer.version>
         <maven.clean.version>3.1.0</maven.clean.version>
@@ -401,8 +399,10 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.version}</version>
                     <configuration>
-                        <source>${maven.compiler.target}</source>
-                        <target>${maven.compiler.target}</target>
+                        <release>${java.version}</release>
+                        <!-- legacy if compiled with JDK 8 javac -->
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                         <parameters>true</parameters>
                         <debuglevel>lines,vars,source</debuglevel>
                     </configuration>
