@@ -416,8 +416,11 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.version}</version>
                     <configuration>
-                        <source>${maven.compiler.target}</source>
-                        <target>${maven.compiler.target}</target>
+                        <release>${java.version}</release>
+                        <!-- The release parameter will only be effective for Java 9 or above,
+                             otherwise the source and target will be passed to the compiler. -->
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                     </configuration>
                 </plugin>
 
