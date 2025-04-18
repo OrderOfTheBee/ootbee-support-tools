@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
@@ -94,6 +93,8 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements InitializingBean
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlfrescoScriptAPITernGet.class);
+
     private static final Collection<Class<?>> PRIMITIVE_NUMBER_CLASSES = Collections
             .unmodifiableList(Arrays.<Class<?>> asList(byte.class, short.class, int.class, long.class, float.class, double.class));
 
@@ -108,9 +109,42 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     private static final Collection<String> INIT_METHOD_NAMES = Collections
             .unmodifiableSet(new HashSet<String>(Arrays.<String> asList("init", "register")));
 
-    private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
+    private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
+    static
+    {
+        // Alfresco 5.0.d (earliest version we want to try to support) contains Spring 3.x
+        // StandardReflectionParameterNameDiscoverer is only available from Spring 4.x on
+        Class<?> cls = null;
+        try
+        {
+            cls = Class.forName("org.springframework.core.StandardReflectionParameterNameDiscoverer");
+        }
+        catch (final ClassNotFoundException ex)
+        {
+            try
+            {
+                cls = Class.forName("org.springframework.core.LocalVariableTableParameterNameDiscoverer");
+            }
+            catch (final ClassNotFoundException ex2)
+            {
+                LOGGER.info("No valid Spring parameter name discoverer class found");
+            }
+        }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlfrescoScriptAPITernGet.class);
+        ParameterNameDiscoverer pnd = null;
+        if (cls != null)
+        {
+            try
+            {
+                pnd = (ParameterNameDiscoverer) cls.newInstance();
+            }
+            catch (final InstantiationException | IllegalAccessException ex)
+            {
+                LOGGER.warn("Failed to instantiate Spring paramater name discoverer", ex);
+            }
+        }
+        PARAMETER_NAME_DISCOVERER = pnd;
+    }
 
     protected NamespaceService namespaceService;
 
@@ -320,7 +354,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         while (classesToDescribe.size() > classesDescribed.size())
         {
-            final Collection<Class<?>> remainingClasses = new HashSet<Class<?>>(classesToDescribe);
+            final Collection<Class<?>> remainingClasses = new HashSet<>(classesToDescribe);
             remainingClasses.removeAll(classesDescribed);
 
             for (final Class<?> cls : remainingClasses)
@@ -333,7 +367,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
                     if (skip == null || skip.isEmpty() || !Boolean.parseBoolean(skip))
                     {
-                        final Map<String, Object> typeDefinition = new HashMap<String, Object>();
+                        final Map<String, Object> typeDefinition = new HashMap<>();
                         final Collection<Class<?>> relatedClasses = this.fillClassTypeDefinition(cls, typeDefinition);
                         classesToDescribe.addAll(relatedClasses);
                         typeDefinitions.add(typeDefinition);
@@ -401,7 +435,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             }
         }
 
-        final Collection<Class<?>> dummyClasses = new HashSet<Class<?>>();
+        final Collection<Class<?>> dummyClasses = new HashSet<>();
 
         for (final Entry<String, Object> globalEntry : model.entrySet())
         {
@@ -509,18 +543,18 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         final String nameOnly = this.properties.getProperty(commonPrefix + ".nameOnly");
         if (nameOnly == null || nameOnly.isEmpty() || !Boolean.parseBoolean(nameOnly))
         {
-            this.fillClassTypeMemberDefinitions(cls, typeDefinition, relatedClasses, commonPrefix, superclass);
+            this.fillClassTypeMemberDefinitions(cls, typeDefinition, relatedClasses, commonPrefix);
         }
 
         return relatedClasses;
     }
 
     protected void fillClassTypeMemberDefinitions(final Class<?> cls, final Map<String, Object> typeDefinition,
-            final Collection<Class<?>> relatedClasses, final String commonPrefix, final Class<?> superclass)
+            final Collection<Class<?>> relatedClasses, final String commonPrefix)
     {
-        final List<Map<String, Object>> memberDefinitions = new ArrayList<Map<String, Object>>();
-        final Map<String, AtomicInteger> usedMemberNames = new HashMap<String, AtomicInteger>();
-        final Collection<String> handledProperties = new HashSet<String>();
+        final List<Map<String, Object>> memberDefinitions = new ArrayList<>();
+        final Map<String, AtomicInteger> usedMemberNames = new HashMap<>();
+        final Collection<String> handledProperties = new HashSet<>();
 
         final List<Method> methods = this.collectDocumentableMethods(cls);
 
@@ -1014,7 +1048,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         typeBuilder.append("fn(");
         if (parameterTypes.length > 0)
         {
-            final String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(method);
+            final String[] parameterNames = PARAMETER_NAME_DISCOVERER != null ? PARAMETER_NAME_DISCOVERER.getParameterNames(method) : null;
 
             for (int idx = 0; idx < parameterTypes.length; idx++)
             {
@@ -1047,7 +1081,12 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
                     typeName = "bool";
                 }
 
-                final String parameterTypeTernName = this.properties.getProperty(methodPrefix + ".arg" + idx + ".typeTernName");
+                String parameterTypeTernName = this.properties.getProperty(methodPrefix + "." + parameterName + ".typeTernName");
+                if ((parameterTypeTernName == null || parameterTypeTernName.isEmpty()) && !parameterName.equals("arg" + idx))
+                {
+                    parameterTypeTernName = this.properties.getProperty(methodPrefix + ".arg" + idx + ".typeTernName");
+                }
+
                 if (parameterTypeTernName != null && !parameterTypeTernName.isEmpty())
                 {
                     typeName = parameterTypeTernName;
