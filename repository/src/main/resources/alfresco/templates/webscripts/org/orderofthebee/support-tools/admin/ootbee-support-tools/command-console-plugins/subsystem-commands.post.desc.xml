@@ -17,5 +17,5 @@
     <negotiate accept="application/json">json</negotiate>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
-    <transaction bufferSize="8192" allow="readonly">required</transaction>
+    <transaction bufferSize="8192" allow="readwrite">required</transaction>
 </webscript>
