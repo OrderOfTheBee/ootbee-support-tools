@@ -477,8 +477,14 @@ public class Log4j2HelperImpl implements Log4jHelper
 
         appender.registerAsAppender(this.getContext().getLogger(this.getRootLoggerName()));
         this.getContext().getLoggerRegistry().getLoggers().stream().filter(org.apache.logging.log4j.core.Logger.class::isInstance)
-                .map(org.apache.logging.log4j.core.Logger.class::cast).filter(logger -> !logger.isAdditive())
-                .forEach(appender::registerAsAppender);
+                .map(org.apache.logging.log4j.core.Logger.class::cast).filter(logger -> {
+                    // avoid false-positives:
+                    // loggers without config use the parent logger config
+                    // if parent logger is additive=false, child logger may appear same, even if using identical appenders
+                    // registering appender on the defining (parent/root) logger is sufficient
+                    final LoggerConfig config = logger.get();
+                    return !logger.isAdditive() && EqualsHelper.nullSafeEquals(config.getName(), logger.getName());
+                }).forEach(appender::registerAsAppender);
 
         return appender.getName();
     }
