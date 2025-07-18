@@ -67,6 +67,70 @@ var Admin = Admin || {};
         _ids[key] = id;
     };
 
+    // disabled default CSRF config
+    Admin.CSRF = {
+        enabled: false,
+        cookie: "",
+        header: "",
+        parameter: "",
+        properties: {}
+    };
+
+    /**
+     * Returns the CSRF token.
+     *
+     * Note! Make sure to use this method just before a request is made against the server since it might have been
+     * updated in another browser tab or window.
+     * 
+     * @method CSRFToken
+     * @return {String} The CSRF token or null if not enable or not defined.
+     */
+    Admin.CSRFToken = function CSRFToken()
+    {
+        var token = null, cookieName = Admin.CSRF.getCookie();
+        if (cookieName)
+        {
+            var matches = document.cookie.match(new RegExp("(?:^|; )" + cookieName + "=([^;]*)"));
+            if (matches)
+            {
+                // remove quotes to support Jetty app-server - bug where it quotes a valid cookie value see ALF-18823
+                token = decodeURIComponent(matches[1]).replace(/"/g, '');
+            }
+        }
+        return token;
+    };
+
+    Admin.CSRF.getCookie = function getCookie()
+    {
+        return Admin.substitute(Admin.CSRF.cookie, Admin.CSRF.properties || {});
+    };
+
+    Admin.CSRF.getParameter= function getParameter()
+    {
+        return Admin.substitute(Admin.CSRF.parameter, Admin.CSRF.properties || {});
+    };
+
+    Admin.CSRF.getHeader = function getHeader()
+    {
+        return Admin.substitute(Admin.CSRF.header, Admin.CSRF.properties || {});
+    };
+
+    /**
+     * Simple string substitution helper. Replaces simple instances of templated strings {name} within a string from
+     * a property object. Each key in the property object is replaced in the string with it's value if match is found.
+     * 
+     * @param str  String to replace into
+     * @param properties Object of key/value pairs to replace templates values with
+     */
+    Admin.substitute = function substitute(str, properties)
+    {
+        for (var prop in properties)
+        {
+            str = str.replace("{" + prop + "}", properties[prop]);
+        }
+        return str;
+    };
+
     /**
      * String trim helper
      * 
@@ -318,6 +382,10 @@ var Admin = Admin || {};
             req.overrideMimeType((config.responseContentType ? config.responseContentType : "application/json") + "; charset=utf-8");
         }
         req.open(config.method ? config.method : "GET", config.url);
+        if ((config.method === "POST" || config.method === "PUT") && Admin.CSRF.enabled)
+        {
+            req.setRequestHeader(Admin.CSRF.getHeader(), Admin.CSRFToken());
+        }
         req.setRequestHeader("Content-Type", (config.requestContentType ? config.requestContentType : "application/json") + ";charset=UTF-8");
         req.setRequestHeader("Accept", config.responseContentType ? config.responseContentType : "application/json");
         req.onreadystatechange = function()
@@ -442,6 +510,10 @@ var Admin = Admin || {};
         form.enctype = "multipart/form-data";
         form.target = iframe.name;
         form.action = url;
+        if (Admin.CSRF.enabled)
+        {
+            form.action += "?" + Admin.CSRF.getParameter() + "=" + encodeURIComponent(Admin.CSRFToken());
+        }
         form.appendChild(file);
         form.submit();
     };
@@ -476,6 +548,14 @@ var Admin = Admin || {};
     {
         // get the root form element
         var form = el(_ids.formId);
+
+        // add CSRF token if enabled
+        if (Admin.CSRF.enabled)
+        {
+            var url = form.attributes.action.value;
+            url += (url.lastIndexOf('?') === -1 ? "?" : "&") + Admin.CSRF.getParameter() + "=" + encodeURIComponent(Admin.CSRFToken());
+            form.attributes.action.value = url;
+        }
 
         // ensure ENTER press in a Form field doesn't submit the Form
         Admin.addEventListener(form, 'keypress', function(e)

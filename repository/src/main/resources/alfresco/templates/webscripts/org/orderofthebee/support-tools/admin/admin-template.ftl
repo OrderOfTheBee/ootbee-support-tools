@@ -65,24 +65,39 @@ Copyright (C) 2005 - 2025 Alfresco Software Limited.
    <!--[if IE 8 ]><style type="text/css">.dialog{width:100%}</style><![endif]-->
    <script type="text/javascript" src="${url.context}/ootbee-support-tools/js/admin.js"></script>
    <script type="text/javascript">//<![CDATA[
-   
+
+   <#assign CSRF=(config.scoped["CSRFPolicy"]["filter"].getChildren("rule")?size != 0)!false>
+   <#if CSRF>
+      Admin.CSRF.enabled = true;
+      Admin.CSRF.cookie = "${config.scoped["CSRFPolicy"]["client"].getChildValue("cookie")!""}";
+      Admin.CSRF.header = "${config.scoped["CSRFPolicy"]["client"].getChildValue("header")!""}";
+      Admin.CSRF.parameter = "${config.scoped["CSRFPolicy"]["client"].getChildValue("parameter")!""}";
+
+      <#if config.scoped["CSRFPolicy"]["properties"]??>
+         <#assign csrfProperties = (config.scoped["CSRFPolicy"]["properties"].children)![]>
+         <#list csrfProperties as p>
+            Admin.CSRF.properties["${p.name?js_string}"] = "${(p.value!"")?js_string}";
+         </#list>
+      </#if>
+   </#if>
+
    Admin.addMessages({
         requestError: "${msg("admin-console.requesterror")?js_string}",
         passwordHide : "${msg("admin-console.password.hide")?js_string}",
         passwordShow : "${msg("admin-console.password.show")?js_string}"
    });
-   
+
    Admin.registerId("formId", "${FORM_ID}");
-   
+
    //]]></script>
-   
+
    <#list customCSSFiles as cssFile>
         <link rel="stylesheet" type="text/css" href="${url.context}/${cssFile}" />
    </#list>
    <#list customJSFiles as jsFile>
         <script type="text/javascript" src="${url.context}/${jsFile}"></script>
    </#list>
-   
+
 </head>
 <#if !dialog>
 <body>
