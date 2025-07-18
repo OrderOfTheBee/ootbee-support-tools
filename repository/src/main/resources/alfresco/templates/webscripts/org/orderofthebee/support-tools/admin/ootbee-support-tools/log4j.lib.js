@@ -292,10 +292,6 @@ function buildLogFilesModel(useAllLoggerAppenders)
 function logSnapshotLapMessage(message)
 {
     var lapLogger;
-
-    // Fake logger that does not correspond to any class-based logger
-    Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.setLevel('org.orderofthebee.addons.support.tools.repo.logSnapshotLap', 'INFO');
-
     lapLogger = Packages.org.slf4j.LoggerFactory.getLogger('org.orderofthebee.addons.support.tools.repo.logSnapshotLap');
     lapLogger.info(message);
 }
