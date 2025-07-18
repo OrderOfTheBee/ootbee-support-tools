@@ -156,36 +156,54 @@ function executeEffectivePermission(args, settable)
         node = search.findNode(nodeArg);
         if (node !== null)
         {
-            runAsUser(
-                    function()
+            if (node.hasAspect('smf:smartFolderChild'))
+            {
+                if (node.properties['smf:actualNodeRef'])
+                {
+                    // translate to the actual node
+                    node = search.findNode(node.properties['smf:actualNodeRef']);
+                }
+                else
+                {
+                    status.setCode(status.STATUS_BAD_REQUEST, 'Node ' + nodeArg + ' is a smart-folder child without a property denoting the actual NodeRef');
+                }
+            }
+            else if (node.hasAspect('smf:smartFolder'))
+            {
+                status.setCode(status.STATUS_BAD_REQUEST, 'Node ' + nodeArg + ' is a smart-folder and cannot be evaluated for permissions');
+            }
+
+            if (status.code === status.STATUS_OK)
+            {
+                runAsUser(function()
+                {
+                    var permissionService = getPermissionService();
+                    if (permissionArg && settable !== true)
                     {
-                        var permissionService = getPermissionService();
-                        if (permissionArg && settable !== true)
-                        {
-                            model.checkedPermissions = [ {
-                                user : userArg,
-                                permission : permissionArg,
-                                node : node,
-                                allowed : permissionService.hasPermission(node.nodeRef, permissionArg) === Packages.org.alfresco.service.cmr.security.AccessStatus.ALLOWED
-                            } ];
-                        }
-                        else
-                        {
-                            model.checkedPermissions = [];
-                            getAllSettablePermissions(node)
-                                    .forEach(
-                                            function(permission)
-                                            {
-                                                model.checkedPermissions
-                                                        .push({
-                                                            user : userArg,
-                                                            permission : permission,
-                                                            node : node,
-                                                            allowed : permissionService.hasPermission(node.nodeRef, permission) === Packages.org.alfresco.service.cmr.security.AccessStatus.ALLOWED
-                                                        });
+                        model.checkedPermissions = [ {
+                            user : userArg,
+                            permission : permissionArg,
+                            node : node,
+                            allowed : permissionService.hasPermission(node.nodeRef, permissionArg) === Packages.org.alfresco.service.cmr.security.AccessStatus.ALLOWED
+                        } ];
+                    }
+                    else
+                    {
+                        model.checkedPermissions = [];
+                        getAllSettablePermissions(node)
+                                .forEach(function(permission)
+                                {
+                                    model.checkedPermissions
+                                            .push({
+                                                user : userArg,
+                                                permission : permission,
+                                                node : node,
+                                                allowed : permissionService.hasPermission(node.nodeRef, permission) === Packages.org.alfresco.service.cmr.security.AccessStatus.ALLOWED
                                             });
-                        }
-                    }, userArg);
+                                });
+                    }
+                }, userArg);
+            }
         }
         else
         {
@@ -224,20 +242,40 @@ function executeEffectiveAuthorisations(args)
         node = search.findNode(nodeArg);
         if (node !== null)
         {
-            if (userArg)
+            if (node.hasAspect('smf:smartFolderChild'))
             {
-                runAsUser(function()
+                if (node.properties['smf:actualNodeRef'])
                 {
-                    model.user = userArg;
-                    authorisations = permissionService.getAuthorisations();
-                    dynamicAuthorities = getEffectiveDynamicAuthorities(node, userArg);
-                }, userArg);
+                    // translate to the actual node
+                    node = search.findNode(node.properties['smf:actualNodeRef']);
+                }
+                else
+                {
+                    status.setCode(status.STATUS_BAD_REQUEST, 'Node ' + nodeArg + ' is a smart-folder child without a property denoting the actual NodeRef');
+                }
             }
-            else
+            else if (node.hasAspect('smf:smartFolder'))
             {
-                model.user = person.properties.userName;
-                authorisations = permissionService.getAuthorisations();
-                dynamicAuthorities = getEffectiveDynamicAuthorities(node, person.properties.userName);
+                status.setCode(status.STATUS_BAD_REQUEST, 'Node ' + nodeArg + ' is a smart-folder and cannot be evaluated for authorisations');
+            }
+
+            if (status.code === status.STATUS_OK)
+            {
+                if (userArg)
+                {
+                    runAsUser(function()
+                    {
+                        model.user = userArg;
+                        authorisations = permissionService.getAuthorisations();
+                        dynamicAuthorities = getEffectiveDynamicAuthorities(node, userArg);
+                    }, userArg);
+                }
+                else
+                {
+                    model.user = person.properties.userName;
+                    authorisations = permissionService.getAuthorisations();
+                    dynamicAuthorities = getEffectiveDynamicAuthorities(node, person.properties.userName);
+                }
             }
         }
         else
