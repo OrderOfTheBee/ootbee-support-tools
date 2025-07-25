@@ -30,6 +30,7 @@ package org.orderofthebee.addons.support.tools.repo.jsconsole;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -84,6 +85,9 @@ import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.annotation.ScriptClass;
+import org.springframework.extensions.webscripts.annotation.ScriptMethod;
+import org.springframework.extensions.webscripts.annotation.ScriptParameter;
 
 /**
  * @author Axel Faust
@@ -516,6 +520,18 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         typeDefinition.put("name", name);
 
         this.findAndAddTernDoc(commonPrefix, typeDefinition);
+        if (!typeDefinition.containsKey("!doc"))
+        {
+            final ScriptClass scriptClass = cls.getDeclaredAnnotation(ScriptClass.class);
+            if (scriptClass != null)
+            {
+                final String help = scriptClass.help();
+                if (help != null && !help.isEmpty())
+                {
+                    typeDefinition.put("!doc", help);
+                }
+            }
+        }
 
         final String ternUrl = this.properties.getProperty(commonPrefix + ".ternUrl");
         if (ternUrl != null && !ternUrl.isEmpty())
@@ -834,6 +850,18 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             memberDefinition.put("type", methodType);
 
             this.findAndAddTernDoc(methodPrefix, memberDefinition);
+            if (!memberDefinition.containsKey("!doc"))
+            {
+                final ScriptMethod scriptMethod = method.getDeclaredAnnotation(ScriptMethod.class);
+                if (scriptMethod != null)
+                {
+                    final String help = scriptMethod.help();
+                    if (help != null && !help.isEmpty())
+                    {
+                        memberDefinition.put("!doc", help);
+                    }
+                }
+            }
         }
         else
         {
@@ -875,6 +903,18 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             memberDefinition.put("type", returnTypeName);
 
             this.findAndAddTernDoc(propertyPrefix, memberDefinition);
+            if (!memberDefinition.containsKey("!doc"))
+            {
+                final ScriptMethod scriptMethod = getter.getDeclaredAnnotation(ScriptMethod.class);
+                if (scriptMethod != null)
+                {
+                    final String output = scriptMethod.output();
+                    if (output != null && !output.isEmpty())
+                    {
+                        memberDefinition.put("!doc", output);
+                    }
+                }
+            }
 
             boolean readOnly = true;
             final String setterName = "set" + propertyName.substring(0, 1).toUpperCase(Locale.ENGLISH) + propertyName.substring(1);
@@ -1006,8 +1046,11 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     protected String buildMethodTypeDescription(final Method method, final Class<?> realReturnType, final Class<?> effectiveReturnType,
             final Class<?> returnType, final Class<?>[] effectiveParameterTypes, final Class<?>[] parameterTypes, final String methodPrefix)
     {
+        final Parameter[] parameters = method.getParameters();
+
         final StringBuilder typeBuilder = new StringBuilder();
         typeBuilder.append("fn(");
+
         if (parameterTypes.length > 0)
         {
             final String[] parameterNames = PARAMETER_NAME_DISCOVERER != null ? PARAMETER_NAME_DISCOVERER.getParameterNames(method) : null;
@@ -1018,6 +1061,14 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
                 if ((parameterName == null || parameterName.isEmpty()) && parameterNames != null)
                 {
                     parameterName = parameterNames[idx];
+                }
+                if (parameterName == null || parameterName.isEmpty())
+                {
+                    final ScriptParameter scriptParameter = parameters[idx].getDeclaredAnnotation(ScriptParameter.class);
+                    if (scriptParameter != null)
+                    {
+                        parameterName = scriptParameter.name();
+                    }
                 }
                 if (parameterName == null || parameterName.isEmpty())
                 {
