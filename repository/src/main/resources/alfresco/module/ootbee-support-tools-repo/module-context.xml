@@ -105,7 +105,7 @@
         </property>
         <property name="preRollScriptClasspath" value="alfresco/module/ootbee-${project.artifactId}/scripts/jsconsole-pre-roll-script.js" />
         <property name="postRollScriptClasspath" value="alfresco/module/ootbee-${project.artifactId}/scripts/jsconsole-post-roll-script.js" />
-        <property name="secureContext" value="${ootbee-support-tools.js-console.scriptContext.secure}"/>
+        <property name="allowUnrestrictedScripts" value="${ootbee-support-tools.js-console.allowUnrestrictedScripts}"/>
     </bean>
 
     <bean id="webscript.org.orderofthebee.support-tools.jsconsole.executionResult.get" class="org.orderofthebee.addons.support.tools.repo.jsconsole.ExecutionResultGet" parent="webscript">
