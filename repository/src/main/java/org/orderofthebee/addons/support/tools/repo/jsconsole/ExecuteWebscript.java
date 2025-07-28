@@ -119,7 +119,7 @@ public class ExecuteWebscript extends AbstractWebScript
 
     private String postRollScriptClasspath;
     
-    private boolean secureContext;
+    private boolean allowUnrestrictedScripts;
 
     /**
      *
@@ -161,7 +161,7 @@ public class ExecuteWebscript extends AbstractWebScript
             // Note: Need to use import here so the user-supplied script may also import scripts
             final String script = "<import resource=\"classpath:" + this.preRollScriptClasspath + "\">\n" + jsreq.script;
 
-            final ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript, this.secureContext);
+            final ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript, this.allowUnrestrictedScripts);
 
             final int providedScriptLength = this.countScriptLines(jsreq.script, false);
             final int resolvedScriptLength = this.countScriptLines(script, true);
@@ -613,9 +613,9 @@ public class ExecuteWebscript extends AbstractWebScript
         this.postRollScriptClasspath = postRollScriptClasspath;
     }
     
-    public void setSecureContext(boolean secureContext) 
+    public final void setAllowUnrestrictedScripts(boolean allowUnrestrictedScripts)
     {
-      this.secureContext = secureContext;
+      this.allowUnrestrictedScripts = allowUnrestrictedScripts;
     }
 
     private static class StringScriptContent implements ScriptContent
@@ -625,7 +625,7 @@ public class ExecuteWebscript extends AbstractWebScript
                 
         private final boolean secure;
 
-        public StringScriptContent(final String content, boolean secure)
+        public StringScriptContent(final String content, final boolean secure)
         {
             this.content = content;
             this.secure = secure;
