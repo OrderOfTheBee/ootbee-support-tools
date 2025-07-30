@@ -4,7 +4,7 @@
             "!name" : "alfresco-script-api",
             "!define" : {
                 <@renderJavaTypes scriptAPIJavaTypeDefinitions/><#if scriptAPIJavaTypeDefinitions?? && scriptAPIJavaTypeDefinitions?size &gt; 0>,</#if>
-                <@renderPropertyTypes />,
+                <@renderModelTypes />,
                 <#-- we fake this as base type for native-like maps -->
                 "NativeLikeMap": {
                     "length": {
@@ -96,7 +96,7 @@
 </#list>
 </#escape></#compress></#macro>
 
-<#macro renderPropertyTypes><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+<#macro renderModelTypes><#compress><#escape x as jsonUtils.encodeJSONString(x)>
 "TaskProperties" : {
     "!proto": "NativeLikeMap2",
     "!doc" : "The virtual type for task property maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
@@ -110,6 +110,20 @@
     <#list nodeProperties as nodeProperty>,
     <@renderProperty nodeProperty />
     </#list>
+},
+"NodeParentChildAssocs" : {
+    "!proto": "NativeLikeMap2",
+    "!doc" : "The virtual type for node parent/child association maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list nodeChildAssociations as childAssociation>,
+    <@renderAssociation childAssociation />
+    </#list>
+},
+"NodePeerAssocs" : {
+    "!proto": "NativeLikeMap2",
+    "!doc" : "The virtual type for node peer association maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list nodePeerAssociations as nodePeerAssociation>,
+    <@renderAssociation nodePeerAssociation />
+    </#list>
 }
 </#escape></#compress></#macro>
 
@@ -122,6 +136,19 @@
 "${propertyName?substring(3)}" : {
     <@renderPropertyType property />,
     "!doc" : "${(property.description!property.title)!propertyName}"
+}
+</#if>
+</#escape></#compress></#macro>
+
+<#macro renderAssociation assoc><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+<#assign assocName = shortQName(assoc.name) />
+"${assocName}" : {
+    "!type": "[ScriptNode]",
+    "!doc" : "${(assoc.description!assoc.title)!assocName}"
+}<#if assocName?starts_with('cm:')>,
+"${assocName?substring(3)}" : {
+    "!type": "[ScriptNode]",
+    "!doc" : "${(assoc.description!assoc.title)!assocName}"
 }
 </#if>
 </#escape></#compress></#macro>
