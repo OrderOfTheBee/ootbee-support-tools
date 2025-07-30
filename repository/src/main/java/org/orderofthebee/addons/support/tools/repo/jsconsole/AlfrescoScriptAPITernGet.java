@@ -61,6 +61,7 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.jscript.JscriptWorkflowTask;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -253,7 +254,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         this.prepareCoreScriptAPIJavaTypeDefinitions(model);
         final Map<String, Object> coreScriptModel = this.prepareCoreScriptAPIGlobalDefinitions(model);
-        this.preparePropertyDefinitions(model);
+        this.prepareModelDefinitions(model);
 
         this.prepareWebScriptAPIJavaTypeDefinitions(req, model, coreScriptModel);
         this.prepareWebScriptAPIGlobalDefinitions(req, model, coreScriptModel);
@@ -1171,13 +1172,13 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     }
 
     /**
-     * Prepares the definitions of node and task properties based on the {@link DictionaryService dictionary} active in the current context
-     * (authentication / tenant)
+     * Prepares the definitions of model definitions for properties and associations based on the {@link DictionaryService dictionary}
+     * active in the current context (authentication / tenant)
      *
      * @param model
      *     the model into which to insert the definitions
      */
-    protected void preparePropertyDefinitions(final Map<String, Object> model)
+    protected void prepareModelDefinitions(final Map<String, Object> model)
     {
         final Collection<QName> taskTypes = this.dictionaryService.getSubTypes(WorkflowModel.TYPE_TASK, true);
         final Collection<QName> taskAspects = this.collectTaskAspects(taskTypes);
@@ -1186,10 +1187,13 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         // though task types could technically be used for nodes (task derives from cm:content) they rarely are
         final Collection<QName> nodeTypes = new TreeSet<>(this.dictionaryService.getAllTypes());
-        nodeTypes.removeAll(nodeTypes);
+        nodeTypes.removeAll(taskTypes);
         final Collection<QName> nodeAspects = this.dictionaryService.getAllAspects();
 
         model.put("nodeProperties", this.buildPropertyDefinitions(nodeTypes, nodeAspects));
+
+        model.put("nodePeerAssociations", this.buildAssociationDefinitions(nodeTypes, nodeAspects, false));
+        model.put("nodeChildAssociations", this.buildAssociationDefinitions(nodeTypes, nodeAspects, true));
     }
 
     protected List<PropertyDefinition> buildPropertyDefinitions(final Collection<QName> types, final Collection<QName> aspects)
@@ -1228,6 +1232,45 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         }
 
         return propertyDefinitions;
+    }
+
+    protected List<AssociationDefinition> buildAssociationDefinitions(final Collection<QName> types, final Collection<QName> aspects,
+            final boolean child)
+    {
+        final List<AssociationDefinition> associationDefinitions = new ArrayList<>();
+
+        final Collection<QName> allClasses = new TreeSet<>();
+        allClasses.addAll(types);
+        allClasses.addAll(aspects);
+
+        for (final QName cls : allClasses)
+        {
+            associationDefinitions.addAll(this.buildAssociationDefinitions(cls, child));
+        }
+
+        return associationDefinitions;
+    }
+
+    protected List<AssociationDefinition> buildAssociationDefinitions(final QName cls, final boolean child)
+    {
+        final ClassDefinition classDefinition = this.dictionaryService.getClass(cls);
+
+        final Map<QName, AssociationDefinition> associations = classDefinition.getAssociations();
+        final Map<QName, AssociationDefinition> parentAssociations = classDefinition.getParentName() != null
+                ? classDefinition.getParentClassDefinition().getAssociations()
+                : Collections.<QName, AssociationDefinition> emptyMap();
+
+        final List<AssociationDefinition> associationDefinitions = new ArrayList<>();
+
+        for (final Entry<QName, AssociationDefinition> associationEntry : associations.entrySet())
+        {
+            if (!parentAssociations.containsKey(associationEntry.getKey()) && associationEntry.getValue().isChild() == child)
+            {
+                associationDefinitions.add(associationEntry.getValue());
+            }
+        }
+
+        return associationDefinitions;
     }
 
     protected Collection<QName> collectTaskAspects(final Collection<QName> taskTypes)
