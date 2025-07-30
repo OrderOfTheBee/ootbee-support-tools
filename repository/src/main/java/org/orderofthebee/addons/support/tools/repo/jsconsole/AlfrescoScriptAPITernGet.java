@@ -72,6 +72,8 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.alfresco.util.PropertyCheck;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -1016,11 +1018,15 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         {
             type = this.determineType(type.getComponentType(), relatedClasses);
         }
+        else if (JSONObject.class.isAssignableFrom(type) || JSONArray.class.isAssignableFrom(type))
+        {
+            relatedClasses.add(type);
+        }
         else if (Map.class.isAssignableFrom(type) && !Scriptable.class.isAssignableFrom(type))
         {
             type = Map.class;
         }
-        else if (List.class.isAssignableFrom(type))
+        else if (List.class.isAssignableFrom(type) && !Scriptable.class.isAssignableFrom(type))
         {
             type = List.class;
         }
