@@ -748,9 +748,25 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
                         {
                             final boolean isPotentialSetter = methodName.matches("^set[A-Z].*") && declaredMethod.getParameterCount() == 1;
                             final boolean isPotentialGetter = methodName.matches("^get[A-Z].*") && declaredMethod.getParameterCount() == 0;
+
+                            // getter without setter is allowed
+                            boolean isWhitelistedGetter = false;
+                            if (isPotentialGetter)
+                            {
+                                final String setterName = "set" + methodName.substring(3);
+                                try
+                                {
+                                    curCls.getDeclaredMethod(setterName, declaredMethod.getReturnType());
+                                }
+                                catch (final NoSuchMethodException ignore)
+                                {
+                                    isWhitelistedGetter = true;
+                                }
+                            }
+
                             if (Modifier.isPublic(declaredMethod.getModifiers()) && !Modifier.isStatic(declaredMethod.getModifiers())
                                     && !INIT_METHOD_NAMES.contains(methodName)
-                                    && (curCls.isInterface() || !(isPotentialSetter || isPotentialGetter) || (!(
+                                    && (curCls.isInterface() || isWhitelistedGetter || !(isPotentialSetter || isPotentialGetter) || (!(
                                     // any getter/setter on BaseProcessorExtension should not be exposed (would drag in a lot of classes)
                                     // one class incorrectly extends from BaseProcessorExtension though
                                     (ProcessorExtension.class.isAssignableFrom(curCls)
