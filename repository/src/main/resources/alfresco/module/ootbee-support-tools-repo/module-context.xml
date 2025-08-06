@@ -118,6 +118,7 @@
         <property name="dictionaryService" ref="DictionaryService" />
         <property name="scriptService" ref="ScriptService" />
         <property name="personService" ref="PersonService" />
+        <property name="actionService" ref="ActionService" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="scriptProcessor" ref="javaScriptProcessor" />
         <property name="properties">

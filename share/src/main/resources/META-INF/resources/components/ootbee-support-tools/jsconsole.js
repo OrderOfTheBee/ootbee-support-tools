@@ -778,12 +778,11 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
          */
         generateTemplates: function JavaScriptConsole_generateTemplates(dictionary)
         {
-            var templates, propertyNames, assocNames, ternProperties, t, cls, type, templDescription, parent, aspect, property, prop, propDescription, association, assoc, assocDescription;
+            var templates, propertyNames, assocNames, t, cls, templDescription, parent, aspect, property, prop, propDescription, association, assoc, assocDescription;
 
             templates = [];
             propertyNames = [];
             assocNames = [];
-            ternProperties = [];
 
             for (t in dictionary)
             {
@@ -843,20 +842,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                                         className: 'CodeMirror-hint-alfresco'
                                     });
                                     propertyNames.push(prop.name);
-                                
-                                    type = this.getTernType(prop.dataType, prop.multiValued);
-                                    ternProperties[prop.name] = {
-                                        '!type': type,
-                                        '!doc': propDescription
-                                    };
-
-                                    if (prop.name.startsWith('cm:'))
-                                    {
-                                        ternProperties[prop.name.replace(/^cm\:/,'')] = {
-                                            '!type': type,
-                                            '!doc': propDescription
-                                        };
-                                    }
                                 }
                             }
                         }
@@ -932,11 +917,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                 });
             }
 
-            CodeMirror.tern.getDef()[1].Properties = {
-                '!type': 'fn()',
-                'prototype': ternProperties,
-            };
-
             templates.sort(function(a,b)
             {
                 return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
@@ -950,9 +930,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
          */
         generateActionDefinitionTemplates: function JavaScriptConsole_generateActionDefinitionTemplates(definitions)
         {
-            var ternProperties, templates, t, action, templDescription, p, param, paramDescription;
+            var templates, t, action, templDescription, p;
 
-            ternProperties = {};
             templates = [];
 
             for (t in definitions)
@@ -973,23 +952,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                         {
                             param = action.parameterDefinitions[p];
                             templDescription += '\t\t\t\t\t' + param.name + ' (' + param.type + ')\n';
-
-                            paramDescription = 'action:\t\t\t' + action.name + '\nname:\t\t\t' + param.name +
-                                '\ndisplayLabel:\t\t' + param.displayLabel + '\ntype:\t\t\t\t' + param.type +
-                                '\nmultiValued:\t\t' + param.isMultiValued + '\nmandatory:\t\t\t' + param.isMandatory +
-                                '\nconstraint:\t\t\t' + param.constraint;
-
-                            if (ternProperties.hasOwnProperty(param.name))
-                            {
-                                ternProperties[param.name]['!doc'] = ternProperties[param.name]['!doc'] + '\n-------------------------------------\n' + paramDescription;
-                            }
-                            else
-                            {
-                                ternProperties[param.name] = {
-                                    '!type': this.getTernType(param.type, param.isMultiValued),
-                                    '!doc': paramDescription
-                                };
-                            }
                         }
                     }
 
@@ -1001,11 +963,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                     });
                 }
             }
-
-            CodeMirror.tern.getDef()[1].actionParameters = {
-                '!type': 'fn()',
-                'prototype': ternProperties,
-            };
 
             templates.sort(function(a,b)
             {
@@ -1048,103 +1005,6 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             });
 
             return templates;
-        },
-    
-        /**
-         * maps the alfresco specific type to a tern compatible type
-         */
-        getTernType: function JavaScriptConsole_getTernType(propertyDataType, isMultiValued)
-        {
-            var type;
-            if (propertyDataType === 'd:text')
-            {
-                if (isMultiValued)
-                {
-                    type = '[string]';
-                }
-                else
-                {
-                    type = 'string';
-                }
-            }
-            else if (propertyDataType === 'd:noderef')
-            {
-                if (isMultiValued)
-                {
-                    type = '[ScriptNode]';
-                }
-                else
-                {
-                    type = 'ScriptNode';
-                }
-            }
-            else if(propertyDataType === 'd:category')
-            {
-                if (isMultiValued)
-                {
-                    type = '[CategoryNode]';
-                }
-                else
-                {
-                    type = 'CategoryNode';
-                }
-            }
-            else if (propertyDataType === 'd:boolean')
-            {
-                if (isMultiValued)
-                {
-                    type = '[bool]';
-                }
-                else
-                {
-                    type = 'bool';
-                }
-            }
-            else if (propertyDataType === 'd:date' || propertyDataType === 'd:datetime')
-            {
-                if (isMultiValued)
-                {
-                    type = '[Date.prototype]';
-                }
-                else
-                {
-                    type = 'Date.prototype';
-                }
-            }
-            else if (propertyDataType === 'd:int' || propertyDataType === 'd:float' || propertyDataType === 'd:double' || propertyDataType === 'd:long')
-            {
-                if (isMultiValued)
-                {
-                    type = '[number]';
-                }
-                else
-                {
-                    type = 'number';
-                }
-            }
-            else if (propertyDataType === 'd:content')
-            {
-                if (isMultiValued)
-                {
-                    type = '[ScriptContent]';
-                }
-                else
-                {
-                    type = 'ScriptContent';
-                }
-            }
-            else
-            {
-                if (isMultiValued)
-                {
-                    type = '[?]';
-                }
-                else
-                {
-                    type = '?';
-                }
-            }
-            return type;
         },
 
         beforeUnload: function JavaScriptConsole_beforeUnload()

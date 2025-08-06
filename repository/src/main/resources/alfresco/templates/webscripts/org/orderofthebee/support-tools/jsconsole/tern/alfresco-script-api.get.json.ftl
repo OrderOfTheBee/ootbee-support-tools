@@ -5,6 +5,8 @@
             "!define" : {
                 <@renderJavaTypes scriptAPIJavaTypeDefinitions/><#if scriptAPIJavaTypeDefinitions?? && scriptAPIJavaTypeDefinitions?size &gt; 0>,</#if>
                 <@renderModelTypes />,
+                <@renderActionParametersType />,
+                "JavaObject": {},
                 <#-- we fake this as base type for native-like maps -->
                 "NativeLikeMap": {
                     "length": {
@@ -127,6 +129,20 @@
 }
 </#escape></#compress></#macro>
 
+<#macro renderActionParametersType><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+"ActionParameters": {
+    "!proto": "NativeLikeMap2",
+    "!doc": "The virtual type for action parameter maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list actionParameterDefinitions as paramDef>,
+    "${paramDef.name}": {
+        <#if paramDef.originalName??>"!original": "${paramDef.originalName}",</#if>
+        <@renderType paramDef.definition.type paramDef.definition.multiValued />,
+        "!doc": "action: ${paramDef.action}\nname: ${paramDef.originalName!paramDef.name}\nmandatory: ${paramDef.definition.mandatory?string('true', 'false')}<#if paramDef.definition.displayLabel??>\ndisplayLabel: ${paramDef.definition.displayLabel}</#if><#if paramDef.definition.parameterConstraintName??>\nconstraint: ${paramDef.definition.parameterConstraintName}</#if>"
+    }
+    </#list>
+}
+</#escape></#compress></#macro>
+
 <#macro renderProperty property><#compress><#escape x as jsonUtils.encodeJSONString(x)>
 <#assign propertyName = shortQName(property.name) />
 "${propertyName}" : {
@@ -153,24 +169,26 @@
 </#if>
 </#escape></#compress></#macro>
 
-<#macro renderPropertyType property><#compress><#escape x as jsonUtils.encodeJSONString(x)>
-"!type": <#switch shortQName(property.dataType.name)>
+<#macro renderPropertyType property><#compress><@renderType property.dataType.name property.multiValued /></#compress></#macro>
+
+<#macro renderType type multiValued><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+"!type": <#switch shortQName(type)>
     <#case "d:text">
     <#case "d:mltext">
         <#-- tests/experience shows even though Rhino WrapFactory wraps String as NativeJavaObject -->
         <#-- handling is still indistinguishable from native string -->
-        "<#if property.multiValued>[</#if>string<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>string<#if multiValued>]</#if>"
         <#break>
     <#case "d:boolean">
         <#-- tests/experience shows even though Rhino WrapFactory wraps Boolean as NativeJavaObject -->
         <#-- handling is still indistinguishable from native bool -->
-        "<#if property.multiValued>[</#if>bool<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>bool<#if multiValued>]</#if>"
         <#break>
     <#case "d:noderef">
-        "<#if property.multiValued>[</#if>ScriptNode<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>ScriptNode<#if multiValued>]</#if>"
         <#break>
     <#case "d:category">
-        "<#if property.multiValued>[</#if>CategoryNode<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>CategoryNode<#if multiValued>]</#if>"
         <#break>
     <#case "d:int">
     <#case "d:long">
@@ -178,17 +196,17 @@
     <#case "d:double">
         <#-- tests/experience shows even though Rhino WrapFactory wraps Number as NativeJavaObject -->
         <#-- handling is still indistinguishable from native number -->
-        "<#if property.multiValued>[</#if>number<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>number<#if multiValued>]</#if>"
         <#break>
     <#case "d:content">
-        "<#if property.multiValued>[</#if>ScriptContentData<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>ScriptContentData<#if multiValued>]</#if>"
         <#break>
     <#case "d:date">
     <#case "d:datetime">
         <#-- Date is converted in ValueConverter -->
-        "<#if property.multiValued>[</#if>+Date<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>+Date<#if multiValued>]</#if>"
         <#break>
     <#default>
-        "<#if property.multiValued>[</#if>?<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>?<#if multiValued>]</#if>"
 </#switch>
 </#escape></#compress></#macro>
