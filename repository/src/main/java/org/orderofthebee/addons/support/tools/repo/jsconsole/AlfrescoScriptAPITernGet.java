@@ -60,6 +60,9 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.jscript.JscriptWorkflowTask;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.action.ActionDefinition;
+import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.dictionary.AspectDefinition;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
@@ -159,6 +162,8 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
     protected PersonService personService;
 
+    protected ActionService actionService;
+
     protected ServiceRegistry serviceRegistry;
 
     protected BaseProcessor scriptProcessor;
@@ -175,6 +180,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         PropertyCheck.mandatory(this, "dictionaryService", this.dictionaryService);
         PropertyCheck.mandatory(this, "scriptService", this.scriptService);
         PropertyCheck.mandatory(this, "personService", this.personService);
+        PropertyCheck.mandatory(this, "actionService", this.actionService);
         PropertyCheck.mandatory(this, "serviceRegistry", this.serviceRegistry);
         PropertyCheck.mandatory(this, "scriptProcessor", this.scriptProcessor);
 
@@ -215,6 +221,15 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
     public void setPersonService(final PersonService personService)
     {
         this.personService = personService;
+    }
+
+    /**
+     * @param actionService
+     *     the actionService to set
+     */
+    public void setActionService(final ActionService actionService)
+    {
+        this.actionService = actionService;
     }
 
     /**
@@ -1194,6 +1209,7 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
 
         model.put("nodePeerAssociations", this.buildAssociationDefinitions(nodeTypes, nodeAspects, false));
         model.put("nodeChildAssociations", this.buildAssociationDefinitions(nodeTypes, nodeAspects, true));
+        model.put("actionParameterDefinitions", this.buildActionParameterDefinitions());
     }
 
     protected List<PropertyDefinition> buildPropertyDefinitions(final Collection<QName> types, final Collection<QName> aspects)
@@ -1396,5 +1412,40 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         }
 
         return Boolean.parseBoolean(skip);
+    }
+
+    protected List<Map<String, Object>> buildActionParameterDefinitions()
+    {
+        final List<ActionDefinition> actionDefinitions = this.actionService.getActionDefinitions();
+        final List<Map<String, Object>> parameterDefinitions = new ArrayList<>();
+
+        final Map<String, AtomicInteger> countByParameterName = new HashMap<>();
+
+        for (final ActionDefinition actionDef : actionDefinitions)
+        {
+            for (final ParameterDefinition parameterDef : actionDef.getParameterDefinitions())
+            {
+                final String name = parameterDef.getName();
+                final Map<String, Object> definition = new HashMap<>();
+
+                String effectiveName = name;
+                if (countByParameterName.containsKey(name))
+                {
+                    effectiveName = name + countByParameterName.get(name).incrementAndGet();
+                    definition.put("originalName", name);
+                }
+                else
+                {
+                    countByParameterName.put(name, new AtomicInteger(0));
+                }
+                definition.put("name", effectiveName);
+                definition.put("action", actionDef.getName());
+                definition.put("definition", parameterDef);
+
+                parameterDefinitions.add(definition);
+            }
+        }
+
+        return parameterDefinitions;
     }
 }

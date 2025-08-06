@@ -276,7 +276,7 @@
   function isSimpleAnnotation(spec) {
     if (!spec["!type"] || /^(fn\(|\[)/.test(spec["!type"])) return false;
     for (var prop in spec)
-      if (prop != "!type" && prop != "!doc" && prop != "!url" && prop != "!span" && prop != "!data")
+      if (prop != "!type" && prop != "!doc" && prop != "!url" && prop != "!span" && prop != "!data" && prop != '!original')
         return false;
     return true;
   }
@@ -287,6 +287,7 @@
       if (tp) {
         if (/^fn\(/.test(tp)) base = emptyObj(infer.Fn);
         else if (tp.charAt(0) == "[") base = emptyObj(infer.Arr);
+        else if (tp.charAt(0) == "+") base = emptyObj(infer.Obj);
         else throw new Error("Invalid !type spec: " + tp);
       } else if (spec["!stdProto"]) {
         base = infer.cx().protos[spec["!stdProto"]];
