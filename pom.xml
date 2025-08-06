@@ -5,7 +5,7 @@
 
     <groupId>org.orderofthebee.support-tools</groupId>
     <artifactId>support-tools-parent</artifactId>
-    <version>1.2.3.0</version>
+    <version>1.2.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OOTBee Support Tools - Parent</name>
@@ -402,6 +402,8 @@
                     <configuration>
                         <source>${maven.compiler.target}</source>
                         <target>${maven.compiler.target}</target>
+                        <parameters>true</parameters>
+                        <debuglevel>lines,vars,source</debuglevel>
                     </configuration>
                 </plugin>
 

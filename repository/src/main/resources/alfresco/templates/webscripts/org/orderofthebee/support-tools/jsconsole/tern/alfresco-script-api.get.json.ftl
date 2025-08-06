@@ -4,12 +4,39 @@
             "!name" : "alfresco-script-api",
             "!define" : {
                 <@renderJavaTypes scriptAPIJavaTypeDefinitions/><#if scriptAPIJavaTypeDefinitions?? && scriptAPIJavaTypeDefinitions?size &gt; 0>,</#if>
-                <@renderPropertyTypes />,
+                <@renderModelTypes />,
+                <@renderActionParametersType />,
+                "JavaObject": {},
+                <#-- we fake this as base type for native-like maps -->
+                "NativeLikeMap": {
+                    "length": {
+                        "!type": "number",
+                        "!doc": "(read-only)"
+                    }
+                },
+                "NativeLikeMap2": {
+                    "!proto": "NativeLikeMap",
+                    "hasOwnProperty": {
+                        "!type": "fn(prop: string) -> bool"
+                    }
+                },
                 <#-- we fake this type for Search.queryResultSet (would just be plain object else) -->
                 "SearchResultSetMeta" : {
+                    "!proto": "Map",
                     "nodes" : "[ScriptNode]",
-                    "meta" : "JavaMap"
-                    <#-- we could add all the metadata collected in latest Alfresco version as sub-structure but then it might not match Alfresco version in use -->
+                    "meta" : {
+                        "!proto": "Map",
+                        <#-- meta structure as available from 5.0.d -->
+                        "numberFound": "number",
+                        "hasMore": "bool",
+                        "facets": "object",
+                        "spellcheck": "ScriptSpellCheckResult",
+                        <#-- version dependent meta structure -->
+                        "highlighting": {
+                            "!proto": "Map",
+                            "!doc": "Alfresco >= 5.1.2/5.2.1"
+                        }
+                    }
                 }
             }<#if scriptAPIGlobalDefinitions?? && scriptAPIGlobalDefinitions?size &gt; 0>,</#if>
             <@renderGlobals scriptAPIGlobalDefinitions />
@@ -71,17 +98,47 @@
 </#list>
 </#escape></#compress></#macro>
 
-<#macro renderPropertyTypes><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+<#macro renderModelTypes><#compress><#escape x as jsonUtils.encodeJSONString(x)>
 "TaskProperties" : {
+    "!proto": "NativeLikeMap2",
     "!doc" : "The virtual type for task property maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
     <#list taskProperties as taskProperty>,
     <@renderProperty taskProperty />
     </#list>
 },
 "NodeProperties" : {
+    "!proto": "NativeLikeMap2",
     "!doc" : "The virtual type for node property maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
     <#list nodeProperties as nodeProperty>,
     <@renderProperty nodeProperty />
+    </#list>
+},
+"NodeParentChildAssocs" : {
+    "!proto": "NativeLikeMap2",
+    "!doc" : "The virtual type for node parent/child association maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list nodeChildAssociations as childAssociation>,
+    <@renderAssociation childAssociation />
+    </#list>
+},
+"NodePeerAssocs" : {
+    "!proto": "NativeLikeMap2",
+    "!doc" : "The virtual type for node peer association maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list nodePeerAssociations as nodePeerAssociation>,
+    <@renderAssociation nodePeerAssociation />
+    </#list>
+}
+</#escape></#compress></#macro>
+
+<#macro renderActionParametersType><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+"ActionParameters": {
+    "!proto": "NativeLikeMap2",
+    "!doc": "The virtual type for action parameter maps. No global object by this type exists - it is only ever returned from Alfresco Script APIs"
+    <#list actionParameterDefinitions as paramDef>,
+    "${paramDef.name}": {
+        <#if paramDef.originalName??>"!original": "${paramDef.originalName}",</#if>
+        <@renderType paramDef.definition.type paramDef.definition.multiValued />,
+        "!doc": "action: ${paramDef.action}\nname: ${paramDef.originalName!paramDef.name}\nmandatory: ${paramDef.definition.mandatory?string('true', 'false')}<#if paramDef.definition.displayLabel??>\ndisplayLabel: ${paramDef.definition.displayLabel}</#if><#if paramDef.definition.parameterConstraintName??>\nconstraint: ${paramDef.definition.parameterConstraintName}</#if>"
+    }
     </#list>
 }
 </#escape></#compress></#macro>
@@ -99,38 +156,57 @@
 </#if>
 </#escape></#compress></#macro>
 
-<#macro renderPropertyType property><#compress><#escape x as jsonUtils.encodeJSONString(x)>
-"!type": <#switch shortQName(property.dataType.name)>
+<#macro renderAssociation assoc><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+<#assign assocName = shortQName(assoc.name) />
+"${assocName}" : {
+    "!type": "[ScriptNode]",
+    "!doc" : "${(assoc.description!assoc.title)!assocName}"
+}<#if assocName?starts_with('cm:')>,
+"${assocName?substring(3)}" : {
+    "!type": "[ScriptNode]",
+    "!doc" : "${(assoc.description!assoc.title)!assocName}"
+}
+</#if>
+</#escape></#compress></#macro>
+
+<#macro renderPropertyType property><#compress><@renderType property.dataType.name property.multiValued /></#compress></#macro>
+
+<#macro renderType type multiValued><#compress><#escape x as jsonUtils.encodeJSONString(x)>
+"!type": <#switch shortQName(type)>
     <#case "d:text">
     <#case "d:mltext">
-        <#-- despite claims in ValueConverter comments, Rhino does not automatically wrap Java String to native string -->
-        "<#if property.multiValued>[</#if>JavaString<#if property.multiValued>]</#if>"
+        <#-- tests/experience shows even though Rhino WrapFactory wraps String as NativeJavaObject -->
+        <#-- handling is still indistinguishable from native string -->
+        "<#if multiValued>[</#if>string<#if multiValued>]</#if>"
         <#break>
     <#case "d:boolean">
-        <#-- despite claims in ValueConverter comments, Rhino does not automatically wrap Java Boolean to native boolean -->
-        "<#if property.multiValued>[</#if>JavaBoolean<#if property.multiValued>]</#if>"
+        <#-- tests/experience shows even though Rhino WrapFactory wraps Boolean as NativeJavaObject -->
+        <#-- handling is still indistinguishable from native bool -->
+        "<#if multiValued>[</#if>bool<#if multiValued>]</#if>"
         <#break>
     <#case "d:noderef">
-        "<#if property.multiValued>[</#if>ScriptNode<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>ScriptNode<#if multiValued>]</#if>"
         <#break>
     <#case "d:category">
-        "<#if property.multiValued>[</#if>CategoryNode<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>CategoryNode<#if multiValued>]</#if>"
         <#break>
     <#case "d:int">
     <#case "d:long">
     <#case "d:float">
     <#case "d:double">
-        <#-- despite claims in ValueConverter comments, Rhino does not automatically wrap Java Number to native number -->
-        "<#if property.multiValued>[</#if>JavaNumber<#if property.multiValued>]</#if>"
+        <#-- tests/experience shows even though Rhino WrapFactory wraps Number as NativeJavaObject -->
+        <#-- handling is still indistinguishable from native number -->
+        "<#if multiValued>[</#if>number<#if multiValued>]</#if>"
         <#break>
     <#case "d:content">
-        "<#if property.multiValued>[</#if>ScriptContentData<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>ScriptContentData<#if multiValued>]</#if>"
         <#break>
     <#case "d:date">
     <#case "d:datetime">
-        "<#if property.multiValued>[</#if>+Date<#if property.multiValued>]</#if>"
+        <#-- Date is converted in ValueConverter -->
+        "<#if multiValued>[</#if>+Date<#if multiValued>]</#if>"
         <#break>
     <#default>
-        "<#if property.multiValued>[</#if>?<#if property.multiValued>]</#if>"
+        "<#if multiValued>[</#if>?<#if multiValued>]</#if>"
 </#switch>
 </#escape></#compress></#macro>
