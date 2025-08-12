@@ -23,14 +23,16 @@ In order to use a pre-built SNAPSHOT artifact published to the Open Source Sonat
 ```xml
 <repositories>
     <repository>
-        <id>ossrh</id>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <id>central-snapshots</id>
+        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         <snapshots>
             <enabled>true</enabled>
         </snapshots>
     </repository>
 </repositories>
 ```
+
+**Note:** Previously, SNAPSHOT builds used to be published to the Open Source Sonatype Repository Hosting (OSSRH) site, which has reached end-of-life on June 30th 2025. Any projects that used to reference OSSRH to obtain a SNAPSHOT of this project need to be updated.
 
 ## Repository-tier
 
