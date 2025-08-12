@@ -70,32 +70,35 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Everything will be built for Java 8 by default -->
+        <!-- Note: using 11 or newer fails during AMP assembly -->
         <java.version>8</java.version>
 
-        <maven.enforcer.version>3.0.0-M3</maven.enforcer.version>
-        <maven.clean.version>3.1.0</maven.clean.version>
-        <maven.resources.version>3.1.0</maven.resources.version>
-        <maven.dependency.version>3.1.1</maven.dependency.version>
+        <maven.enforcer.version>3.6.1</maven.enforcer.version>
+        <maven.clean.version>3.5.0</maven.clean.version>
+        <maven.resources.version>3.3.1</maven.resources.version>
+        <maven.dependency.version>3.8.1</maven.dependency.version>
         <maven.compiler.version>3.14.0</maven.compiler.version>
-        <maven.source.version>3.2.1</maven.source.version>
-        <maven.javadoc.version>3.1.1</maven.javadoc.version>
-        <maven.jar.version>3.2.0</maven.jar.version>
-        <!-- using milestone versions is ugly, but apparently Alfresco SDK devs have no qualms   -->
-        <maven.surefire.version>3.0.0-M4</maven.surefire.version>
-        <maven.failsafe.version>3.0.0-M4</maven.failsafe.version>
+        <maven.source.version>3.3.1</maven.source.version>
+        <maven.javadoc.version>3.11.2</maven.javadoc.version>
+        <maven.jar.version>3.4.2</maven.jar.version>
+        <maven.surefire.version>3.5.3</maven.surefire.version>
+        <maven.failsafe.version>3.5.3</maven.failsafe.version>
         <!-- apparently SDK 4 only works with very old version due to API conflicts -->
+        <!-- also only works with JDK before 11 -->
         <maven.assembly.version>2.6</maven.assembly.version>
-        <maven.install.version>3.0.0-M1</maven.install.version>
-        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
-        <maven.sonatype.version>1.6.8</maven.sonatype.version>
+        <maven.install.version>3.1.4</maven.install.version>
+        <maven.deploy.version>3.1.4</maven.deploy.version>
+
+        <!-- we use the Sonatype plugin for deploy -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+
+        <maven.sonatype.version>0.8.0</maven.sonatype.version>
 
         <maven.acosix.jshint.version>1.0.0</maven.acosix.jshint.version>
         <maven.alchim.yuicompressor.version>1.5.1</maven.alchim.yuicompressor.version>
-
-        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
         
         <!-- purely SDK 4 stuff from here on out -->
-        <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
+        <alfresco.sdk.version>4.12.0</alfresco.sdk.version>
         <alfresco.groupId>org.alfresco</alfresco.groupId>
         <alfresco.bomDependencyArtifactId>acs-community-packaging</alfresco.bomDependencyArtifactId>
         <alfresco.platform.version>6.1.2-ga</alfresco.platform.version>
@@ -153,11 +156,11 @@
 
     <distributionManagement>
         <repository>
-            <id>ossrh</id>
+            <id>central</id>
             <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
-            <id>ossrh</id>
+            <id>central</id>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
@@ -557,7 +560,9 @@
                                 <goal>single</goal>
                             </goals>
                             <configuration>
-                                <descriptor>src/main/assembly/amp.xml</descriptor>
+                                <descriptors>
+                                    <descriptor>src/main/assembly/amp.xml</descriptor>
+                                </descriptors>
                                 <escapeString>\</escapeString>
                                 <attach>true</attach>
                             </configuration>
@@ -583,14 +588,14 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
                     <version>${maven.sonatype.version}</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        <deploymentName>central.sonatype.com</deploymentName>
+                        <autoPublish>true</autoPublish>
+                        <waitUntil>published</waitUntil>
                     </configuration>
                 </plugin>
 
@@ -632,6 +637,11 @@
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
