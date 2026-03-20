@@ -60,106 +60,118 @@ import com.google.common.base.Preconditions;
  */
 
 @ScriptClass(types=ScriptClassType.JavaScriptRootObject, code= "favorites", help="the root object for the favorites service")
-public class ScriptFavoritesService extends BaseScopableProcessorExtension {
-	private FavouritesService favouritesService;
-	private ServiceRegistry serviceRegistry;
+public class ScriptFavoritesService extends BaseScopableProcessorExtension
+{
+    private FavouritesService favouritesService;
+    private ServiceRegistry serviceRegistry;
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+    public void setServiceRegistry(ServiceRegistry serviceRegistry)
+    {
+        this.serviceRegistry = serviceRegistry;
+    }
 
-	public void setFavouritesService(FavouritesService favouritesService) {
-		this.favouritesService = favouritesService;
-	}
+    public void setFavouritesService(FavouritesService favouritesService)
+    {
+        this.favouritesService = favouritesService;
+    }
 
-	@ScriptMethod(
-			help = "adds the given script node as favorite for the current authenticated user and returns the favorite as scriptnode",
-			output = "ScriptNode",
-			code = "favorites.add(<Scriptnode>)",
-			type = ScriptMethodType.WRITE)
-	public ScriptNode add(ScriptNode node) {
+    @ScriptMethod(
+        help = "adds the given script node as favorite for the current authenticated user and returns the favorite as scriptnode",
+        output = "ScriptNode",
+        code = "favorites.add(<Scriptnode>)",
+        type = ScriptMethodType.WRITE)
+    public ScriptNode add(ScriptNode node)
+    {
 
-		Preconditions.checkNotNull(node,"Node parameter must be given");
-		ScriptNode result=null;
-		String username = AuthenticationUtil.getRunAsUser();
+        Preconditions.checkNotNull(node,"Node parameter must be given");
+        ScriptNode result=null;
+        String username = AuthenticationUtil.getRunAsUser();
 
-		if(!favouritesService.isFavourite(username, node.getNodeRef())) {
-			NodeRef nodeRef = favouritesService.addFavourite(username, node.getNodeRef()).getNodeRef();
-			result = new ScriptNode(nodeRef, serviceRegistry,getScope());
-		}
+        if(!favouritesService.isFavourite(username, node.getNodeRef()))
+        {
+            NodeRef nodeRef = favouritesService.addFavourite(username, node.getNodeRef()).getNodeRef();
+            result = new ScriptNode(nodeRef, serviceRegistry,getScope());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@ScriptMethod(
-			help = "adds the given script node as favorite for the given user and returns the favorite as scriptnode",
-			output = "ScriptNode",
-			code = "favorites.add(<Scriptnode>)",
-			type = ScriptMethodType.WRITE)
-	public ScriptNode add(ScriptNode node, final String username) {
+    @ScriptMethod(
+        help = "adds the given script node as favorite for the given user and returns the favorite as scriptnode",
+        output = "ScriptNode",
+        code = "favorites.add(<Scriptnode>)",
+        type = ScriptMethodType.WRITE)
+    public ScriptNode add(ScriptNode node, final String username)
+    {
 
-		Preconditions.checkNotNull(node,"Node parameter must be given");
-		Preconditions.checkNotNull(username,"username must be given");
+        Preconditions.checkNotNull(node,"Node parameter must be given");
+        Preconditions.checkNotNull(username,"username must be given");
 
-		ScriptNode result = AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<ScriptNode>() {
-			@Override
-			public ScriptNode doWork() throws Exception {
-				ScriptNode result=null;
-				if(!favouritesService.isFavourite(username, node.getNodeRef())) {
-					NodeRef nodeRef = favouritesService.addFavourite(username, node.getNodeRef()).getNodeRef();
-					result = new ScriptNode(nodeRef, serviceRegistry, getScope());
-				}
-				return result;
-			}
-		}, username);
+        ScriptNode result = AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<ScriptNode>()
+        {
+            @Override
+            public ScriptNode doWork() throws Exception
+            {
+                ScriptNode result=null;
+                if(!favouritesService.isFavourite(username, node.getNodeRef()))
+                {
+                    NodeRef nodeRef = favouritesService.addFavourite(username, node.getNodeRef()).getNodeRef();
+                    result = new ScriptNode(nodeRef, serviceRegistry, getScope());
+                }
+                return result;
+            }
+        }, username);
 
-		return result;
-	}
+        return result;
+    }
 
-	@ScriptMethod(
-			help = "removes the given script node as favorite for the current authenticated user",
-			output = "void",
-			code = "",
-			type = ScriptMethodType.WRITE)
-	public void remove(ScriptNode node){
-		Preconditions.checkNotNull(node,"Node parameter must be given");
-		String username = AuthenticationUtil.getRunAsUser();
-		// currently the return value of removeFavourite is always false- so we do not offer a return value here...
-		if(favouritesService.isFavourite(username, node.getNodeRef())){
-			favouritesService.removeFavourite(username, node.getNodeRef());
-		}
-	}
+    @ScriptMethod(
+        help = "removes the given script node as favorite for the current authenticated user",
+        output = "void",
+        code = "",
+        type = ScriptMethodType.WRITE)
+    public void remove(ScriptNode node)
+    {
+        Preconditions.checkNotNull(node,"Node parameter must be given");
+        String username = AuthenticationUtil.getRunAsUser();
+        if(favouritesService.isFavourite(username, node.getNodeRef()))
+        {
+            favouritesService.removeFavourite(username, node.getNodeRef());
+        }
+    }
 
-	@ScriptMethod(
-			help = "checks if the given script node is a favorite for the current authenticated user",
-			output = "void",
-			code = "",
-			type = ScriptMethodType.READ)
-	public boolean isFavorite(ScriptNode node){
-		Preconditions.checkNotNull(node,"Node parameter must be given");
-		return favouritesService.isFavourite(AuthenticationUtil.getRunAsUser(), node.getNodeRef());
-	}
+    @ScriptMethod(
+        help = "checks if the given script node is a favorite for the current authenticated user",
+        output = "void",
+        code = "",
+        type = ScriptMethodType.READ)
+    public boolean isFavorite(ScriptNode node)
+    {
+        Preconditions.checkNotNull(node,"Node parameter must be given");
+        return favouritesService.isFavourite(AuthenticationUtil.getRunAsUser(), node.getNodeRef());
+    }
 
-	@ScriptMethod(
-			help = "get favorites for the current authenticated user",
-			output = "void",
-			code = "",
-			type = ScriptMethodType.READ)
-	public Scriptable getFavorites(int startCount, int limit){
+    @ScriptMethod(
+        help = "get favorites for the current authenticated user",
+        output = "void",
+        code = "",
+        type = ScriptMethodType.READ)
+    public Scriptable getFavorites(int startCount, int limit)
+    {
 
-		PagingResults<PersonFavourite> favourites = favouritesService.getPagedFavourites(
-				AuthenticationUtil.getRunAsUser(),
-				FavouritesService.Type.ALL_FILTER_TYPES,
-				Collections.emptyList(),
-				new PagingRequest(startCount, limit));
+        PagingResults<PersonFavourite> favourites = favouritesService.getPagedFavourites(
+                AuthenticationUtil.getRunAsUser(),
+                FavouritesService.Type.ALL_FILTER_TYPES,
+                Collections.emptyList(),
+                new PagingRequest(startCount, limit));
 
-		List<PersonFavourite> favouritesList = favourites.getPage();
-		Object[] favoritesArray = favouritesList.toArray(new Object[favouritesList.size()]);
+        List<PersonFavourite> favouritesList = favourites.getPage();
+        Object[] favoritesArray = favouritesList.toArray(new Object[favouritesList.size()]);
 
-		return Context.getCurrentContext().newArray(getScope(), favoritesArray);
+        return Context.getCurrentContext().newArray(getScope(), favoritesArray);
 
 
-	}
+    }
 
 
 

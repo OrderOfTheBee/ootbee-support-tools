@@ -35,42 +35,52 @@ import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
  * Expose global properties to js scripts
  *
  */
-public class ScriptVariablesService extends BaseScopableProcessorExtension {
+public class ScriptVariablesService extends BaseScopableProcessorExtension
+{
 
     private Properties properties;
 
-    public void setProperties(final Properties globalProperties) {
+    public void setProperties(final Properties globalProperties)
+    {
         properties = globalProperties;
     }
 
-    public Object getProperties() {
+    public Object getProperties()
+    {
         return new ScriptProperties(properties);
     }
 
-    public String get(String key) {
+    public String get(String key)
+    {
         return properties.getProperty(key);
     }
 
-    public String get(String key, String otherwise) {
+    public String get(String key, String otherwise)
+    {
         return properties.getProperty(key, otherwise);
     }
 
-    public static class ScriptProperties {
+    public static class ScriptProperties
+    {
         private Properties properties;
 
-        public ScriptProperties(Properties p) {
+        public ScriptProperties(Properties p)
+        {
             this.properties = p;
         }
 
-        public java.util.Enumeration<?> propertyNames() {
+        public java.util.Enumeration<?> propertyNames()
+        {
             return properties.propertyNames();
         }
 
-        public String getProperty(String key) {
+        public String getProperty(String key)
+        {
             return properties.getProperty(key);
         }
 
-        public String toString() {
+        public String toString()
+        {
             return properties.toString();
         }
     }

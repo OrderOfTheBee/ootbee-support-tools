@@ -60,8 +60,10 @@ import org.springframework.extensions.webscripts.annotation.ScriptClassType;
  *
  * @author Bulat Yaminov
  */
-@ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "batchExecuter", help = "the root object for the de.jgoldhammer.alfresco.jscript.de interface")
-public class ScriptBatchExecuter extends BaseScopableProcessorExtension implements ApplicationContextAware {
+@ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "batchExecuter",
+             help = "the root object for the de.jgoldhammer.alfresco.jscript.de interface")
+public class ScriptBatchExecuter extends BaseScopableProcessorExtension implements ApplicationContextAware
+{
 
     private static final Log logger = LogFactory.getLog(ScriptBatchExecuter.class);
 
@@ -72,8 +74,8 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
 
     private static ConcurrentHashMap<String, BatchJobParameters> runningJobs = new ConcurrentHashMap<>(10);
     @SuppressWarnings("rawtypes")
-    private static ConcurrentHashMap<String, Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>> runningWorkProviders = new ConcurrentHashMap<>(
-            10);
+    private static ConcurrentHashMap<String, Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>> runningWorkProviders =
+        new ConcurrentHashMap<>(10);
 
     /**
      * Starts processing an array of objects, applying a function to each object or
@@ -86,7 +88,8 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
      *               {@link BatchJobParameters} for all parameters.
      * @return job ID.
      */
-    public String processArray(Object params) {
+    public String processArray(Object params)
+    {
         BatchJobParameters.ProcessArrayJobParameters job = BatchJobParameters.parseArrayParameters(params);
         return doProcess(job, WorkProviders.CollectionWorkProviderFactory.getInstance(), job.getItems());
     }
@@ -104,11 +107,12 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
      *               {@link BatchJobParameters} for all parameters.
      * @return job ID.
      */
-    public String processFolderRecursively(Object params) {
+    public String processFolderRecursively(Object params)
+    {
         BatchJobParameters.ProcessFolderJobParameters job = BatchJobParameters.parseFolderParameters(params);
         return doProcess(job,
-                new WorkProviders.FolderBrowsingWorkProviderFactory(serviceRegistry, getScope(), logger),
-                job.getRoot().getNodeRef());
+                         new WorkProviders.FolderBrowsingWorkProviderFactory(serviceRegistry, getScope(), logger),
+                         job.getRoot().getNodeRef());
     }
 
     /**
@@ -116,7 +120,8 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
      *
      * @return collection of de.jgoldhammer.alfresco.jscript.jobs being executed.
      */
-    public Collection<BatchJobParameters> getCurrentJobs() {
+    public Collection<BatchJobParameters> getCurrentJobs()
+    {
         return runningJobs.values();
     }
 
@@ -129,8 +134,10 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
      *         False if job was already finished or never existed.
      */
     @SuppressWarnings("rawtypes")
-    public synchronized boolean cancelJob(String jobId) {
-        if (jobId == null) {
+    public synchronized boolean cancelJob(String jobId)
+    {
+        if (jobId == null)
+        {
             return false;
         }
 
@@ -138,11 +145,13 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
         // so the only way to cancel is stop giving new work packages
         BatchJobParameters job = runningJobs.get(jobId);
         Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker> pair = runningWorkProviders.get(jobId);
-        if (pair != null) {
+        if (pair != null)
+        {
             boolean workProviderCanceled = pair.getFirst().cancel();
             boolean workerCanceled = pair.getSecond().cancel();
             boolean canceled = workProviderCanceled || workerCanceled; // either cancellation is a change
-            if (canceled && job != null) {
+            if (canceled && job != null)
+            {
                 job.setStatus(BatchJobParameters.Status.CANCELED);
             }
             return canceled;
@@ -152,9 +161,11 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
 
     @SuppressWarnings("rawtypes")
     private <T> String doProcess(BatchJobParameters job,
-            WorkProviders.NodeOrBatchWorkProviderFactory<T> workFactory,
-            T data) {
-        try {
+                                 WorkProviders.NodeOrBatchWorkProviderFactory<T> workFactory,
+                                 T data)
+    {
+        try
+        {
             /* Process items */
             runningJobs.put(job.getId(), job);
 
@@ -165,72 +176,83 @@ public class ScriptBatchExecuter extends BaseScopableProcessorExtension implemen
 
             job.setStatus(BatchJobParameters.Status.RUNNING);
 
-            if (job.getOnNode() != null) {
+            if (job.getOnNode() != null)
+            {
 
                 // Let the BatchProcessor do the batching
                 WorkProviders.CancellableWorkProvider<Object> workProvider = workFactory.newNodesWorkProvider(data,
-                        job.getBatchSize());
+                    job.getBatchSize());
                 Workers.ProcessNodeWorker worker = new Workers.ProcessNodeWorker(job.getOnNode(), cachedScope,
-                        user, job.getDisableRules(), ruleService, logger, this);
+                    user, job.getDisableRules(), ruleService, logger, this);
 
                 runningWorkProviders.put(job.getId(),
-                        new Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>(workProvider,
-                                worker));
+                                         new Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>(workProvider,
+                                                 worker));
 
                 BatchProcessor<Object> processor = new BatchProcessor<>(job.getName(), rth,
-                        workProvider,
-                        job.getThreads(), job.getBatchSize(), applicationContext, logger, 1000);
+                    workProvider,
+                    job.getThreads(), job.getBatchSize(), applicationContext, logger, 1000);
                 logger.info(String.format("Starting de.jgoldhammer.alfresco.jscript.batch processor '%s' to process %s",
-                        job.getName(), workFactory.describe(data)));
+                                          job.getName(), workFactory.describe(data)));
                 processor.process(worker, true);
 
-            } else {
+            }
+            else
+            {
 
                 // Split into batches here so that onBatch function can process them
                 WorkProviders.CancellableWorkProvider<List<Object>> workProvider = workFactory
-                        .newBatchesWorkProvider(data, job.getBatchSize());
+                    .newBatchesWorkProvider(data, job.getBatchSize());
                 Workers.ProcessBatchWorker worker = new Workers.ProcessBatchWorker(job.getOnBatch(), cachedScope,
-                        user, job.getDisableRules(), ruleService, logger, this);
+                    user, job.getDisableRules(), ruleService, logger, this);
 
                 runningWorkProviders.put(job.getId(),
-                        new Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>(workProvider,
-                                worker));
+                                         new Pair<WorkProviders.CancellableWorkProvider, Workers.CancellableWorker>(workProvider,
+                                                 worker));
 
                 BatchProcessor<List<Object>> processor = new BatchProcessor<>(job.getName(), rth,
-                        workProvider,
-                        job.getThreads(), 1, applicationContext, logger, 1);
+                    workProvider,
+                    job.getThreads(), 1, applicationContext, logger, 1);
                 logger.info(String.format(
-                        "Starting de.jgoldhammer.alfresco.jscript.batch processor '%s' to process %s with de.jgoldhammer.alfresco.jscript.batch function",
-                        job.getName(), workFactory.describe(data)));
+                                "Starting de.jgoldhammer.alfresco.jscript.batch processor '%s' to process %s "
+                                + "with de.jgoldhammer.alfresco.jscript.batch function",
+                                job.getName(), workFactory.describe(data)));
                 processor.process(worker, true);
             }
 
-            if (job.getStatus() != BatchJobParameters.Status.CANCELED) {
+            if (job.getStatus() != BatchJobParameters.Status.CANCELED)
+            {
                 job.setStatus(BatchJobParameters.Status.FINISHED);
             }
 
             return job.getName();
 
-        } finally {
+        }
+        finally
+        {
             runningJobs.remove(job.getId());
             runningWorkProviders.remove(job.getId());
         }
     }
 
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+    public void setServiceRegistry(ServiceRegistry serviceRegistry)
+    {
         this.serviceRegistry = serviceRegistry;
     }
 
-    public void setTransactionService(TransactionService transactionService) {
+    public void setTransactionService(TransactionService transactionService)
+    {
         this.transactionService = transactionService;
     }
 
-    public void setRuleService(RuleService ruleService) {
+    public void setRuleService(RuleService ruleService)
+    {
         this.ruleService = ruleService;
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
+    {
         this.applicationContext = applicationContext;
     }
 

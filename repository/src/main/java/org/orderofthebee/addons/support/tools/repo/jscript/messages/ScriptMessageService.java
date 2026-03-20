@@ -41,47 +41,53 @@ import org.mozilla.javascript.Scriptable;
 /**
  *
  *
- * copied from https://github.com/bluedolmen/App-blue-courrier/blob/ba0fa1e8119419fdb3bb3ccf844e60ad9df9a736/alfresco-extensions/src/main/java/org/bluedolmen/repo/jscript/MessageScript.java
+ * copied from https://github.com/bluedolmen/App-blue-courrier/blob/ba0fa1e8119419fdb3bb3ccf844e60ad9df9a736/
+ * alfresco-extensions/src/main/java/org/bluedolmen/repo/jscript/MessageScript.java
  */
-public class ScriptMessageService extends BaseScopableProcessorExtension {
-	
-	private final ValueConverter valueConverter = new ValueConverter();
+public class ScriptMessageService extends BaseScopableProcessorExtension
+{
 
-	public String get(String messageKey) {
-		return getMessage(messageKey);
-	}
-	
-	public String getMessage(String messageKey) {
-		return messageService.getMessage(messageKey);
-	}
-	
-	public String get(String messageKey, Scriptable params) {
-		return getMessage(messageKey, params);
-	}
-	
-	public String getMessage(String messageKey, Scriptable params) {
-		
-		final Object convertedValue = valueConverter.convertValueForJava(params);
-		Preconditions.checkArgument(convertedValue instanceof List<?>);
+    private final ValueConverter valueConverter = new ValueConverter();
 
-		final List<?> paramsList = (List<?>) convertedValue;
-		final Object[] paramsArray = paramsList.toArray();
-		return messageService.getMessage(messageKey, paramsArray);
-		
-	}
+    public String get(String messageKey)
+    {
+        return getMessage(messageKey);
+    }
 
-	public Scriptable getRegisteredBundles(){
-		Set<String> registeredBundles = messageService.getRegisteredBundles();
-		return Context.getCurrentContext().newArray(getScope(),registeredBundles.toArray(new Object[registeredBundles.size()]));
+    public String getMessage(String messageKey)
+    {
+        return messageService.getMessage(messageKey);
+    }
 
-	}
-	
-	// IoC
-	
-	private MessageService messageService;
-	
-	public void setMessageService(MessageService messageService) {
-		this.messageService = messageService;
-	}
-	
+    public String get(String messageKey, Scriptable params)
+    {
+        return getMessage(messageKey, params);
+    }
+
+    public String getMessage(String messageKey, Scriptable params)
+    {
+
+        final Object convertedValue = valueConverter.convertValueForJava(params);
+        Preconditions.checkArgument(convertedValue instanceof List<?>);
+
+        final List<?> paramsList = (List<?>) convertedValue;
+        final Object[] paramsArray = paramsList.toArray();
+        return messageService.getMessage(messageKey, paramsArray);
+
+    }
+
+    public Scriptable getRegisteredBundles()
+    {
+        Set<String> registeredBundles = messageService.getRegisteredBundles();
+        return Context.getCurrentContext().newArray(getScope(),registeredBundles.toArray(new Object[registeredBundles.size()]));
+
+    }
+
+    private MessageService messageService;
+
+    public void setMessageService(MessageService messageService)
+    {
+        this.messageService = messageService;
+    }
+
 }

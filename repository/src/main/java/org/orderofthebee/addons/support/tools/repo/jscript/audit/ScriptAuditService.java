@@ -46,154 +46,172 @@ import java.util.Map;
  * query the auditservice and clearing the audit entries of a given app.
  *
  * @author jgoldhammer
- * 
+ *
  */
-public class ScriptAuditService extends BaseScopableProcessorExtension {
+public class ScriptAuditService extends BaseScopableProcessorExtension
+{
 
-	AuditService auditService;
+    AuditService auditService;
 
-	public void setAuditService(AuditService auditService) {
-		this.auditService = auditService;
-	}
+    public void setAuditService(AuditService auditService)
+    {
+        this.auditService = auditService;
+    }
 
-	public boolean isAllEnabled() {
-		return auditService.isAuditEnabled();
-	}
+    public boolean isAllEnabled()
+    {
+        return auditService.isAuditEnabled();
+    }
 
-	
-	public boolean isEnabledFor(String appName, String path) {
-		return auditService.isAuditEnabled(appName, path);
-	}
 
-	public void enableAll() {
-		auditService.setAuditEnabled(true);
-	}
+    public boolean isEnabledFor(String appName, String path)
+    {
+        return auditService.isAuditEnabled(appName, path);
+    }
 
-	public void disableAll() {
-		auditService.setAuditEnabled(false);
-	}
+    public void enableAll()
+    {
+        auditService.setAuditEnabled(true);
+    }
 
-	public Map<String, AuditService.AuditApplication> getApplications(){
-		return auditService.getAuditApplications();
-	}
+    public void disableAll()
+    {
+        auditService.setAuditEnabled(false);
+    }
 
-	public void clearAll(String appName) {
-		auditService.clearAudit(appName, null, null);
-	}
+    public Map<String, AuditService.AuditApplication> getApplications()
+    {
+        return auditService.getAuditApplications();
+    }
 
-	/**
-	 * Remove .audit entries for the given application between the time ranges.
-	 * If no start time is given then entries are deleted as far back as they
-	 * exist. If no end time is given then entries are deleted up until the
-	 * current time.
-	 * 
-	 * @param appName
-	 *            the name of the application for which to remove entries
-	 * @param start
-	 *            the start time of entries to remove (inclusive and optional)
-	 * @param end
-	 *            the end time of entries to remove (exclusive and optional)
-	 *
-	 * @since 3.4
-	 **/
-	public void clear(String appName, long start, long end) {
-		auditService.clearAudit(appName, start, end);
-	}
+    public void clearAll(String appName)
+    {
+        auditService.clearAudit(appName, null, null);
+    }
 
-	/**
-	 * Issue an audit query using the given parameters and consuming results.
-	 * Results are returned in entry order, corresponding to time order.
-	 *
-	 * @param appName
-	 *            if not null, find entries logged against this application
-	 * @param user
-	 *            if not null, find entries logged against this user
-	 * @param path
-	 *            if not null, find entries logged against this path
-	 * @param fromTime
-	 *            the start search time (<code>null</code> to start at the
-	 *            beginning)
-	 * @param toTime
-	 *            the end search time (<code>null</code> for no limit)
-	 * @param forward
-	 *            <code>true</code> for results to ordered from first to last, or
-	 *            <code>false</code> to order from last to first
-	 * @param limit
-	 *            the maximum number of results to retrieve (zero or negative to
-	 *            ignore)
-	 * @param valuesRequired
-	 *            Determines whether the entries will be populated with data
-	 * @return an array of maps with key=noderef and values=entryvalues
-	 */
-	public Map<String, ScriptAuditValue> query(String appName, String user,
-			String path, Long fromTime, Long toTime, Boolean forward,
-			Integer limit, Boolean valuesRequired) {
+    /**
+     * Remove .audit entries for the given application between the time ranges.
+     * If no start time is given then entries are deleted as far back as they
+     * exist. If no end time is given then entries are deleted up until the
+     * current time.
+     *
+     * @param appName
+     *            the name of the application for which to remove entries
+     * @param start
+     *            the start time of entries to remove (inclusive and optional)
+     * @param end
+     *            the end time of entries to remove (exclusive and optional)
+     *
+     * @since 3.4
+     **/
+    public void clear(String appName, long start, long end)
+    {
+        auditService.clearAudit(appName, start, end);
+    }
 
-		final AuditQueryParameters params = createAuditParameters(appName,
-				user, fromTime, toTime, forward);
+    /**
+     * Issue an audit query using the given parameters and consuming results.
+     * Results are returned in entry order, corresponding to time order.
+     *
+     * @param appName
+     *            if not null, find entries logged against this application
+     * @param user
+     *            if not null, find entries logged against this user
+     * @param path
+     *            if not null, find entries logged against this path
+     * @param fromTime
+     *            the start search time (<code>null</code> to start at the
+     *            beginning)
+     * @param toTime
+     *            the end search time (<code>null</code> for no limit)
+     * @param forward
+     *            <code>true</code> for results to ordered from first to last, or
+     *            <code>false</code> to order from last to first
+     * @param limit
+     *            the maximum number of results to retrieve (zero or negative to
+     *            ignore)
+     * @param valuesRequired
+     *            Determines whether the entries will be populated with data
+     * @return an array of maps with key=noderef and values=entryvalues
+     */
+    public Map<String, ScriptAuditValue> query(String appName, String user,
+            String path, Long fromTime, Long toTime, Boolean forward,
+            Integer limit, Boolean valuesRequired)
+    {
 
-		if (valuesRequired == null) {
-			valuesRequired = Boolean.TRUE;
-		}
+        final AuditQueryParameters params = createAuditParameters(appName,
+                                            user, fromTime, toTime, forward);
 
-		if (limit == null) {
-			limit = 25;
-		}
+        if (valuesRequired == null)
+        {
+            valuesRequired = Boolean.TRUE;
+        }
 
-		final Map<String, ScriptAuditValue> results = Maps.newLinkedHashMap();
-		auditService.auditQuery(new AuditQueryCallback() {
-			@Override
-			public boolean valuesRequired() {
-				return true;
-			}
+        if (limit == null)
+        {
+            limit = 25;
+        }
 
-			@Override
-			public boolean handleAuditEntryError(Long entryId, String errorMsg,
-					Throwable error) {
-				// LOG.warn(
-				// "Error fetching tagging update entry - " + errorMsg,
-				// error);
-				// Keep trying
-				return true;
-			}
+        final Map<String, ScriptAuditValue> results = Maps.newLinkedHashMap();
+        auditService.auditQuery(new AuditQueryCallback()
+        {
+            @Override
+            public boolean valuesRequired()
+            {
+                return true;
+            }
 
-			@Override
-			public boolean handleAuditEntry(Long entryId,
-					String applicationName, String user, long time,
-					Map<String, Serializable> values) {
-				results.put(String.valueOf(entryId), new ScriptAuditValue(
-						applicationName, user, time, values));
-				return true;
+            @Override
+            public boolean handleAuditEntryError(Long entryId, String errorMsg,
+                                                 Throwable error)
+            {
+                return true;
+            }
 
-			}
-		}, params, limit);
-		return results;
-	}
+            @Override
+            public boolean handleAuditEntry(Long entryId,
+                                            String applicationName, String user, long time,
+                                            Map<String, Serializable> values)
+            {
+                results.put(String.valueOf(entryId), new ScriptAuditValue(
+                                applicationName, user, time, values));
+                return true;
 
-	private AuditQueryParameters createAuditParameters(String appName,
-			String user, Long fromTime, Long toTime, Boolean forward) {
-		final AuditQueryParameters params = new AuditQueryParameters();
+            }
+        }, params, limit);
+        return results;
+    }
 
-		if (forward != null) {
-			params.setForward(forward);
-		}
+    private AuditQueryParameters createAuditParameters(String appName,
+            String user, Long fromTime, Long toTime, Boolean forward)
+    {
+        final AuditQueryParameters params = new AuditQueryParameters();
 
-		if (StringUtils.isNotBlank(appName)) {
-			params.setApplicationName(appName);
-		}
+        if (forward != null)
+        {
+            params.setForward(forward);
+        }
 
-		if (StringUtils.isNotBlank(user)) {
-			params.setUser(user);
-		}
+        if (StringUtils.isNotBlank(appName))
+        {
+            params.setApplicationName(appName);
+        }
 
-		if (fromTime != null) {
-			params.setFromTime(fromTime);
-		}
+        if (StringUtils.isNotBlank(user))
+        {
+            params.setUser(user);
+        }
 
-		if (toTime != null) {
-			params.setToTime(toTime);
-		}
-		return params;
-	}
+        if (fromTime != null)
+        {
+            params.setFromTime(fromTime);
+        }
+
+        if (toTime != null)
+        {
+            params.setToTime(toTime);
+        }
+        return params;
+    }
 
 }

@@ -40,13 +40,17 @@ import java.util.*;
  *
  * @author Bulat Yaminov
  */
-public class RhinoUtils {
+public class RhinoUtils
+{
 
-    public static Map<String, Object> convertToMap(ScriptableObject o) {
+    public static Map<String, Object> convertToMap(ScriptableObject o)
+    {
         Map<String, Object> map = new HashMap<>();
         Object[] propIds = o.getIds();
-        for (Object propId : propIds) {
-            if (propId instanceof String) {
+        for (Object propId : propIds)
+        {
+            if (propId instanceof String)
+            {
                 String key = (String) propId;
                 Object value = o.get(key, o);
                 map.put(key, value);
@@ -55,109 +59,153 @@ public class RhinoUtils {
         return map;
     }
 
-    public static int getInteger(Map<String, Object> map, String key, int defaultValue) {
+    public static int getInteger(Map<String, Object> map, String key, int defaultValue)
+    {
         int result = defaultValue;
         Object val = map.get(key);
-        if (val != null) {
-            if (val instanceof NativeJavaObject) {
+        if (val != null)
+        {
+            if (val instanceof NativeJavaObject)
+            {
                 val = ((NativeJavaObject) val).unwrap();
             }
-            if (val instanceof Number) {
+            if (val instanceof Number)
+            {
                 result = ((Number) val).intValue();
-                if (result < 0) {
+                if (result < 0)
+                {
                     throw new IllegalArgumentException(key + " must be a positive number, but is instead: " + val);
                 }
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(key + " must be an integer, but is instead: " + val);
             }
         }
         return result;
     }
 
-    public static String getString(Map<String, Object> map, String key, String defaultValue) {
+    public static String getString(Map<String, Object> map, String key, String defaultValue)
+    {
         String result = defaultValue;
         Object val = map.get(key);
-        if (val != null) {
-            if (val instanceof NativeJavaObject) {
+        if (val != null)
+        {
+            if (val instanceof NativeJavaObject)
+            {
                 val = ((NativeJavaObject) val).unwrap();
             }
-            if (val instanceof String) {
+            if (val instanceof String)
+            {
                 String value = ((String) val);
-                if (StringUtils.isNotBlank(value)) {
+                if (StringUtils.isNotBlank(value))
+                {
                     result = value;
                 }
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(key + " must be an string, but is instead: " + val);
             }
         }
         return result;
     }
 
-    public static Function getFunction(Map<String, Object> map, String key) {
+    public static Function getFunction(Map<String, Object> map, String key)
+    {
         Function result = null;
-        if (map.get(key) != null) {
-            if (map.get(key) instanceof Function) {
+        if (map.get(key) != null)
+        {
+            if (map.get(key) instanceof Function)
+            {
                 result = (Function) map.get(key);
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(key + " must be a function, but is instead: " + map.get(key));
             }
         }
         return result;
     }
 
-    public static List<Object> getArray(Map<String, Object> map, String key) {
+    public static List<Object> getArray(Map<String, Object> map, String key)
+    {
         List<Object> result = null;
         Object value = map.get(key);
-        if (value != null) {
-            if (value instanceof NativeArray) {
+        if (value != null)
+        {
+            if (value instanceof NativeArray)
+            {
                 NativeArray array = (NativeArray) value;
                 Object[] propIds = array.getIds();
                 result = new ArrayList<>(propIds.length);
-                for (Object propId : propIds) {
-                    if (propId instanceof Integer) {
+                for (Object propId : propIds)
+                {
+                    if (propId instanceof Integer)
+                    {
                         result.add(array.get((Integer) propId, array));
                     }
                 }
-            } else if (value instanceof Object[]) {
+            }
+            else if (value instanceof Object[])
+            {
                 result = Arrays.asList((Object[]) value);
-            } else if (value instanceof NativeJavaArray) {
+            }
+            else if (value instanceof NativeJavaArray)
+            {
                 result = Arrays.asList((Object[]) ((NativeJavaArray) value).unwrap());
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(key +
-                        " must be a NativeArray or Object[], but is instead: " + value);
+                                                   " must be a NativeArray or Object[], but is instead: " + value);
             }
         }
         return result;
     }
 
-    public static boolean getBoolean(Map<String, Object> map, String key, boolean defaultValue) {
+    public static boolean getBoolean(Map<String, Object> map, String key, boolean defaultValue)
+    {
         boolean result = defaultValue;
         Object val = map.get(key);
-        if (val != null) {
-            if (val instanceof NativeJavaObject) {
+        if (val != null)
+        {
+            if (val instanceof NativeJavaObject)
+            {
                 val = ((NativeJavaObject) val).unwrap();
             }
-            if (val instanceof Boolean) {
+            if (val instanceof Boolean)
+            {
                 result = (Boolean) val;
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(key + " must be a boolean, but is instead: " + val);
             }
         }
         return result;
     }
 
-    public static ScriptNode getScriptNode(Map<String, Object> map, String key) {
+    public static ScriptNode getScriptNode(Map<String, Object> map, String key)
+    {
         ScriptNode result = null;
-        if (map.get(key) != null) {
-            if (map.get(key) instanceof NativeJavaObject) {
+        if (map.get(key) != null)
+        {
+            if (map.get(key) instanceof NativeJavaObject)
+            {
                 Object o = ((NativeJavaObject) map.get(key)).unwrap();
-                if (o instanceof ScriptNode) {
+                if (o instanceof ScriptNode)
+                {
                     result = (ScriptNode) o;
-                } else {
-                    throw new IllegalArgumentException(key +
-                            " must have a ScriptNode as Java object, but has instead: " + o);
                 }
-            } else {
+                else
+                {
+                    throw new IllegalArgumentException(key +
+                                                       " must have a ScriptNode as Java object, but has instead: " + o);
+                }
+            }
+            else
+            {
                 throw new IllegalArgumentException(key + " must be a JavaObject, but is instead: " + map.get(key));
             }
         }

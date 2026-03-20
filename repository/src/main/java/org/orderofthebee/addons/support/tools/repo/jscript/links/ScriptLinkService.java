@@ -45,78 +45,92 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
  * delete all links for a document and get the original document of a given
  * link.
  */
-public class ScriptLinkService extends BaseScopableProcessorExtension {
+public class ScriptLinkService extends BaseScopableProcessorExtension
+{
 
-	DocumentLinkService documentLinkService;
-	ServiceRegistry services;
+    DocumentLinkService documentLinkService;
+    ServiceRegistry services;
 
-	public void setDocumentLinkService(DocumentLinkService documentLinkService) {
-		this.documentLinkService = documentLinkService;
-	}
+    public void setDocumentLinkService(DocumentLinkService documentLinkService)
+    {
+        this.documentLinkService = documentLinkService;
+    }
 
-	/**
-	 * Sets the service registry
-	 *
-	 * @param services the service registry
-	 */
-	public void setServiceRegistry(ServiceRegistry services) {
-		this.services = services;
-	}
+    /**
+     * Sets the service registry
+     *
+     * @param services the service registry
+     */
+    public void setServiceRegistry(ServiceRegistry services)
+    {
+        this.services = services;
+    }
 
-	/**
-	 * creates a link from the source to the target
-	 * 
-	 * @param source       the document to link in another folder
-	 * @param targetFolder folder the document should be linked to.
-	 * @return the created link as script node
-	 */
-	public ScriptNode createLink(ScriptNode source, ScriptNode targetFolder) {
-		Preconditions.checkNotNull(source);
-		Preconditions.checkNotNull(targetFolder);
+    /**
+     * creates a link from the source to the target
+     *
+     * @param source       the document to link in another folder
+     * @param targetFolder folder the document should be linked to.
+     * @return the created link as script node
+     */
+    public ScriptNode createLink(ScriptNode source, ScriptNode targetFolder)
+    {
+        Preconditions.checkNotNull(source);
+        Preconditions.checkNotNull(targetFolder);
 
-		List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(targetFolder.getNodeRef());
-		for (ChildAssociationRef child : children) {
-			NodeRef childNode = child.getChildRef();
-			try {
-				NodeRef dest = documentLinkService.getLinkDestination(childNode);
-				if (dest != null && dest.equals(source.getNodeRef())) {
-					return new ScriptNode(childNode, services);
-				}
-			} catch (Exception e) {
-				// Not a link or permission issue, ignore
-			}
-		}
+        List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(targetFolder.getNodeRef());
+        for (ChildAssociationRef child : children)
+        {
+            NodeRef childNode = child.getChildRef();
+            try
+            {
+                NodeRef dest = documentLinkService.getLinkDestination(childNode);
+                if (dest != null && dest.equals(source.getNodeRef()))
+                {
+                    return new ScriptNode(childNode, services);
+                }
+            }
+            catch (Exception e)
+            {
+                // Not a link or permission issue, ignore
+            }
+        }
 
-		return new ScriptNode(documentLinkService.createDocumentLink(source.getNodeRef(),
-				targetFolder.getNodeRef()), services);
-	}
+        return new ScriptNode(documentLinkService.createDocumentLink(source.getNodeRef(),
+                              targetFolder.getNodeRef()), services);
+    }
 
-	/**
-	 * delete all links of the given document.
-	 *
-	 * @param source - document or folder to delete all links for.
-	 * @return the deletelinkstatusreport object which holds information about the
-	 *         deletion
-	 */
-	public DeleteLinksStatusReport deleteLinks(ScriptNode source) {
-		Preconditions.checkNotNull(source);
-		return documentLinkService.deleteLinksToDocument(source.getNodeRef());
-	}
+    /**
+     * delete all links of the given document.
+     *
+     * @param source - document or folder to delete all links for.
+     * @return the deletelinkstatusreport object which holds information about the
+     *         deletion
+     */
+    public DeleteLinksStatusReport deleteLinks(ScriptNode source)
+    {
+        Preconditions.checkNotNull(source);
+        return documentLinkService.deleteLinksToDocument(source.getNodeRef());
+    }
 
-	/**
-	 * get the original document for a linked node.
-	 *
-	 * @param link the document to get the source document for.
-	 * @return the source document or null (if the given parameter is not a link)
-	 */
-	public ScriptNode getSource(ScriptNode link) {
-		Preconditions.checkNotNull(link);
-		NodeRef sourceDocument = documentLinkService.getLinkDestination(link.getNodeRef());
-		if (sourceDocument != null) {
-			return new ScriptNode(sourceDocument, services);
-		} else {
-			return null;
-		}
-	}
+    /**
+     * get the original document for a linked node.
+     *
+     * @param link the document to get the source document for.
+     * @return the source document or null (if the given parameter is not a link)
+     */
+    public ScriptNode getSource(ScriptNode link)
+    {
+        Preconditions.checkNotNull(link);
+        NodeRef sourceDocument = documentLinkService.getLinkDestination(link.getNodeRef());
+        if (sourceDocument != null)
+        {
+            return new ScriptNode(sourceDocument, services);
+        }
+        else
+        {
+            return null;
+        }
+    }
 
 }

@@ -43,7 +43,8 @@ import java.util.Map;
  *
  * @author Bulat Yaminov
  */
-public abstract class BatchJobParameters {
+public abstract class BatchJobParameters
+{
 
     private static final String PARAM_ITEMS = "items";
     private static final String PARAM_ROOT = "root";
@@ -68,12 +69,15 @@ public abstract class BatchJobParameters {
 
     private Status status;
 
-    public enum Status {
+    public enum Status
+    {
         RUNNING, FINISHED, CANCELED
     }
 
     /** New instance can only be created using static factory methods */
-    protected BatchJobParameters() {}
+    protected BatchJobParameters()
+    {
+    }
 
     /**
      * Parse JavaScript object with job parameters and return
@@ -84,10 +88,12 @@ public abstract class BatchJobParameters {
      * @return Parsed job parameters object.
      * @throws IllegalArgumentException when parameters are incorrect.
      */
-    public static ProcessArrayJobParameters parseArrayParameters(Object params) throws IllegalArgumentException {
+    public static ProcessArrayJobParameters parseArrayParameters(Object params) throws IllegalArgumentException
+    {
         Map<String, Object> paramsMap = getParametersMap(params);
         final List<Object> items = RhinoUtils.getArray(paramsMap, PARAM_ITEMS);
-        if (items == null) {
+        if (items == null)
+        {
             throw new IllegalArgumentException(PARAM_ITEMS + " must be specified and be an array");
         }
 
@@ -109,10 +115,12 @@ public abstract class BatchJobParameters {
      * @return Parsed job parameters object.
      * @throws IllegalArgumentException when parameters are incorrect.
      */
-    public static ProcessFolderJobParameters parseFolderParameters(Object params) throws IllegalArgumentException {
+    public static ProcessFolderJobParameters parseFolderParameters(Object params) throws IllegalArgumentException
+    {
         Map<String, Object> paramsMap = getParametersMap(params);
         final ScriptNode root = RhinoUtils.getScriptNode(paramsMap, PARAM_ROOT);
-        if (root == null) {
+        if (root == null)
+        {
             throw new IllegalArgumentException(PARAM_ROOT + " must be specified and be a node");
         }
 
@@ -125,7 +133,8 @@ public abstract class BatchJobParameters {
         return job;
     }
 
-    private static void parseCommonParameters(BatchJobParameters job, Map<String, Object> paramsMap) {
+    private static void parseCommonParameters(BatchJobParameters job, Map<String, Object> paramsMap)
+    {
         /* Parse common parameters */
         job.setBatchSize(RhinoUtils.getInteger(paramsMap, PARAM_BATCH_SIZE, DEFAULT_BATCH_SIZE));
         job.setThreads(RhinoUtils.getInteger(paramsMap, PARAM_THREADS, DEFAULT_THREADS));
@@ -133,149 +142,184 @@ public abstract class BatchJobParameters {
 
         final Function onNode = RhinoUtils.getFunction(paramsMap, PARAM_ON_NODE);
         final Function onBatch = RhinoUtils.getFunction(paramsMap, PARAM_ON_BATCH);
-        if (onNode == null && onBatch == null) {
+        if (onNode == null && onBatch == null)
+        {
             throw new IllegalArgumentException("one of " + PARAM_ON_NODE + " or " + PARAM_ON_BATCH +
-                    " function is required");
+                                               " function is required");
         }
-        if (onNode != null && onBatch != null) {
+        if (onNode != null && onBatch != null)
+        {
             throw new IllegalArgumentException("only one of " + PARAM_ON_NODE + " or " + PARAM_ON_BATCH +
-                    " function can be specified");
+                                               " function can be specified");
         }
 
         job.setOnNode(onNode);
         job.setOnBatch(onBatch);
     }
 
-    public static Map<String, Object> getParametersMap(Object params) {
-        if (!(params instanceof ScriptableObject)) {
+    public static Map<String, Object> getParametersMap(Object params)
+    {
+        if (!(params instanceof ScriptableObject))
+        {
             throw new IllegalArgumentException("first parameter must be an object but was: " + params);
         }
         return RhinoUtils.convertToMap((ScriptableObject) params);
     }
 
-    private static void generateJobNameAndId(BatchJobParameters job, String shortTitle) {
+    private static void generateJobNameAndId(BatchJobParameters job, String shortTitle)
+    {
         if (shortTitle == null)
             shortTitle = "";
         String random = RandomStringUtils.randomAlphabetic(20);
         job.setId(random);
         // Make name shorter for nicer logs
         job.setName(String.format("BatchExecuter_%s_%s",
-                shortTitle.substring(0, Math.min(20, shortTitle.length())),
-                random.substring(0, 4).toLowerCase()));
+                                  shortTitle.substring(0, Math.min(20, shortTitle.length())),
+                                  random.substring(0, 4).toLowerCase()));
     }
 
 
     /* Getters and setters */
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String id) {
+    public void setName(String id)
+    {
         this.name = id;
     }
 
-    public int getThreads() {
+    public int getThreads()
+    {
         return threads;
     }
 
-    public void setThreads(int threads) {
+    public void setThreads(int threads)
+    {
         this.threads = threads;
     }
 
-    public int getBatchSize() {
+    public int getBatchSize()
+    {
         return batchSize;
     }
 
-    public void setBatchSize(int batchSize) {
+    public void setBatchSize(int batchSize)
+    {
         this.batchSize = batchSize;
     }
 
-    public boolean getDisableRules() {
+    public boolean getDisableRules()
+    {
         return disableRules;
     }
 
-    public void setDisableRules(boolean disableRules) {
+    public void setDisableRules(boolean disableRules)
+    {
         this.disableRules = disableRules;
     }
 
-    public String getOnNodeFunction() {
+    public String getOnNodeFunction()
+    {
         return onNodeFunction;
     }
 
-    public String getOnBatchFunction() {
+    public String getOnBatchFunction()
+    {
         return onBatchFunction;
     }
 
-    public void setOnNode(Function onNode) {
+    public void setOnNode(Function onNode)
+    {
         this.onNode = onNode;
-        if (onNode != null) {
+        if (onNode != null)
+        {
             this.onNodeFunction = Context.getCurrentContext().decompileFunction(onNode, 2);
         }
     }
 
-    public Function getOnNode() {
+    public Function getOnNode()
+    {
         return onNode;
     }
 
-    public void setOnBatch(Function onBatch) {
+    public void setOnBatch(Function onBatch)
+    {
         this.onBatch = onBatch;
-        if (onBatch != null) {
+        if (onBatch != null)
+        {
             this.onBatchFunction = Context.getCurrentContext().decompileFunction(onBatch, 2);
         }
     }
 
-    public Function getOnBatch() {
+    public Function getOnBatch()
+    {
         return onBatch;
     }
 
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
-    public Status getStatus() {
+    public Status getStatus()
+    {
         return status;
     }
 
-    protected void setStatus(Status status) {
+    protected void setStatus(Status status)
+    {
         this.status = status;
     }
 
 
     /* Subclasses */
 
-    public static class ProcessArrayJobParameters extends BatchJobParameters {
+    public static class ProcessArrayJobParameters extends BatchJobParameters
+    {
 
         private List<Object> items;
 
         /** New instance can only be created using static factory methods */
-        private ProcessArrayJobParameters() {}
+        private ProcessArrayJobParameters()
+        {
+        }
 
-        public void setItems(List<Object> items) {
+        public void setItems(List<Object> items)
+        {
             this.items = items;
         }
 
-        public List<Object> getItems() {
+        public List<Object> getItems()
+        {
             return items;
         }
     }
 
-    public static class ProcessFolderJobParameters extends BatchJobParameters {
+    public static class ProcessFolderJobParameters extends BatchJobParameters
+    {
 
         private ScriptNode root;
 
         /** New instance can only be created using static factory methods */
-        private ProcessFolderJobParameters() {}
+        private ProcessFolderJobParameters()
+        {
+        }
 
-        public void setRoot(ScriptNode root) {
+        public void setRoot(ScriptNode root)
+        {
             this.root = root;
         }
 
-        public ScriptNode getRoot() {
+        public ScriptNode getRoot()
+        {
             return root;
         }
     }

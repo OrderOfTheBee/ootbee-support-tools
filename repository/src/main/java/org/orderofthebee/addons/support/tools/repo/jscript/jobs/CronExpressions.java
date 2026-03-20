@@ -39,7 +39,8 @@ import org.springframework.extensions.webscripts.annotation.ScriptClassType;
  * @author Order of the Bee
  */
 @ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "cronExpressions", help = "Useful cron expressions")
-public class CronExpressions extends BaseScopableProcessorExtension {
+public class CronExpressions extends BaseScopableProcessorExtension
+{
 
     public final String EVERY_TEN_SECONDS = "0/10 * * * * ?";
     public final String EVERY_TWENTY_SECONDS = "0/20 * * * * ?";

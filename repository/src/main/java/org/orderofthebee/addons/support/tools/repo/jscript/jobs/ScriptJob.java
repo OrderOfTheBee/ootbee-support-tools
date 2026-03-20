@@ -42,13 +42,14 @@ import java.util.List;
  * Class representing a job which can be used to trigger a new run, check if the
  * job is running and
  * cancel a running job (when the job class supports it).
- * 
+ *
  * Refactored for Quartz 2.x API compatibility.
  *
  * @author jgoldhammer
  * @author Order of the Bee
  */
-public class ScriptJob {
+public class ScriptJob
+{
 
     public final String jobName;
     public final String groupName;
@@ -61,7 +62,8 @@ public class ScriptJob {
     public String cronExpression;
 
     public ScriptJob(String jobName, String jobGroupName, Scheduler scheduler, Date previousFireTime,
-            Date nextFireTime, String calendarName, String triggerName, String triggerGroup) {
+                     Date nextFireTime, String calendarName, String triggerName, String triggerGroup)
+    {
         this.jobName = jobName;
         this.groupName = jobGroupName;
         this.scheduler = scheduler;
@@ -75,57 +77,72 @@ public class ScriptJob {
     /**
      * Starts to trigger the job via quartz runtime which will start the job.
      */
-    public void runNow() {
-        try {
+    public void runNow()
+    {
+        try
+        {
             scheduler.triggerJob(JobKey.jobKey(this.jobName, this.groupName));
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Cannot start job " + this, e);
         }
     }
 
     /**
      * Checks if the current job is running.
-     * 
+     *
      * @return true if running, false if not.
      */
-    public boolean isRunning() {
+    public boolean isRunning()
+    {
         boolean isRunning = false;
-        try {
+        try
+        {
             List<JobExecutionContext> currentlyExecutingJobs = scheduler.getCurrentlyExecutingJobs();
-            for (JobExecutionContext job : currentlyExecutingJobs) {
+            for (JobExecutionContext job : currentlyExecutingJobs)
+            {
                 JobKey key = job.getJobDetail().getKey();
-                if (key.getName().equals(this.jobName) && key.getGroup().equals(this.groupName)) {
+                if (key.getName().equals(this.jobName) && key.getGroup().equals(this.groupName))
+                {
                     isRunning = true;
                     break;
                 }
             }
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Cannot check if the current job " + this + " is running", e);
         }
         return isRunning;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ScriptJob{" +
-                "jobName='" + jobName + '\'' +
-                ", groupName='" + groupName + '\'' +
-                ", previousFireTime=" + previousFireTime +
-                ", nextFireTime=" + nextFireTime +
-                ", calendarName='" + calendarName + '\'' +
-                ", triggerName='" + triggerName + '\'' +
-                ", triggerGroup='" + triggerGroup + '\'' +
-                ", cronExpression='" + cronExpression + '\'' +
-                '}';
+               "jobName='" + jobName + '\'' +
+               ", groupName='" + groupName + '\'' +
+               ", previousFireTime=" + previousFireTime +
+               ", nextFireTime=" + nextFireTime +
+               ", calendarName='" + calendarName + '\'' +
+               ", triggerName='" + triggerName + '\'' +
+               ", triggerGroup='" + triggerGroup + '\'' +
+               ", cronExpression='" + cronExpression + '\'' +
+               '}';
     }
 
     /**
      * Unschedule/cancel the job trigger.
      */
-    public void cancelRun() {
-        try {
+    public void cancelRun()
+    {
+        try
+        {
             scheduler.unscheduleJob(TriggerKey.triggerKey(this.triggerName, this.triggerGroup));
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to cancel the job " + this, e);
         }
     }
@@ -133,10 +150,14 @@ public class ScriptJob {
     /**
      * Pause the job.
      */
-    public void pauseJob() {
-        try {
+    public void pauseJob()
+    {
+        try
+        {
             scheduler.pauseJob(JobKey.jobKey(this.jobName, this.groupName));
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to pause the job " + this, e);
         }
     }
@@ -144,10 +165,14 @@ public class ScriptJob {
     /**
      * Resume a paused job.
      */
-    public void resumeJob() {
-        try {
+    public void resumeJob()
+    {
+        try
+        {
             scheduler.resumeJob(JobKey.jobKey(this.jobName, this.groupName));
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to resume the job " + this, e);
         }
     }
@@ -155,16 +180,21 @@ public class ScriptJob {
     /**
      * Delete the job from the scheduler.
      */
-    public void deleteJob() {
-        try {
+    public void deleteJob()
+    {
+        try
+        {
             scheduler.deleteJob(JobKey.jobKey(this.jobName, this.groupName));
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Cannot delete the job with name " + jobName + " and group " + groupName,
-                    e);
+                                               e);
         }
     }
 
-    public void setCronExpression(String cronExpression) {
+    public void setCronExpression(String cronExpression)
+    {
         this.cronExpression = cronExpression;
     }
 }

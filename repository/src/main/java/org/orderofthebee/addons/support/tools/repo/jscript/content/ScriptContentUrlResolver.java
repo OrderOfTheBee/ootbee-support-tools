@@ -40,32 +40,38 @@ import com.google.common.base.Preconditions;
 /**
  * helps to get the content url of a node.
  *
- * https://github.com/magnus-larsson/my-alfresco/blob/97538c73268e3ca77e39e8cc37d6f61f8f90b4c5/repo/src/main/java/se/vgregion/alfresco/repo/scripts/ContentUrlResolver.java
+ * https://github.com/magnus-larsson/my-alfresco/blob/97538c73268e3ca77e39e8cc37d6f61f8f90b4c5/
+ * repo/src/main/java/se/vgregion/alfresco/repo/scripts/ContentUrlResolver.java
  *
  */
-public class ScriptContentUrlResolver extends BaseScopableProcessorExtension implements InitializingBean {
+public class ScriptContentUrlResolver extends BaseScopableProcessorExtension implements InitializingBean
+{
 
-  private FileFolderService fileFolderService;
+    private FileFolderService fileFolderService;
 
-  public void setFileFolderService(final FileFolderService fileFolderService) {
-    this.fileFolderService = fileFolderService;
-  }
-
-  public String getContentUrl(final String node) {
-    Preconditions.checkNotNull(node);
-    NodeRef nodeRef = new NodeRef(node);
-
-    final FileInfo fileInfo = fileFolderService.getFileInfo(nodeRef);
-
-    if (fileInfo == null || fileInfo.getContentData() == null) {
-      throw new IllegalArgumentException("Cannot get the content date for this node");
+    public void setFileFolderService(final FileFolderService fileFolderService)
+    {
+        this.fileFolderService = fileFolderService;
     }
-    return fileFolderService.getFileInfo(nodeRef).getContentData().getContentUrl();
-  }
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    Assert.notNull(fileFolderService, "FileFolderService must not be null");
-  }
+    public String getContentUrl(final String node)
+    {
+        Preconditions.checkNotNull(node);
+        NodeRef nodeRef = new NodeRef(node);
+
+        final FileInfo fileInfo = fileFolderService.getFileInfo(nodeRef);
+
+        if (fileInfo == null || fileInfo.getContentData() == null)
+        {
+            throw new IllegalArgumentException("Cannot get the content date for this node");
+        }
+        return fileFolderService.getFileInfo(nodeRef).getContentData().getContentUrl();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception
+    {
+        Assert.notNull(fileFolderService, "FileFolderService must not be null");
+    }
 
 }

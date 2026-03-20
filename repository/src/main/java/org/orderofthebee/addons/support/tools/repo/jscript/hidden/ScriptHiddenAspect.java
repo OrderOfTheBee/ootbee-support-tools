@@ -38,37 +38,44 @@ import com.google.common.base.Preconditions;
 /**
  * wraps the api to hide nodes for certain clients or completely...
  */
-public class ScriptHiddenAspect extends BaseScopableProcessorExtension {
+public class ScriptHiddenAspect extends BaseScopableProcessorExtension
+{
 
-	HiddenAspect hiddenAspect;
+    HiddenAspect hiddenAspect;
 
-	public void setHiddenAspect(HiddenAspect hiddenAspect) {
-		this.hiddenAspect = hiddenAspect;
-	}
+    public void setHiddenAspect(HiddenAspect hiddenAspect)
+    {
+        this.hiddenAspect = hiddenAspect;
+    }
 
-	public void hideNodeExplicit(ScriptNode scriptNode) {
-		Preconditions.checkNotNull(scriptNode);
-		hiddenAspect.hideNodeExplicit(scriptNode.getNodeRef());
-	}
+    public void hideNodeExplicit(ScriptNode scriptNode)
+    {
+        Preconditions.checkNotNull(scriptNode);
+        hiddenAspect.hideNodeExplicit(scriptNode.getNodeRef());
+    }
 
-	public void unhideNode(ScriptNode scriptNode) {
-		Preconditions.checkNotNull(scriptNode);
-		hiddenAspect.unhideExplicit(scriptNode.getNodeRef());
-	}
+    public void unhideNode(ScriptNode scriptNode)
+    {
+        Preconditions.checkNotNull(scriptNode);
+        hiddenAspect.unhideExplicit(scriptNode.getNodeRef());
+    }
 
-	public boolean hasHiddenAspect(ScriptNode scriptNode) {
-		Preconditions.checkNotNull(scriptNode);
-		return hiddenAspect.hasHiddenAspect(scriptNode.getNodeRef());
-	}
+    public boolean hasHiddenAspect(ScriptNode scriptNode)
+    {
+        Preconditions.checkNotNull(scriptNode);
+        return hiddenAspect.hasHiddenAspect(scriptNode.getNodeRef());
+    }
 
-	public void removeHiddenAspect(ScriptNode scriptNode) {
-		Preconditions.checkNotNull(scriptNode);
-		hiddenAspect.removeHiddenAspect(scriptNode.getNodeRef());
-	}
+    public void removeHiddenAspect(ScriptNode scriptNode)
+    {
+        Preconditions.checkNotNull(scriptNode);
+        hiddenAspect.removeHiddenAspect(scriptNode.getNodeRef());
+    }
 
-	public HiddenFileInfo onHiddenPath(ScriptNode scriptNode) {
-		Preconditions.checkNotNull(scriptNode);
-		return hiddenAspect.onHiddenPath(scriptNode.getNodeRef());
-	}
+    public HiddenFileInfo onHiddenPath(ScriptNode scriptNode)
+    {
+        Preconditions.checkNotNull(scriptNode);
+        return hiddenAspect.onHiddenPath(scriptNode.getNodeRef());
+    }
 
 }

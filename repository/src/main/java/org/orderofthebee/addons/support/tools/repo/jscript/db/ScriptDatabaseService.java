@@ -51,59 +51,70 @@ import com.google.common.base.Preconditions;
 /**
  * JavaScript root object for database operations.
  * Only admin users are allowed to execute database queries.
- * 
+ *
  * @author jgoldhammer
  */
 @ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "database", help = "Root object for database service")
-public class ScriptDatabaseService extends BaseProcessorExtension implements ApplicationContextAware {
+public class ScriptDatabaseService extends BaseProcessorExtension implements ApplicationContextAware
+{
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
+    {
+        this.applicationContext = applicationContext;
+    }
 
-	private void checkAdminAuthority() {
-		AuthorityService authorityService = (AuthorityService) applicationContext.getBean("authorityService");
-		if (!authorityService.isAdminAuthority(AuthenticationUtil.getFullyAuthenticatedUser())) {
-			throw new RuntimeException("Only admin users are allowed to execute database queries");
-		}
-	}
+    private void checkAdminAuthority()
+    {
+        AuthorityService authorityService = (AuthorityService) applicationContext.getBean("authorityService");
+        if (!authorityService.isAdminAuthority(AuthenticationUtil.getFullyAuthenticatedUser()))
+        {
+            throw new RuntimeException("Only admin users are allowed to execute database queries");
+        }
+    }
 
-	@ScriptMethod()
-	public int update(String dataSourceName, String sql, Object... params) {
-		checkAdminAuthority();
-		JdbcDaoSupport daoSupport = getDaoSupport(dataSourceName);
-		Preconditions.checkNotNull(daoSupport, " daosupport is null- please check the datasource name");
-		return daoSupport.getJdbcTemplate().update(sql, params);
-	}
+    @ScriptMethod()
+    public int update(String dataSourceName, String sql, Object... params)
+    {
+        checkAdminAuthority();
+        JdbcDaoSupport daoSupport = getDaoSupport(dataSourceName);
+        Preconditions.checkNotNull(daoSupport, " daosupport is null- please check the datasource name");
+        return daoSupport.getJdbcTemplate().update(sql, params);
+    }
 
-	public Map<String, Object>[] query(String dataSourceName, String sql, Object... params) {
-		checkAdminAuthority();
-		JdbcDaoSupport daoSupport = getDaoSupport(dataSourceName);
-		Preconditions.checkNotNull(daoSupport, " daosupport is null- please check the datasource name");
+    public Map<String, Object>[] query(String dataSourceName, String sql, Object... params)
+    {
+        checkAdminAuthority();
+        JdbcDaoSupport daoSupport = getDaoSupport(dataSourceName);
+        Preconditions.checkNotNull(daoSupport, " daosupport is null- please check the datasource name");
 
-		List<Map<String, Object>> result = daoSupport.getJdbcTemplate().queryForList(sql, params);
-		@SuppressWarnings("unchecked")
-		Map<String, Object>[] arr = new Map[result.size()];
-		for (int i = 0; i < result.size(); i++) {
-			arr[i] = result.get(i);
-		}
-		return arr;
-	}
+        List<Map<String, Object>> result = daoSupport.getJdbcTemplate().queryForList(sql, params);
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] arr = new Map[result.size()];
+        for (int i = 0; i < result.size(); i++)
+        {
+            arr[i] = result.get(i);
+        }
+        return arr;
+    }
 
-	private JdbcDaoSupport getDaoSupport(String dataSourceName) {
-		Object dsBean = applicationContext.getBean(dataSourceName);
+    private JdbcDaoSupport getDaoSupport(String dataSourceName)
+    {
+        Object dsBean = applicationContext.getBean(dataSourceName);
 
-		if (dsBean instanceof DataSource) {
-			JdbcDaoSupport daoSupport = new NamedParameterJdbcDaoSupport();
-			daoSupport.setDataSource((DataSource) dsBean);
-			return daoSupport;
-		} else {
+        if (dsBean instanceof DataSource)
+        {
+            JdbcDaoSupport daoSupport = new NamedParameterJdbcDaoSupport();
+            daoSupport.setDataSource((DataSource) dsBean);
+            return daoSupport;
+        }
+        else
+        {
 
-			throw new AlfrescoRuntimeException("dataSource '" + dataSourceName + "' not found.");
-		}
-	}
+            throw new AlfrescoRuntimeException("dataSource '" + dataSourceName + "' not found.");
+        }
+    }
 
 }

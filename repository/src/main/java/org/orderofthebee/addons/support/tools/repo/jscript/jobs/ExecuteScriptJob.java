@@ -39,13 +39,14 @@ import org.quartz.JobExecutionException;
 /**
  * Quartz job that executes a scheduled inline JS script.
  * The job execution is cluster aware and uses the JobLockService.
- * 
+ *
  * Compatible with Quartz 2.x API used by Alfresco.
  *
  * @author Jens Goldhammer
  * @author Order of the Bee
  */
-public class ExecuteScriptJob extends AbstractScheduledLockedJob {
+public class ExecuteScriptJob extends AbstractScheduledLockedJob
+{
 
     public static final String PARAM_SCRIPT = "script";
     public static final String PARAM_RUN_AS = "runAs";
@@ -57,40 +58,50 @@ public class ExecuteScriptJob extends AbstractScheduledLockedJob {
      * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
      */
     @Override
-    public void executeJob(JobExecutionContext context) throws JobExecutionException {
+    public void executeJob(JobExecutionContext context) throws JobExecutionException
+    {
         JobDataMap jobData = context.getJobDetail().getJobDataMap();
 
         // Get the script service from the job map
         Object scriptServiceObj = jobData.get(PARAM_SCRIPT_SERVICE);
-        if (scriptServiceObj == null || !(scriptServiceObj instanceof ScriptService)) {
+        if (scriptServiceObj == null || !(scriptServiceObj instanceof ScriptService))
+        {
             throw new AlfrescoRuntimeException(
-                    "ExecuteScriptJob data must contain valid script service");
+                "ExecuteScriptJob data must contain valid script service");
         }
 
         // Get the script from the job map
         String script = (String) jobData.get(PARAM_SCRIPT);
-        if (script == null) {
+        if (script == null)
+        {
             throw new AlfrescoRuntimeException(
-                    "ExecuteScriptJob data must contain valid script as String");
+                "ExecuteScriptJob data must contain valid script as String");
         }
 
         // Get the runAs user from the job map
         String runAs = null;
         Object runAsParam = jobData.get(PARAM_RUN_AS);
-        if (runAsParam != null && (runAsParam instanceof String)) {
+        if (runAsParam != null && (runAsParam instanceof String))
+        {
             runAs = (String) runAsParam;
         }
 
-        try {
-            if (runAs == null || runAs.equalsIgnoreCase("system")) {
+        try
+        {
+            if (runAs == null || runAs.equalsIgnoreCase("system"))
+            {
                 AuthenticationUtil.setRunAsUserSystem();
-            } else {
+            }
+            else
+            {
                 AuthenticationUtil.setRunAsUser(runAs);
             }
 
             // Execute the script
             ((ScriptService) scriptServiceObj).executeScriptString(script, null);
-        } finally {
+        }
+        finally
+        {
             AuthenticationUtil.clearCurrentSecurityContext();
         }
     }

@@ -47,23 +47,26 @@ import java.io.IOException;
  */
 
 @ScriptClass(types=ScriptClassType.JavaScriptRootObject, code="tenantAdmin", help="the root object for tenant " +
-		"interpreter used in the tenantadmin console. Allows to run commands to show tenants, create new tenants " +
-		"and delete tenants...")
-public class ScriptTenantAdminConsole extends BaseProcessorExtension {
-	
-	TenantInterpreter tenantInterpreter;
+             "interpreter used in the tenantadmin console. Allows to run commands to show tenants, create new tenants " +
+             "and delete tenants...")
+public class ScriptTenantAdminConsole extends BaseProcessorExtension
+{
 
-	public void setTenantInterpreter(TenantInterpreter tenantInterpreter) {
-		this.tenantInterpreter = tenantInterpreter;
-	}
+    TenantInterpreter tenantInterpreter;
 
-	@ScriptMethod(
-    		help="using the tenantinterpreter to run commands similar to the de.jgoldhammer.alfresco.jscript.tenant console",
-    		output="String",
-    		code="tenants.exec('help')",
-    		type=ScriptMethodType.WRITE)
-    public String exec(String command) throws IOException{
-		return tenantInterpreter.interpretCommand(command);
+    public void setTenantInterpreter(TenantInterpreter tenantInterpreter)
+    {
+        this.tenantInterpreter = tenantInterpreter;
+    }
+
+    @ScriptMethod(
+        help="using the tenantinterpreter to run commands similar to the de.jgoldhammer.alfresco.jscript.tenant console",
+        output="String",
+        code="tenants.exec('help')",
+        type=ScriptMethodType.WRITE)
+    public String exec(String command) throws IOException
+    {
+        return tenantInterpreter.interpretCommand(command);
     }
 
 

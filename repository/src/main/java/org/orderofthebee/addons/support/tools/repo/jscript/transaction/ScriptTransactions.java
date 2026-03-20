@@ -45,27 +45,32 @@ import org.springframework.extensions.webscripts.annotation.ScriptMethodType;
  */
 
 @ScriptClass(types=ScriptClassType.JavaScriptRootObject, code= "transaction", help="the root object for the transactionservice")
-public class ScriptTransactions extends BaseProcessorExtension {
+public class ScriptTransactions extends BaseProcessorExtension
+{
 
-	private TransactionService transactionService;
+    private TransactionService transactionService;
 
-    public void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
-	}
+    public void setTransactionService(TransactionService transactionService)
+    {
+        this.transactionService = transactionService;
+    }
 
     @ScriptMethod(
-    		help="get a new user transaction object- the transaction is not started yet. Please execute begin, commit, rollback and getStatus on the transaction.",
-    		output="void",
-    		code="de.jgoldhammer.alfresco.jscript.transaction.getUserTransaction()",
-    		type=ScriptMethodType.WRITE)
-    public ScriptTransaction getUserTransaction(){
-    	return new ScriptTransaction(transactionService.getUserTransaction());
-    }
-    
-    public boolean isReadOnly(){
-    	return !transactionService.getAllowWrite();
+        help="get a new user transaction object- the transaction is not started yet. "
+             + "Please execute begin, commit, rollback and getStatus on the transaction.",
+        output="void",
+        code="de.jgoldhammer.alfresco.jscript.transaction.getUserTransaction()",
+        type=ScriptMethodType.WRITE)
+    public ScriptTransaction getUserTransaction()
+    {
+        return new ScriptTransaction(transactionService.getUserTransaction());
     }
 
-    
-    
+    public boolean isReadOnly()
+    {
+        return !transactionService.getAllowWrite();
+    }
+
+
+
 }

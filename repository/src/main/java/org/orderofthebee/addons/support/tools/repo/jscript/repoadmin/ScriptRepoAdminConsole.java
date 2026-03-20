@@ -46,22 +46,27 @@ import java.io.IOException;
  * @author Jens Goldhammer (fme AG)
  */
 
-@ScriptClass(types=ScriptClassType.JavaScriptRootObject, code="repoAdmin", help="the root object for the repo admin interpreter used in the de.jgoldhammer.alfresco.jscript.repoadmin console. Allows to run commands to deploy messages, models in the backend.")
-public class ScriptRepoAdminConsole extends BaseProcessorExtension {
-	
-	RepoAdminInterpreter repoAdminInterpreter;
+@ScriptClass(types=ScriptClassType.JavaScriptRootObject, code="repoAdmin",
+             help="the root object for the repo admin interpreter used in the de.jgoldhammer.alfresco.jscript.repoadmin "
+                  + "console. Allows to run commands to deploy messages, models in the backend.")
+public class ScriptRepoAdminConsole extends BaseProcessorExtension
+{
 
-	public void setRepoAdminInterpreter(RepoAdminInterpreter repoAdminInterpreter) {
-		this.repoAdminInterpreter = repoAdminInterpreter;
-	}
+    RepoAdminInterpreter repoAdminInterpreter;
 
-	@ScriptMethod(
-    		help="using the repoAdminInterpreter to run commands similar to the repo admin console",
-    		output="String",
-    		code="repoAdmin.exec('help')",
-    		type=ScriptMethodType.WRITE)
-    public String exec(String command) throws IOException{
-		return repoAdminInterpreter.interpretCommand(command);
+    public void setRepoAdminInterpreter(RepoAdminInterpreter repoAdminInterpreter)
+    {
+        this.repoAdminInterpreter = repoAdminInterpreter;
+    }
+
+    @ScriptMethod(
+        help="using the repoAdminInterpreter to run commands similar to the repo admin console",
+        output="String",
+        code="repoAdmin.exec('help')",
+        type=ScriptMethodType.WRITE)
+    public String exec(String command) throws IOException
+    {
+        return repoAdminInterpreter.interpretCommand(command);
     }
 
 

@@ -54,43 +54,49 @@ import org.mozilla.javascript.Context;
 /**
  * retrieves the ticket for the current user.
  */
-public class TicketScriptExtension extends BaseScopableProcessorExtension {
+public class TicketScriptExtension extends BaseScopableProcessorExtension
+{
 
-	ServiceRegistry serviceRegistry;
-	TicketComponent ticketComponent;
+    ServiceRegistry serviceRegistry;
+    TicketComponent ticketComponent;
 
-	/**
-	 * @return the serviceRegistry
-	 */
-	public ServiceRegistry getServiceRegistry() {
-		return serviceRegistry;
-	}
+    /**
+     * @return the serviceRegistry
+     */
+    public ServiceRegistry getServiceRegistry()
+    {
+        return serviceRegistry;
+    }
 
-	/**
-	 * @param serviceRegistry
-	 *                        the serviceRegistry to set
-	 */
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+    /**
+     * @param serviceRegistry
+     *                        the serviceRegistry to set
+     */
+    public void setServiceRegistry(ServiceRegistry serviceRegistry)
+    {
+        this.serviceRegistry = serviceRegistry;
+    }
 
-	/**
-	 * @return the ticketComponent
-	 */
-	public TicketComponent getTicketComponent() {
-		return ticketComponent;
-	}
+    /**
+     * @return the ticketComponent
+     */
+    public TicketComponent getTicketComponent()
+    {
+        return ticketComponent;
+    }
 
-	/**
-	 * @param ticketComponent
-	 *                        the ticketComponent to set
-	 */
-	public void setTicketComponent(TicketComponent ticketComponent) {
-		this.ticketComponent = ticketComponent;
-	}
+    /**
+     * @param ticketComponent
+     *                        the ticketComponent to set
+     */
+    public void setTicketComponent(TicketComponent ticketComponent)
+    {
+        this.ticketComponent = ticketComponent;
+    }
 
-	public Object getCurrentTicket() {
-		String ticket = serviceRegistry.getAuthenticationService().getCurrentTicket();
-		return Context.getCurrentContext().newObject(getScope(), "String", new Object[] { ticket });
-	}
+    public Object getCurrentTicket()
+    {
+        String ticket = serviceRegistry.getAuthenticationService().getCurrentTicket();
+        return Context.getCurrentContext().newObject(getScope(), "String", new Object[] { ticket });
+    }
 }

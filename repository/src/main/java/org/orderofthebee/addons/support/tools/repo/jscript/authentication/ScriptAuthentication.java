@@ -49,58 +49,87 @@ import org.springframework.extensions.webscripts.annotation.ScriptMethodType;
  * @author Jens Goldhammer (fme AG)
  * @author Order of the Bee
  */
-@ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "auth", help = "Root object for authentication utilities to switch the authenticated user")
-public class ScriptAuthentication extends BaseProcessorExtension implements ApplicationContextAware {
+@ScriptClass(types = ScriptClassType.JavaScriptRootObject, code = "auth",
+             help = "Root object for authentication utilities to switch the authenticated user")
+public class ScriptAuthentication extends BaseProcessorExtension implements ApplicationContextAware
+{
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
+    {
+        this.applicationContext = applicationContext;
+    }
 
-	private void checkAdminAuthority() {
-		AuthorityService authorityService = (AuthorityService) applicationContext.getBean("authorityService");
-		if (!authorityService.isAdminAuthority(AuthenticationUtil.getFullyAuthenticatedUser())) {
-			throw new RuntimeException("Only admin users are allowed to use the runAs methods");
-		}
-	}
+    private void checkAdminAuthority()
+    {
+        AuthorityService authorityService = (AuthorityService) applicationContext.getBean("authorityService");
+        if (!authorityService.isAdminAuthority(AuthenticationUtil.getFullyAuthenticatedUser()))
+        {
+            throw new RuntimeException("Only admin users are allowed to use the runAs methods");
+        }
+    }
 
-	@ScriptMethod(help = "Set the system user as the currently running user for authentication purposes. Requires admin authority.", output = "void", code = "auth.runAsSystem()", type = ScriptMethodType.READ)
-	public void runAsSystem() {
-		checkAdminAuthority();
-		AuthenticationUtil.setRunAsUserSystem();
-	}
+    @ScriptMethod(help = "Set the system user as the currently running user for authentication purposes. Requires admin authority.",
+                  output = "void", code = "auth.runAsSystem()", type = ScriptMethodType.READ)
+    public void runAsSystem()
+    {
+        checkAdminAuthority();
+        AuthenticationUtil.setRunAsUserSystem();
+    }
 
-	@ScriptMethod(help = "Switch to the given user for all authenticated operations. Requires admin authority. The original user can still be found using auth.getFullyAuthenticatedUser()", output = "void", code = "auth.runAs('user1');", type = ScriptMethodType.READ)
-	public void runAs(String userName) {
-		checkAdminAuthority();
-		AuthenticationUtil.setRunAsUser(userName);
-	}
+    @ScriptMethod(help =
+                      "Switch to the given user for all authenticated operations. Requires admin authority. "
+                      + "The original user can still be found using auth.getFullyAuthenticatedUser()",
+                  output = "void", code = "auth.runAs('user1');", type = ScriptMethodType.READ)
+    public void runAs(String userName)
+    {
+        checkAdminAuthority();
+        AuthenticationUtil.setRunAsUser(userName);
+    }
 
-	@ScriptMethod(help = "Get the user that is currently in effect for purposes of authentication. This includes any overlays introduced by auth.runAs().", output = "String", code = "auth.getRunAsUser()", type = ScriptMethodType.READ)
-	public String getRunAsUser() {
-		return AuthenticationUtil.getRunAsUser();
-	}
+    @ScriptMethod(help =
+                      "Get the user that is currently in effect for purposes of authentication. "
+                      + "This includes any overlays introduced by auth.runAs().",
+                  output = "String", code = "auth.getRunAsUser()", type = ScriptMethodType.READ)
+    public String getRunAsUser()
+    {
+        return AuthenticationUtil.getRunAsUser();
+    }
 
-	@ScriptMethod(help = "Get the fully authenticated user. Returns the name of the user that last authenticated, excluding any overlay authentication.", output = "String", code = "auth.getFullyAuthenticatedUser();", type = ScriptMethodType.READ)
-	public String getFullyAuthenticatedUser() {
-		return AuthenticationUtil.getFullyAuthenticatedUser();
-	}
+    @ScriptMethod(help =
+                      "Get the fully authenticated user. Returns the name of the user that last authenticated, "
+                      + "excluding any overlay authentication.",
+                  output = "String", code = "auth.getFullyAuthenticatedUser();", type = ScriptMethodType.READ)
+    public String getFullyAuthenticatedUser()
+    {
+        return AuthenticationUtil.getFullyAuthenticatedUser();
+    }
 
-	@ScriptMethod(help = "Authenticate as the given user. Requires admin authority. All operations will run in the context of this user.", output = "void", code = "auth.runAsFullyAuthenticatedUser('user1');", type = ScriptMethodType.READ)
-	public void runAsFullyAuthenticatedUser(String userName) {
-		checkAdminAuthority();
-		AuthenticationUtil.setFullyAuthenticatedUser(userName);
-	}
+    @ScriptMethod(help = "Authenticate as the given user. Requires admin authority. All operations will run in the context of this user.",
+                  output = "void", code = "auth.runAsFullyAuthenticatedUser('user1');", type = ScriptMethodType.READ)
+    public void runAsFullyAuthenticatedUser(String userName)
+    {
+        checkAdminAuthority();
+        AuthenticationUtil.setFullyAuthenticatedUser(userName);
+    }
 
-	@ScriptMethod(help = "Get the name of the system user", output = "String", code = "auth.getSystemUserName()", type = ScriptMethodType.READ)
-	public String getSystemUserName() {
-		return AuthenticationUtil.getSystemUserName();
-	}
+    @ScriptMethod(help = "Get the name of the system user",
+                  output = "String",
+                  code = "auth.getSystemUserName()",
+                  type = ScriptMethodType.READ)
+    public String getSystemUserName()
+    {
+        return AuthenticationUtil.getSystemUserName();
+    }
 
-	@ScriptMethod(help = "Get the name of the admin user", output = "String", code = "auth.getAdminUserName();", type = ScriptMethodType.READ)
-	public String getAdminUserName() {
-		return AuthenticationUtil.getAdminUserName();
-	}
+    @ScriptMethod(help = "Get the name of the admin user",
+                  output = "String",
+                  code = "auth.getAdminUserName();",
+                  type = ScriptMethodType.READ)
+    public String getAdminUserName()
+    {
+        return AuthenticationUtil.getAdminUserName();
+    }
 }

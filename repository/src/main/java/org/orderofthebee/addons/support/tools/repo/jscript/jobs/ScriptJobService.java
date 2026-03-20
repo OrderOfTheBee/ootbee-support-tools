@@ -60,13 +60,14 @@ import java.util.Set;
  * repository.
  * You can iterate over all jobs, get a job by name or print the details.
  * Running, state checking and cancel a job run is part of the ScriptJob class.
- * 
+ *
  * Refactored for Quartz 2.x API compatibility.
  *
  * @author jgoldhammer
  * @author Order of the Bee
  */
-public class ScriptJobService extends BaseScopableProcessorExtension {
+public class ScriptJobService extends BaseScopableProcessorExtension
+{
 
     private static final String SCRIPT_JOB_GROUP = "ootbeeScriptJobGroup";
     private static final String SCRIPT_TRIGGER_GROUP = "ootbeeScriptTriggerGroup";
@@ -75,48 +76,59 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     private Scheduler scheduler;
     private JobLockService jobLockService;
 
-    public void setScriptService(ScriptService scriptService) {
+    public void setScriptService(ScriptService scriptService)
+    {
         this.scriptService = scriptService;
     }
 
-    public void setScheduler(Scheduler scheduler) {
+    public void setScheduler(Scheduler scheduler)
+    {
         this.scheduler = scheduler;
     }
 
-    public void setJobLockService(JobLockService jobLockService) {
+    public void setJobLockService(JobLockService jobLockService)
+    {
         this.jobLockService = jobLockService;
     }
 
-    private Map<String, ScriptJob> getJobs() {
+    private Map<String, ScriptJob> getJobs()
+    {
         Map<String, ScriptJob> jobs = new HashMap<>();
 
-        try {
+        try
+        {
             List<String> jobGroupNames = scheduler.getJobGroupNames();
-            for (String jobGroupName : jobGroupNames) {
+            for (String jobGroupName : jobGroupNames)
+            {
                 Set<JobKey> jobKeys = scheduler
-                        .getJobKeys(org.quartz.impl.matchers.GroupMatcher.jobGroupEquals(jobGroupName));
-                for (JobKey jobKey : jobKeys) {
+                                      .getJobKeys(org.quartz.impl.matchers.GroupMatcher.jobGroupEquals(jobGroupName));
+                for (JobKey jobKey : jobKeys)
+                {
                     List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
-                    if (!triggers.isEmpty()) {
+                    if (!triggers.isEmpty())
+                    {
                         Trigger jobTrigger = triggers.get(0);
                         ScriptJob job = new ScriptJob(
-                                jobKey.getName(),
-                                jobKey.getGroup(),
-                                scheduler,
-                                jobTrigger.getPreviousFireTime(),
-                                jobTrigger.getNextFireTime(),
-                                jobTrigger.getCalendarName(),
-                                jobTrigger.getKey().getName(),
-                                jobTrigger.getKey().getGroup());
+                            jobKey.getName(),
+                            jobKey.getGroup(),
+                            scheduler,
+                            jobTrigger.getPreviousFireTime(),
+                            jobTrigger.getNextFireTime(),
+                            jobTrigger.getCalendarName(),
+                            jobTrigger.getKey().getName(),
+                            jobTrigger.getKey().getGroup());
 
-                        if (jobTrigger instanceof CronTrigger) {
+                        if (jobTrigger instanceof CronTrigger)
+                        {
                             job.setCronExpression(((CronTrigger) jobTrigger).getCronExpression());
                         }
                         jobs.put(jobKey.getName(), job);
                     }
                 }
             }
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Cannot determine the configured Alfresco jobs via Quartz", e);
         }
         return jobs;
@@ -125,7 +137,8 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Get all scheduled jobs as a JavaScript array.
      */
-    public Scriptable getAllJobs() {
+    public Scriptable getAllJobs()
+    {
         Map<String, ScriptJob> jobs = getJobs();
         Scriptable scope = getScope();
         Object[] jobsArray = jobs.values().toArray(new Object[0]);
@@ -135,17 +148,22 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Get a specific job by name.
      */
-    public ScriptJob getJob(String name) {
+    public ScriptJob getJob(String name)
+    {
         return getJobs().get(name);
     }
 
     /**
      * Pause all scheduled jobs.
      */
-    public void pauseJobs() {
-        try {
+    public void pauseJobs()
+    {
+        try
+        {
             scheduler.pauseAll();
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to pause all jobs", e);
         }
     }
@@ -153,10 +171,14 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Resume all paused jobs.
      */
-    public void resumeJobs() {
-        try {
+    public void resumeJobs()
+    {
+        try
+        {
             scheduler.resumeAll();
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to resume all jobs", e);
         }
     }
@@ -164,10 +186,14 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Put the scheduler in standby mode.
      */
-    public void standbyScheduler() {
-        try {
+    public void standbyScheduler()
+    {
+        try
+        {
             scheduler.standby();
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to put scheduler in standby mode", e);
         }
     }
@@ -175,10 +201,14 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Start the scheduler.
      */
-    public void startScheduler() {
-        try {
+    public void startScheduler()
+    {
+        try
+        {
             scheduler.start();
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException("Unable to start the scheduler", e);
         }
     }
@@ -193,7 +223,8 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
      * @param cronExpression the cron expression for scheduling (e.g., use
      *                       http://www.cronmaker.com)
      */
-    public void scheduleTemporaryJob(String jobName, String script, String runAsUser, String cronExpression) {
+    public void scheduleTemporaryJob(String jobName, String script, String runAsUser, String cronExpression)
+    {
         String fullJobName = jobName + " (run as " + (runAsUser != null ? runAsUser : "system") + ")";
 
         JobDataMap jobDataMap = new JobDataMap();
@@ -204,21 +235,24 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
 
         // Quartz 2.x: Use JobBuilder
         JobDetail job = JobBuilder.newJob(ExecuteScriptJob.class)
-                .withIdentity(fullJobName, SCRIPT_JOB_GROUP)
-                .usingJobData(jobDataMap)
-                .build();
+                        .withIdentity(fullJobName, SCRIPT_JOB_GROUP)
+                        .usingJobData(jobDataMap)
+                        .build();
 
         // Quartz 2.x: Use TriggerBuilder with CronScheduleBuilder
         Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("trigger_" + System.nanoTime(), SCRIPT_TRIGGER_GROUP)
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                .build();
+                          .withIdentity("trigger_" + System.nanoTime(), SCRIPT_TRIGGER_GROUP)
+                          .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+                          .build();
 
-        try {
+        try
+        {
             scheduler.scheduleJob(job, trigger);
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException(
-                    "Cannot schedule executeScriptJob with script=" + script + " and runAs=" + runAsUser, e);
+                "Cannot schedule executeScriptJob with script=" + script + " and runAs=" + runAsUser, e);
         }
     }
 
@@ -229,19 +263,21 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
      *                     cronExpression, script (function)
      * @return the created job name
      */
-    public String scheduleTemporaryJob(Object jobParameter) {
+    public String scheduleTemporaryJob(Object jobParameter)
+    {
         Map<String, Object> paramsMap = BatchJobParameters.getParametersMap(jobParameter);
         String jobName = RhinoUtils.getString(paramsMap, "jobName", "Inline Script Job (" + System.nanoTime() + ")");
         String runAsUser = RhinoUtils.getString(paramsMap, ExecuteScriptJob.PARAM_RUN_AS, "system");
         String cronExpression = Preconditions.checkNotNull(
-                RhinoUtils.getString(paramsMap, "cronExpression", null),
-                "cronExpression is required");
+                                    RhinoUtils.getString(paramsMap, "cronExpression", null),
+                                    "cronExpression is required");
         Function scriptFunction = Preconditions.checkNotNull(
-                RhinoUtils.getFunction(paramsMap, ExecuteScriptJob.PARAM_SCRIPT),
-                "script function is required");
+                                      RhinoUtils.getFunction(paramsMap, ExecuteScriptJob.PARAM_SCRIPT),
+                                      "script function is required");
 
         Context cx = Context.enter();
-        try {
+        try
+        {
             String script = cx.decompileFunctionBody(scriptFunction, 3).trim();
             String fullJobName = jobName + " (run as " + (runAsUser != null ? runAsUser : "system") + ")";
 
@@ -252,24 +288,28 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
             jobDataMap.put("jobLockService", jobLockService);
 
             JobDetail job = JobBuilder.newJob(ExecuteScriptJob.class)
-                    .withIdentity(fullJobName, SCRIPT_JOB_GROUP)
-                    .usingJobData(jobDataMap)
-                    .build();
+                            .withIdentity(fullJobName, SCRIPT_JOB_GROUP)
+                            .usingJobData(jobDataMap)
+                            .build();
 
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity("trigger_" + System.nanoTime(), SCRIPT_TRIGGER_GROUP)
-                    .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                    .build();
+                              .withIdentity("trigger_" + System.nanoTime(), SCRIPT_TRIGGER_GROUP)
+                              .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+                              .build();
 
             scheduler.scheduleJob(job, trigger);
             return fullJobName;
 
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException e)
+        {
             throw new AlfrescoRuntimeException(
-                    "Cannot schedule executeScriptJob with cronExpression=" + cronExpression + " and runAs="
-                            + runAsUser,
-                    e);
-        } finally {
+                "Cannot schedule executeScriptJob with cronExpression=" + cronExpression + " and runAs="
+                + runAsUser,
+                e);
+        }
+        finally
+        {
             Context.exit();
         }
     }
@@ -277,7 +317,8 @@ public class ScriptJobService extends BaseScopableProcessorExtension {
     /**
      * Print details of all configured jobs.
      */
-    public String printJobDetails() {
+    public String printJobDetails()
+    {
         return StringUtils.join(getJobs().values(), "\n");
     }
 }
