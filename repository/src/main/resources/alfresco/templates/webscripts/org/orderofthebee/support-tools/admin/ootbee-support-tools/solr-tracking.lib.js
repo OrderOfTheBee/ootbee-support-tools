@@ -26,7 +26,7 @@ function buildPropertyGetter(ctxt)
     var globalProperties, placeholderHelper, propertyGetter;
 
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
-    placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+    placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
 
     propertyGetter = function(propertyName, defaultValue)
     {
