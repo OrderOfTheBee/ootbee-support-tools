@@ -269,7 +269,11 @@ var AdminTT = AdminTT || {};
             url: url,
             data: rqData,
             fnSuccess: function (response) {
-                alert(response.responseJSON.probeResponse);
+                if (response.responseJSON.probeSuccessful) {
+                    alert(response.responseJSON.probeResponse);
+                } else {
+                    alert(response.responseJSON.errorMessage);
+                }
             },
             fnFailure: handleRequestError
         });

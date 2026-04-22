@@ -31,7 +31,7 @@ var ctx, globalProperties, placeholderHelper, propertyGetter, nodeService, inter
 
 ctx = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
 globalProperties = ctx.getBean('global-properties', Packages.java.util.Properties);
-placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
 
 propertyGetter = function(propertyName, defaultValue)
 {

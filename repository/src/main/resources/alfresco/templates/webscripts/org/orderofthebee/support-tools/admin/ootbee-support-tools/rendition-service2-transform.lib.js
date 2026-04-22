@@ -61,7 +61,7 @@ function buildPropertyGetter(ctxt)
     var globalProperties, placeholderHelper, propertyGetter;
 
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
-    placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+    placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
 
     propertyGetter = function(propertyName, defaultValue)
     {
@@ -256,7 +256,7 @@ function buildTransformServiceRegistryModels()
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
-    placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+    placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
 
     // in ACS 6.x there is actually a switching facade and we need the real thing
     if (ctxt.containsBean('localTransformServiceRegistryImpl') || ctxt.containsBean('localTransformServiceRegistry'))
@@ -441,7 +441,7 @@ function renditionService2callProbeLocalTransform(localTransformName, liveProbe)
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
-    placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+    placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
     
     localTransformUrl = globalProperties['localTransform.' + localTransformName + '.url'];
     if (localTransformUrl)
@@ -552,7 +552,7 @@ function renditionService2retrieveLocalTransformLogs(localTransformName)
 
     ctxt = Packages.org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
     globalProperties = ctxt.getBean('global-properties', Packages.java.util.Properties);
-    placeholderHelper = new Packages.org.springframework.util.PropertyPlaceholderHelper('${', '}', ':', true);
+    placeholderHelper = Packages.org.orderofthebee.addons.support.tools.repo.config.PropertyUtilities.getPropertyPlaceholderHelper();
     
     localTransformUrl = globalProperties['localTransform.' + localTransformName + '.url'];
     if (localTransformUrl)
