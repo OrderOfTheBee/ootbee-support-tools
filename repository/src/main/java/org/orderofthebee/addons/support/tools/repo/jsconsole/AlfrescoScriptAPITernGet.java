@@ -749,7 +749,17 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
             // anything in linear hierarchy would be handled via prototype reference
             if (cls.equals(curCls) || !linearClassHierarchy.contains(curCls))
             {
-                final Method[] declaredMethods = curCls.getDeclaredMethods();
+                final Method[] declaredMethods;
+                try
+                {
+                    declaredMethods = curCls.getDeclaredMethods();
+                }
+                catch (final NoClassDefFoundError ex)
+                {
+                    LOGGER.warn("Skipping Tern method metadata for class {} due to unavailable referenced type", curCls.getName(), ex);
+                    continue;
+                }
+
                 for (final Method declaredMethod : declaredMethods)
                 {
                     final String methodName = declaredMethod.getName();
