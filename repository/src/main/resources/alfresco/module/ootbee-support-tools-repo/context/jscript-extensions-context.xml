@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Licensed under LGPL v3.
+    Order of the Bee - JavaScript Extensions for Alfresco
+    Merged from alfresco-jscript-extensions project by Jens Goldhammer
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+    <!-- Authentication Script Extension -->
+    <bean id="ootbee.scriptAuthentication" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.authentication.ScriptAuthentication">
+        <property name="extensionName" value="auth" />
+    </bean>
+
+    <!-- Policy/Behaviour Script Extension -->
+    <bean id="ootbee.scriptPolicies" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.policy.ScriptPolicies">
+        <property name="extensionName" value="policies" />
+        <property name="namespaceService" ref="namespaceService" />
+        <property name="behaviourFilter" ref="policyBehaviourFilter" />
+    </bean>
+
+    <!-- Transaction Script Extension -->
+    <bean id="ootbee.scriptTransactions" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.transaction.ScriptTransactions">
+        <property name="extensionName" value="transactions" />
+        <property name="transactionService" ref="TransactionService" />
+    </bean>
+
+    <!-- Audit Script Extension -->
+    <bean id="ootbee.scriptAuditService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.audit.ScriptAuditService">
+        <property name="extensionName" value="audit" />
+        <property name="auditService" ref="AuditService" />
+    </bean>
+
+    <!-- Repository Script Extension -->
+    <bean id="ootbee.scriptRepository" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.repository.ScriptRepository">
+        <property name="extensionName" value="repository" />
+        <property name="repository" ref="repositoryHelper"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="siteService" ref="SiteService"/>
+        <property name="docLibNodeLocator" ref="docLibNodeLocator"/>
+        <property name="personService" ref="PersonService"/>
+    </bean>
+
+    <!-- Batch Executer Script Extension -->
+    <bean id="ootbee.batchExecuterScript" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.batchexecuter.ScriptBatchExecuter">
+        <property name="extensionName" value="batchExecuter"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="transactionService" ref="TransactionService" />
+        <property name="ruleService" ref="RuleService" />
+    </bean>
+
+    <!-- Repo Admin Console Script Extension -->
+    <bean id="ootbee.scriptRepoAdminConsole" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.repoadmin.ScriptRepoAdminConsole">
+        <property name="extensionName" value="repoAdmin" />
+        <property name="repoAdminInterpreter" ref="repoAdminInterpreter" />
+    </bean>
+
+    <!-- Tenant Admin Console Script Extension -->
+    <bean id="ootbee.scriptTenantAdminConsole" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.tenant.ScriptTenantAdminConsole">
+        <property name="extensionName" value="tenantAdmin" />
+        <property name="tenantInterpreter" ref="tenantInterpreter" />
+    </bean>
+
+    <!-- Workflow Console Script Extension -->
+    <bean id="ootbee.scriptWorkflowConsole" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.workflow.ScriptWorkflowConsole">
+        <property name="extensionName" value="workflowAdmin" />
+        <property name="workflowInterpreter" ref="workflowInterpreter" />
+    </bean>
+
+    <!-- Rules Service Script Extension -->
+    <bean id="ootbee.scriptRulesService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.rules.ScriptRulesService">
+        <property name="ruleService" ref="RuleService"/>
+        <property name="extensionName" value="rules"/>
+    </bean>
+
+    <!-- Quickshare Service Script Extension -->
+    <bean id="ootbee.scriptQuickshareService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.quickshare.ScriptQuickshareService">
+        <property name="quickShareService" ref="quickShareService"/>
+        <property name="extensionName" value="quickshares"/>
+    </bean>
+
+    <!-- Link Service Script Extension -->
+    <bean id="ootbee.scriptLinkService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.links.ScriptLinkService">
+        <property name="documentLinkService" ref="DocumentLinkService"/>
+        <property name="extensionName" value="links"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <!-- Favorites Service Script Extension -->
+    <bean id="ootbee.scriptFavoritesService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.favorites.ScriptFavoritesService">
+        <property name="favouritesService" ref="FavouritesService"/>
+        <property name="extensionName" value="favorites"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <!-- Download Service Script Extension -->
+    <bean id="ootbee.scriptDownloadService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.download.ScriptDownloadService">
+        <property name="extensionName" value="downloads"/>
+        <property name="downloadService" ref="DownloadService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <!-- Dictionary Service Script Extension -->
+    <bean id="ootbee.scriptDictionaryService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.dictionary.ScriptDictionaryService">
+        <property name="dictionaryService" ref="DictionaryService"/>
+        <property name="extensionName" value="dictionary"/>
+        <property name="namespaceService" ref="NamespaceService"/>
+    </bean>
+
+    <!-- Hidden Aspect Script Extension -->
+    <bean id="ootbee.scriptHiddenAspect" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.hidden.ScriptHiddenAspect">
+        <property name="extensionName" value="hidden"/>
+        <property name="hiddenAspect" ref="hiddenAspect"/>
+    </bean>
+
+    <!-- Global Properties Script Extension -->
+    <bean id="ootbee.scriptVariablesService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.variables.ScriptVariablesService">
+        <property name="properties" ref="global-properties" />
+        <property name="extensionName" value="globalProperties" />
+    </bean>
+
+    <!-- Permission Service Script Extension -->
+    <bean id="ootbee.scriptPermissionService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.permission.ScriptPermissionService">
+        <property name="extensionName" value="permissions"/>
+        <property name="permissionService" ref="PermissionService"/>
+    </bean>
+
+    <!-- Database Service Script Extension (Admin only) -->
+    <bean id="ootbee.scriptDatabaseService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.db.ScriptDatabaseService">
+        <property name="extensionName" value="database"/>
+    </bean>
+
+    <!-- Model Service Script Extension -->
+    <bean id="ootbee.scriptModelService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.model.ScriptModelService">
+        <property name="extensionName" value="customModel"/>
+        <property name="customModelService" ref="customModelService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <!-- Messages/I18N Script Extension -->
+    <bean id="ootbee.scriptMessagesService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.messages.ScriptMessageService">
+        <property name="extensionName" value="messages"/>
+        <property name="messageService" ref="messageService"/>
+    </bean>
+
+    <!-- Content URL Resolver Script Extension -->
+    <bean id="ootbee.scriptContentUrlResolver" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.content.ScriptContentUrlResolver">
+        <property name="extensionName" value="contentUrls"/>
+        <property name="fileFolderService" ref="FileFolderService"/>
+    </bean>
+
+    <!-- Ticket Script Extension -->
+    <bean id="ootbee.ticketScriptExtension" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.ticket.TicketScriptExtension">
+        <property name="extensionName" value="ticket"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="ticketComponent" ref="ticketComponent"/>
+    </bean>
+
+    <!-- Attributes Service Script Extension -->
+    <bean id="ootbee.scriptAttributesService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.attributes.ScriptAttributeService">
+        <property name="extensionName" value="attributes"/>
+        <property name="attributeService" ref="AttributeService"/>
+    </bean>
+
+    <!-- Job Service Script Extension (Quartz 2.x compatible) -->
+    <bean id="ootbee.scriptJobService" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.jobs.ScriptJobService">
+        <property name="extensionName" value="jobs"/>
+        <property name="scheduler" ref="schedulerFactory"/>
+        <property name="scriptService" ref="ScriptService"/>
+        <property name="jobLockService" ref="JobLockService"/>
+    </bean>
+
+    <!-- Cron Expressions Script Extension -->
+    <bean id="ootbee.scriptCronExpressions" parent="baseJavaScriptExtension"
+          class="org.orderofthebee.addons.support.tools.repo.jscript.jobs.CronExpressions">
+        <property name="extensionName" value="cronExpressions"/>
+    </bean>
+
+</beans>
