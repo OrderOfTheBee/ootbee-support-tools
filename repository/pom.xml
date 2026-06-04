@@ -111,6 +111,22 @@
             <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- include both servlet-api variants since we need their annotations -->
+        <!-- application container will pick up the class(es) with the annotations it supports and ignore the other(s) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

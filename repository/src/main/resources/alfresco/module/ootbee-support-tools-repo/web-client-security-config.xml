@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<alfresco-config>
+    <config evaluator="string-compare" condition="CSRFPolicy">
+        <filter>
+            <rule>
+                <request>
+                    <method>GET</method>
+                    <path>/(wc)?s(ervice)?/ootbee/admin/.*</path>
+                </request>
+                <action name="generateToken">
+                    <param name="session">{token}</param>
+                    <param name="cookie">{token}</param>
+                </action>
+            </rule>
+        </filter>
+    </config>
+</alfresco-config>

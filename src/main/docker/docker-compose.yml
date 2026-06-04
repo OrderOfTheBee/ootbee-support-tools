@@ -24,6 +24,7 @@ services:
       context: ../../repository/target/docker/
     environment:
       CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
+      JAVA_OPTS: "-Dcsrf.filter.enabled=true '-Dcsrf.filter.referer=http://localhost:${acs.port}(/.*)?' '-Dcsrf.filter.origin=http://localhost:${acs.port}(/.*)?'"
       JAVA_TOOL_OPTIONS: "${docker.acs.opts}"
     ports:
       - ${acs.port}:8080
