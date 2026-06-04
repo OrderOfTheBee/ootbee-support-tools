@@ -4,8 +4,9 @@
 	<shortname>Log4J Settings - Log File - Close Snapshot</shortname>
 	<description>Closes (deregisters) a snapshot Log4J appender and retrieves the contents of the associated log file</description>
 	<url>/ootbee/admin/log4j-snapshots/{snapshotUUID}</url>
+    <family>AdminConsoleHelper</family>
+    <family>OOTBee Support Tools</family>
 	<authentication>admin</authentication>
 	<lifecycle>internal</lifecycle>
 	<transaction>none</transaction>
-	<family>OOTBee Support Tools</family>
 </webscript>
