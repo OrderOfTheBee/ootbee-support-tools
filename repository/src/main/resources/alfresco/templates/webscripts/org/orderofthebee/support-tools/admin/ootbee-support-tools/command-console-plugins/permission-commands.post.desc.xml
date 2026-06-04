@@ -6,6 +6,7 @@
     <url>/ootbee/admin/command-console/permissions/effectivePermission</url>
     <url>/ootbee/admin/command-console/permissions/effectivePermissions</url>
     <url>/ootbee/admin/command-console/permissions/effectiveAuthorisations</url>
+    <family>AdminConsoleHelper</family>
     <family>OOTBee Support Tools</family>
     <format default="json">any</format>
     <negotiate accept="application/json">json</negotiate>

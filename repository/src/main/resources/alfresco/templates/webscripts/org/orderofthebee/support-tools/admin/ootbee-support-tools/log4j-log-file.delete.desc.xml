@@ -3,6 +3,7 @@
     <shortname>Log4J Settings - Log File</shortname>
     <description>Deletes a specific Log4J log file</description>
     <url>/ootbee/admin/log4j-log-file/{path}</url>
+    <family>AdminConsoleHelper</family>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>

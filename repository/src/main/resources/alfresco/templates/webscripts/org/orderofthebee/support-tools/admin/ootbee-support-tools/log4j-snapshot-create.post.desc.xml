@@ -3,9 +3,10 @@
     <shortname>Log4J Settings - Log File - Create Snapshot</shortname>
     <description>Creates a snapshot Log4J appender and log file</description>
     <url>/ootbee/admin/log4j-snapshots</url>
+    <family>AdminConsoleHelper</family>
+    <family>OOTBee Support Tools</family>
     <authentication>admin</authentication>
     <format default="json"/>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
-    <family>OOTBee Support Tools</family>
 </webscript>

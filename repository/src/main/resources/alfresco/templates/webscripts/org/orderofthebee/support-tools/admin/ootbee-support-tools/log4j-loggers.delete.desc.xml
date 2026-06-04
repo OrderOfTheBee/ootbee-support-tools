@@ -3,9 +3,10 @@
     <shortname>Log4J Loggers</shortname>
     <description>Reset Log4J Loggers</description>
     <url>/ootbee/admin/log4j-loggers</url>
+    <family>AdminConsoleHelper</family>
+    <family>OOTBee Support Tools</family>
     <format default="json" />
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
-    <family>OOTBee Support Tools</family>
 </webscript>

@@ -3,8 +3,9 @@
     <shortname>Hot Threads - GetOne</shortname>
     <description>Generate a single hot threads dump</description>
     <url>/ootbee/admin/hot-threads-getone</url>
+    <family>AdminConsoleHelper</family>
+    <family>OOTBee Support Tools</family>
     <authentication>admin</authentication>
     <lifecycle>internal</lifecycle>
     <transaction>none</transaction>
-    <family>OOTBee Support Tools</family>
 </webscript>

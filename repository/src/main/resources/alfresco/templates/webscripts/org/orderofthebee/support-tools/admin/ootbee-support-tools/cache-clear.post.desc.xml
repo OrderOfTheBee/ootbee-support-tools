@@ -3,6 +3,7 @@
     <shortname>Clear Cache</shortname>
     <description>Clear contents of a cache</description>
     <url>/ootbee/admin/caches/{cache}/clear</url>
+    <family>AdminConsoleHelper</family>
     <family>OOTBee Support Tools</family>
     <format default="json" />
     <authentication>admin</authentication>
