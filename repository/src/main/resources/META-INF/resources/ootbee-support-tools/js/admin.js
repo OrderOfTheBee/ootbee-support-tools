@@ -124,9 +124,13 @@ var Admin = Admin || {};
      */
     Admin.substitute = function substitute(str, properties)
     {
-        for (var prop in properties)
+        var prop;
+        for (prop in properties)
         {
-            str = str.replace("{" + prop + "}", properties[prop]);
+            if (properties.hasOwnProperty(prop))
+            {
+                str = str.replace("{" + prop + "}", properties[prop]);
+            }
         }
         return str;
     };
