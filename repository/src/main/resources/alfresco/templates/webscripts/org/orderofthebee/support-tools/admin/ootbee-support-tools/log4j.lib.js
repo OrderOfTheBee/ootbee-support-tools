@@ -176,6 +176,7 @@ function retrieveTailingEvents()
     {
         uuid = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.createTailingAppender();
     }
+    model.uuid = uuid;
     model.events = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.retrieveTailingAppenderEvents(uuid);
 }
 
