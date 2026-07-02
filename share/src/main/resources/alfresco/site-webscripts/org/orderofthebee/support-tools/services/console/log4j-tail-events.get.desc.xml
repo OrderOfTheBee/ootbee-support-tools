@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<webscript>
+    <shortname>Log4J Settings - Tail Events</shortname>
+    <url>/data/console/ootbee-support-tools/log4j-tail-events</url>
+    <family>OOTBee Support Tools</family>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <lifecycle>internal</lifecycle>
+    <transaction>none</transaction>
+</webscript>

@@ -434,6 +434,23 @@ public class Log4j2HelperImpl implements Log4jHelper
      * {@inheritDoc}
      */
     @Override
+    public void createTailingAppenderIfNotExists(final String uuid)
+    {
+        final Logger rootLogger = this.getContext().getLogger(this.getRootLoggerName());
+        if (rootLogger instanceof org.apache.logging.log4j.core.Logger)
+        {
+            Appender appender = ((org.apache.logging.log4j.core.Logger) rootLogger).getAppenders().get(uuid);
+            if (appender == null) {
+                appender = new Log4j2LimitedListAppender(uuid, 10000);
+                ((Log4j2LimitedListAppender)appender).registerAsAppender(rootLogger);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<?> retrieveTailingAppenderEvents(final String uuid)
     {
         List<?> events = Collections.emptyList();

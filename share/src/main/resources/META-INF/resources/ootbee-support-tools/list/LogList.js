@@ -31,7 +31,7 @@ define([ 'dojo/_base/declare', 'alfresco/lists/AlfList', 'dojo/_base/lang', 'alf
                 loadDataPublishTopic : 'ALF_CRUD_GET_ALL',
 
                 loadDataPublishPayloadDefault : {
-                    url : 'data/console/ootbee-support-tools/log4j-settings-tail',
+                    url : 'data/console/ootbee-support-tools/log4j-tail-events',
                     urlType : 'SHARE'
                 },
 

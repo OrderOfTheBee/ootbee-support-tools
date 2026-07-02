@@ -47,7 +47,7 @@ Copyright (C) 2005 - 2025 Alfresco Software Limited.
 
 	<div id="textonlybox" class="textonlybox" style="display: none;" >
         <textarea id="textareaLog" cols=150 rows=60 font=small class="log" wrap="logical" readonly=true >
-        </textarea>		  
+        </textarea>
 	</div>
 
 	<div class="datagrid">
