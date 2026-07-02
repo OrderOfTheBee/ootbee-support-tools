@@ -113,7 +113,7 @@ function buildTailButton(repoTier)
                         // TODO Report enhancement - table should not force "loading" to be larger than current table view
                         style : 'min-height: 40ex;',
                         loadDataPublishPayload : {
-                            url : repoTier ? 'ootbee/admin/log4j-tail-events' : 'data/console/ootbee-support-tools/log4j-tail',
+                            url : repoTier ? 'ootbee/admin/log4j-tail-events' : 'data/console/ootbee-support-tools/log4j-tail-events',
                             urlType : repoTier ? 'PROXY' : 'SHARE'
                         }
                     }

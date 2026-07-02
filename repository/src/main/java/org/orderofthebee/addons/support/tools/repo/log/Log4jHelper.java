@@ -153,6 +153,15 @@ public interface Log4jHelper
     String createTailingAppender();
 
     /**
+     * Creates an in-memory appender (if it does not exist yet) to collect log output of the root logger for regular polling retrieval. The
+     * tailing appender will be automatically deregistered after an amount of time configured in the system configuration.
+     *
+     * @param uuid
+     *     the UUID of the appender
+     */
+    void createTailingAppenderIfNotExists(String uuid);
+
+    /**
      * Retrieves all collected log events collected by the trailing appender since registration or the last retrieval.
      *
      * @param uuid

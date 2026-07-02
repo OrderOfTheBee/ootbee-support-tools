@@ -167,7 +167,15 @@ function retrieveTailingEvents()
 {
     var uuid;
 
-    uuid = args.uuid ? String(args.uuid) : registerTailingAppender();
+    uuid = args.uuid ? String(args.uuid) : null;
+    if (uuid !== null)
+    {
+        Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.createTailingAppenderIfNotExists(uuid);
+    }
+    else
+    {
+        uuid = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.createTailingAppender();
+    }
     model.events = Packages.org.orderofthebee.addons.support.tools.repo.log.Log4jCompatibilityUtils.LOG4J_HELPER.retrieveTailingAppenderEvents(uuid);
 }
 
