@@ -24,6 +24,7 @@ Copyright (C) 2005 - 2025 Alfresco Software Limited.
   -->
 
 {
+    "uuid": "${uuid}",
     "events" : [
         <#if events??><#list events as event>{
             "level" : "${event.level?string}",

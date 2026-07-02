@@ -22,6 +22,8 @@ Linked to Alfresco
 Copyright (C) 2005 - 2025 Alfresco Software Limited.
  
   -->
-{}
+{
+    "uuid": "${uuid}"
+}
 </#escape>
 </#compress>
