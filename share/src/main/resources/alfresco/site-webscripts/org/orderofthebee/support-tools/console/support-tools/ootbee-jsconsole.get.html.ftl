@@ -107,9 +107,13 @@ addon.
                             <span class="label">${msg("option.crazy")}</span>
                             <select id="${el}-runlikecrazy">
                                 <option value="0" selected="selected">${msg("value.off")}</option>
-                                <option value="10000">${msg("value.tenseconds")}</option>
-                                <option value="1000">${msg("value.onesecond")}</option>
                                 <option value="1">${msg("value.nodelay")}</option>
+                                <option value="1000">${msg("value.onesecond")}</option>
+                                <option value="10000">${msg("value.tenseconds")}</option>
+                                <option value="20000">${msg("value.twentyseconds")}</option>
+                                <option value="30000">${msg("value.thirtyseconds")}</option>
+                                <option value="60000">${msg("value.oneminute")}</option>
+                                <option value="300000">${msg("value.fiveminutes")}</option>
                             </select>
                         </div>
                     </div> 
@@ -118,6 +122,7 @@ addon.
 		</div>
 
 		<div class="execute-buttonbar">
+            <button type="submit" name="${el}-clearTimeout-button" id="${el}-clearTimeout-button">${msg("button.clearTimeout")}</button>
 			<button type="submit" name="${el}-execute-button" id="${el}-execute-button">${msg("button.execute")}</button>
 			 ${msg("label.execute.key")}
 			 <img id="${el}-spinner" src="${page.url.context}/res/components/images/ajax_anim.gif" class="spinner" width="16" height="16"></img>
