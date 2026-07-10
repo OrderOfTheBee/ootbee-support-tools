@@ -151,6 +151,9 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                 };
 
                 this.parent.widgets.selectDestinationButton = Alfresco.util.createYUIButton(this.parent, 'selectDestination-button', this.parent.onSelectDestinationClick);
+                this.parent.widgets.clearTimeoutButton = Alfresco.util.createYUIButton(this.parent, 'clearTimeout-button', this.parent.onClearTimeoutClick, {
+                    disabled: true
+                });
                 this.parent.widgets.executeButton = Alfresco.util.createYUIButton(this.parent, 'execute-button', this.parent.onExecuteClick);
                 this.parent.widgets.refreshButton = Alfresco.util.createYUIButton(this.parent, 'refresh-button', this.parent.onRefreshServerInfoClick);
                 Dom.addClass(this.parent.widgets.refreshButton._button.parentNode.parentNode, 'refresh-button-env');
@@ -171,6 +174,8 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
     YAHOO.extend(OOTBee.JavaScriptConsole, Alfresco.ConsoleTool,
     {
         panelHandler: null,
+        
+        executeTimeout: null,
 
         clearOutput: function JavaScriptConsole_clearOutput()
         {
@@ -1279,6 +1284,22 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         },
 
         /**
+         * Fired when the user clicks on the "cancel repeat" button.
+         *
+         * @method onClearTimeoutClick
+         */
+        onClearTimeoutClick: function JavaScriptConsole_onExecuteClick(e)
+        {
+            // clears any timeout for a pending runLikeCrazy
+            if (this.executeTimeout)
+            {
+                clearTimeout(this.executeTimeout);
+                this.executeTimeout = null;
+            }
+            this.widgets.clearTimeoutButton.set('disabled', true);
+        },
+
+        /**
          * Fired when the user clicks on the execute button. Reads the script
          * from the input textarea and calls the execute webscript in the
          * repository to run the script.
@@ -1292,6 +1313,14 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             // Save any changes done in CodeMirror editor before submitting
             this.widgets.codeMirrorScript.save();
             this.widgets.codeMirrorTemplate.save();
+
+            // clears any timeout for a pending runLikeCrazy
+            if (this.executeTimeout)
+            {
+                clearTimeout(this.executeTimeout);
+                this.executeTimeout = null;
+            }
+            this.widgets.clearTimeoutButton.set('disabled', true);
 
             // If something is selected, only get the selected part of the script
             if (this.widgets.codeMirrorScript.somethingSelected())
@@ -1318,7 +1347,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
 
             // Disable the result textarea
             this.widgets.scriptOutput.disabled = true;
-            this.widgets.executeButton.disabled = true;
+            this.widgets.executeButton.set('disabled', true);
 
             this.showLoadingAjaxSpinner(true);
 
@@ -1353,7 +1382,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                         this.widgets.scriptOutput.disabled = false;
                         this.widgets.templateOutputHtml.disabled = false;
                         this.widgets.templateOutputText.disabled = false;
-                        this.widgets.executeButton.disabled = false;
+                        this.widgets.executeButton.set('disabled', false);
 
                         this.showResultTable(res.json.result);
                         Dom.removeClass(this.widgets.scriptOutput, 'jserror');
@@ -1387,7 +1416,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                                 '\nStacktrace-Details:\n' + result.callstack+'\n\n' + result.status.description + '\n' + result.message);
     
                             this.widgets.scriptOutput.disabled = false;
-                            this.widgets.executeButton.disabled = false;
+                            this.widgets.executeButton.set('disabled', false);
                             Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
                             Dom.addClass(this.widgets.scriptOutput, 'jserror');
                             this.widgets.outputTabs.selectTab(0); // show console tab
@@ -1410,7 +1439,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
         fetchResult: function JavaScriptConsole_fetchResult()
         {
             // double check that execution is still ongoing
-            if (this.widgets.executeButton.disabled)
+            if (this.widgets.executeButton.get('disabled'))
             {
                 // this is a best-effort update - we do not care about failures
                 Alfresco.util.Ajax.jsonGet({
@@ -1466,7 +1495,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                                         this.widgets.scriptOutput.disabled = false;
                                         this.widgets.templateOutputHtml.disabled = false;
                                         this.widgets.templateOutputText.disabled = false;
-                                        this.widgets.executeButton.disabled = false;
+                                        this.widgets.executeButton.set('disabled', false);
             
                                         if (YAHOO.lang.isArray(response.json.result))
                                         {
@@ -1478,7 +1507,7 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
                                     }
                                 }
 
-                                if (this.widgets.executeButton.disabled)
+                                if (this.widgets.executeButton.get('disabled'))
                                 {
                                     // fetch further result updates to the print output after a second
                                     this.fetchResultTimer = YAHOO.lang.later(1000, this, this.fetchResult, null, false);
@@ -1496,11 +1525,12 @@ if (typeof OOTBee === 'undefined' || !OOTBee)
             var self = this;
             if (this.widgets.config.runlikecrazy.value > 0)
             {
-                window.setTimeout(function()
+                this.executeTimeout = window.setTimeout(function()
                     {
                         self.onExecuteClick();
                     }, this.widgets.config.runlikecrazy.value
                 );
+                this.widgets.clearTimeoutButton.set('disabled', false);
             }
         },
 
