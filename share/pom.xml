@@ -178,7 +178,7 @@
 
             <plugin>
                 <groupId>de.acosix.maven</groupId>
-                <artifactId>jshint-maven-plugin</artifactId>
+                <artifactId>jshint-plugin</artifactId>
             </plugin>
 
             <plugin>

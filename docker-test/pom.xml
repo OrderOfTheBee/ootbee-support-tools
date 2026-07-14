@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.orderofthebee.support-tools</groupId>
+        <artifactId>support-tools-parent</artifactId>
+        <version>1.2.3.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>support-tools-docker-test</artifactId>
+
+    <name>OOTBee Support Tools - Docker Test</name>
+
+    <properties>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.orderofthebee.support-tools</groupId>
+                <artifactId>support-tools-repo</artifactId>
+                <version>${project.version}</version>
+                <type>amp</type>
+                <classifier>amp</classifier>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.orderofthebee.support-tools</groupId>
+                <artifactId>support-tools-share</artifactId>
+                <version>${project.version}</version>
+                <type>amp</type>
+                <classifier>amp</classifier>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orderofthebee.support-tools</groupId>
+            <artifactId>support-tools-repo</artifactId>
+            <type>amp</type>
+            <classifier>amp</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.orderofthebee.support-tools</groupId>
+            <artifactId>support-tools-share</artifactId>
+            <type>amp</type>
+            <classifier>amp</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+
+            <plugins>
+
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>copyDockerITRepoDependencies</id>
+                            <phase>generate-test-resources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/repository</outputDirectory>
+                                <includeTypes>amp</includeTypes>
+                                <includeArtifactIds>support-tools-repo</includeArtifactIds>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copyDockerITShareDependencies</id>
+                            <phase>generate-test-resources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker/share</outputDirectory>
+                                <includeTypes>amp</includeTypes>
+                                <includeArtifactIds>support-tools-share</includeArtifactIds>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>prepareDockerIT</id>
+                            <phase>generate-test-resources</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/docker</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>src/test/docker</directory>
+                                        <filtering>true</filtering>
+                                        <excludes>
+                                            <exclude>**/*.keystore</exclude>
+                                            <exclude>**/*.jks</exclude>
+                                            <exclude>**/*.jceks</exclude>
+                                            <exclude>**/*.p12</exclude>
+
+                                            <exclude>**/*.jar</exclude>
+                                            <exclude>**/*.ear</exclude>
+                                            <exclude>**/*.war</exclude>
+                                            <exclude>**/*.zip</exclude>
+
+                                            <exclude>**/*.png</exclude>
+                                            <exclude>**/*.bmp</exclude>
+                                        </excludes>
+                                    </resource>
+                                    <resource>
+                                        <directory>src/test/docker</directory>
+                                        <filtering>false</filtering>
+                                        <includes>
+                                            <include>**/*.keystore</include>
+                                            <include>**/*.jks</include>
+                                            <include>**/*.jceks</include>
+                                            <include>**/*.p12</include>
+
+                                            <include>**/*.jar</include>
+                                            <include>**/*.ear</include>
+                                            <include>**/*.war</include>
+                                            <include>**/*.zip</include>
+
+                                            <include>**/*.png</include>
+                                            <include>**/*.bmp</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>buildDockerBeforeIT</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <arguments>
+                                    <argument>compose</argument>
+                                    <argument>-f</argument>
+                                    <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                    <argument>build</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>startDockerBeforeIT</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <arguments>
+                                    <argument>compose</argument>
+                                    <argument>-f</argument>
+                                    <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                    <argument>up</argument>
+                                    <argument>-d</argument>
+                                    <argument>--wait</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>stopDockerAfterIT</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <arguments>
+                                    <argument>compose</argument>
+                                    <argument>-f</argument>
+                                    <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                    <argument>down</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
+
+    <profiles>
+
+        <profile>
+            <id>docker-integration-tests-clean-if-compose-present</id>
+
+            <activation>
+                <file>
+                    <exists>target/docker/docker-compose.yaml</exists>
+                </file>
+            </activation>
+
+            <build>
+
+                <pluginManagement>
+                    <plugins>
+
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>cleanDockerIT</id>
+                                    <phase>pre-clean</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <arguments>
+                                            <argument>compose</argument>
+                                            <argument>-f</argument>
+                                            <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                            <argument>down</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                    </plugins>
+                </pluginManagement>
+
+            </build>
+        </profile>
+
+        <profile>
+            <id>docker-integration-tests-purge-if-compose-present</id>
+
+            <activation>
+                <property>
+                    <name>purge</name>
+                    <value>true</value>
+                </property>
+                <file>
+                    <exists>target/docker/docker-compose.yaml</exists>
+                </file>
+            </activation>
+
+            <build>
+
+                <pluginManagement>
+                    <plugins>
+
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>cleanDockerIT</id>
+                                    <phase>pre-clean</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <arguments>
+                                            <argument>compose</argument>
+                                            <argument>-f</argument>
+                                            <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                            <argument>down</argument>
+                                            <argument>-v</argument>
+                                            <argument>--rmi</argument>
+                                            <argument>local</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>stopDockerAfterIT</id>
+                                    <phase>post-integration-test</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <skip>${docker.tests.down.skip}</skip>
+                                        <executable>docker</executable>
+                                        <arguments>
+                                            <argument>compose</argument>
+                                            <argument>-f</argument>
+                                            <argument>${project.build.directory}/docker/docker-compose.yaml</argument>
+                                            <argument>down</argument>
+                                            <argument>-v</argument>
+                                            <argument>--rmi</argument>
+                                            <argument>local</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                    </plugins>
+                </pluginManagement>
+
+            </build>
+        </profile>
+
+    </profiles>
+</project>

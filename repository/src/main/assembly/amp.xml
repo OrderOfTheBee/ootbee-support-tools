@@ -128,6 +128,10 @@
             <outputDirectory>lib</outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
             <useProjectAttachments>false</useProjectAttachments>
+            <!-- avoids inclusion of activemq-broker + transitives with some profiles -->
+            <excludes>
+                <exclude>org.apache.activemq:*</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>

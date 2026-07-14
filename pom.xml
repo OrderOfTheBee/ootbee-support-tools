@@ -71,7 +71,14 @@
 
         <!-- Everything will be built for Java 8 by default -->
         <!-- Note: using 11 or newer fails during AMP assembly -->
+        <!-- distinct exec (runtime via toolchain) + target (cross-compilation) -->
         <java.version>8</java.version>
+        <java.version.exec>${java.version}</java.version.exec>
+        <java.version.target>${java.version}</java.version.target>
+        <toolchain.jdk.version>${java.version.exec}</toolchain.jdk.version>
+        <maven.compiler.release>${java.version.target}</maven.compiler.release>
+        <maven.compiler.source>${java.version.target}</maven.compiler.source>
+        <maven.compiler.target>${java.version.target}</maven.compiler.target>
 
         <maven.enforcer.version>3.6.1</maven.enforcer.version>
         <maven.clean.version>3.5.0</maven.clean.version>
@@ -81,20 +88,25 @@
         <maven.source.version>3.3.1</maven.source.version>
         <maven.javadoc.version>3.11.2</maven.javadoc.version>
         <maven.jar.version>3.4.2</maven.jar.version>
+        <maven.toolchain.version>3.2.0</maven.toolchain.version>
         <maven.surefire.version>3.5.3</maven.surefire.version>
         <maven.failsafe.version>3.5.3</maven.failsafe.version>
         <!-- apparently SDK 4 only works with very old version due to API conflicts -->
         <!-- also only works with JDK before 11 -->
         <maven.assembly.version>2.6</maven.assembly.version>
         <maven.install.version>3.1.4</maven.install.version>
+        <maven.gpg.version>3.2.8</maven.gpg.version>
         <maven.deploy.version>3.1.4</maven.deploy.version>
+        <maven.exec.version>3.5.1</maven.exec.version>
 
         <!-- we use the Sonatype plugin for deploy -->
         <maven.deploy.skip>true</maven.deploy.skip>
 
-        <maven.sonatype.version>0.8.0</maven.sonatype.version>
+        <maven.sonatype.version>0.9.0</maven.sonatype.version>
 
-        <maven.acosix.jshint.version>1.0.0</maven.acosix.jshint.version>
+        <maven.acosix.jshint.version>1.2.0</maven.acosix.jshint.version>
+        <maven.acosix.i18n.version>1.1.0</maven.acosix.i18n.version>
+
         <maven.alchim.yuicompressor.version>1.5.1</maven.alchim.yuicompressor.version>
         
         <!-- purely SDK 4 stuff from here on out -->
@@ -109,19 +121,52 @@
         <alfresco.slf4j.version>1.7.25</alfresco.slf4j.version>
         <alfresco74.log4j2.version>2.19.0</alfresco74.log4j2.version>
 
-        <alfresco.docker.platform.version>${alfresco.platform.version}</alfresco.docker.platform.version>
-        <alfresco.docker.share.version>${alfresco.share.version}</alfresco.docker.share.version>
-        <docker.acs.image>alfresco/alfresco-content-repository-community</docker.acs.image>
+        <!-- Acosix-style properties to use for docker-test sub-module (used in GitHub build) -->
+        <alfresco.repo.docker.image>alfresco/alfresco-content-repository-community</alfresco.repo.docker.image>
+        <alfresco.repo.docker.version>${alfresco.platform.version}</alfresco.repo.docker.version>
+        <alfresco.repo.docker.tomcat.path>/usr/local/tomcat</alfresco.repo.docker.tomcat.path>
+        <alfresco.repo.docker.amp.path>/usr/local/tomcat/amps</alfresco.repo.docker.amp.path>
+        <alfresco.repo.docker.mmt.path>/usr/local/tomcat/alfresco-mmt</alfresco.repo.docker.mmt.path>
+        <alfresco.repo.docker.data.path>/usr/local/tomcat/alf_data</alfresco.repo.docker.data.path>
+        <alfresco.repo.docker.port>8080</alfresco.repo.docker.port>
+        <alfresco.repo.docker.debugPort>8888</alfresco.repo.docker.debugPort>
+
+        <alfresco.repo.docker.build.preRun></alfresco.repo.docker.build.preRun>
+        <alfresco.repo.docker.build.postRun></alfresco.repo.docker.build.postRun>
+        <alfresco.repo.docker.chown.mask>root:root</alfresco.repo.docker.chown.mask>
+
+        <alfresco.repo.docker.opts></alfresco.repo.docker.opts>
+        <alfresco.search.docker.opts></alfresco.search.docker.opts>
+
+        <alfresco.share.docker.image>alfresco/alfresco-share</alfresco.share.docker.image>
+        <alfresco.share.docker.version>${alfresco.share.version}</alfresco.share.docker.version>
+        <alfresco.share.docker.tomcat.path>/usr/local/tomcat</alfresco.share.docker.tomcat.path>
+        <alfresco.share.docker.amp.path>/usr/local/tomcat/share_amps</alfresco.share.docker.amp.path>
+        <alfresco.share.docker.mmt.path>/usr/local/tomcat/alfresco-mmt</alfresco.share.docker.mmt.path>
+        <alfresco.share.docker.port>8180</alfresco.share.docker.port>
+        <alfresco.share.docker.debugPort>9898</alfresco.share.docker.debugPort>
+
+        <alfresco.solr6.docker.version>${alfresco.search.version}</alfresco.solr6.docker.version>
+        <alfresco.activemq.docker.version>5.18-jre17-rockylinux8</alfresco.activemq.docker.version>
+        <alfresco.aio.docker.version>5.1.5</alfresco.aio.docker.version>
+
+        <postgres.docker.version>16</postgres.docker.version>
+        <postgres.docker.port>5555</postgres.docker.port>
+
+        <!-- map to SDK-style properties for SDK run.bat/run.sh -->
+        <alfresco.docker.platform.version>${alfresco.repo.docker.version}</alfresco.docker.platform.version>
+        <alfresco.docker.share.version>${alfresco.share.docker.version}</alfresco.docker.share.version>
+        <docker.acs.image>${alfresco.repo.docker.image}</docker.acs.image>
         <docker.acs.dockerfile>Dockerfile</docker.acs.dockerfile>
-        <docker.acs.opts></docker.acs.opts>
+        <docker.acs.opts>${alfresco.repo.docker.opts}</docker.acs.opts>
         <docker.share.image>alfresco/alfresco-share</docker.share.image>
-        <docker.search.opts></docker.search.opts>
-        
-        <acs.port>8080</acs.port>
-        <acs.debug.port>8888</acs.debug.port>
-        <share.port>8180</share.port>
-        <share.debug.port>9898</share.debug.port>
-        <postgres.port>5555</postgres.port>
+        <docker.search.opts>${alfresco.search.docker.opts}</docker.search.opts>
+
+        <acs.port>${alfresco.repo.docker.port}</acs.port>
+        <acs.debug.port>${alfresco.repo.docker.debugPort}</acs.debug.port>
+        <share.port>${alfresco.share.docker.port}</share.port>
+        <share.debug.port>${alfresco.share.docker.debugPort}</share.debug.port>
+        <postgres.port>${postgres.docker.port}</postgres.port>
         <test.acs.endpoint.path></test.acs.endpoint.path>
     </properties>
 
@@ -221,6 +266,12 @@
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-toolchains-plugin</artifactId>
+                    <version>${maven.toolchain.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven.enforcer.version}</version>
                     <executions>
@@ -232,8 +283,12 @@
                             <configuration>
                                 <rules>
                                     <requireMavenVersion>
-                                        <version>[3.5,)</version>
+                                        <version>[3.9,)</version>
                                     </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>[${java.version},)</version>
+                                        <message>Project requires Java ${java.version}</message>
+                                    </requireJavaVersion>
                                 </rules>
                             </configuration>
                         </execution>
@@ -402,10 +457,6 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.version}</version>
                     <configuration>
-                        <release>${java.version}</release>
-                        <!-- legacy if compiled with JDK 8 javac -->
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
                         <parameters>true</parameters>
                         <debuglevel>lines,vars,source</debuglevel>
                     </configuration>
@@ -469,8 +520,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.version}</version>
                     <configuration>
-                        <!-- if built on a JDK 11, this suppresses issues due to referencing unnamed Java modules -->
-                        <source>8</source>
+                        <source>${java.version}</source>
                     </configuration>
                     <executions>
                         <execution>
@@ -484,7 +534,7 @@
 
                 <plugin>
                     <groupId>de.acosix.maven</groupId>
-                    <artifactId>jshint-maven-plugin</artifactId>
+                    <artifactId>jshint-plugin</artifactId>
                     <version>${maven.acosix.jshint.version}</version>
                     <configuration>
                         <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
@@ -578,13 +628,44 @@
                 </plugin>
 
                 <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.version}</version>
+                </plugin>
+
+                <plugin>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven.install.version}</version>
                 </plugin>
 
                 <plugin>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${maven.gpg.version}</version>
+                    <configuration>
+                        <useAgent>false</useAgent>
+                        <keyname>${gpg.keyname}</keyname>
+                        <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven.deploy.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${maven.exec.version}</version>
+                    <extensions>true</extensions>
                 </plugin>
 
                 <plugin>
@@ -610,7 +691,7 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>de.acosix.maven</groupId>
-                                        <artifactId>jshint-maven-plugin</artifactId>
+                                        <artifactId>jshint-plugin</artifactId>
                                         <versionRange>[${maven.acosix.jshint.version},)</versionRange>
                                         <goals>
                                             <goal>jshint</goal>
@@ -658,35 +739,27 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <configuration>
-                            <useAgent>false</useAgent>
-                            <keyname>${gpg.keyname}</keyname>
-                            <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>acs-docker-7.4</id>
 
             <properties>
-                <alfresco.docker.platform.version>7.4.1</alfresco.docker.platform.version>
-                <alfresco.docker.share.version>7.4.1</alfresco.docker.share.version>
-                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
-                <docker.acs.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=/usr/local/tomcat/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</docker.acs.opts>
+                <alfresco.repo.docker.version>7.4.1</alfresco.repo.docker.version>
+                <alfresco.share.docker.version>7.4.1</alfresco.share.docker.version>
+
+                <alfresco.repo.docker.build.preRun>USER root</alfresco.repo.docker.build.preRun>
+                <alfresco.repo.docker.build.postRun>USER alfresco</alfresco.repo.docker.build.postRun>
+                <alfresco.repo.docker.chown.mask>alfresco:Alfresco</alfresco.repo.docker.chown.mask>
+
+                <alfresco.repo.docker.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=${alfresco.repo.docker.tomcat.path}/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</alfresco.repo.docker.opts>
                 <alfresco.search.version>2.0.7</alfresco.search.version>
-                <docker.search.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</docker.search.opts>
+                <alfresco.search.docker.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</alfresco.search.docker.opts>
+
+                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
             </properties>
 
             <dependencyManagement>
@@ -700,6 +773,7 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
+
         <profile>
             <id>acs-docker-23.1</id>
             <activation>
@@ -707,12 +781,18 @@
             </activation>
 
             <properties>
-                <alfresco.docker.platform.version>23.1.0</alfresco.docker.platform.version>
-                <alfresco.docker.share.version>23.1.0</alfresco.docker.share.version>
-                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
-                <docker.acs.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=/usr/local/tomcat/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</docker.acs.opts>
+                <alfresco.repo.docker.version>23.1.0</alfresco.repo.docker.version>
+                <alfresco.share.docker.version>23.1.0</alfresco.share.docker.version>
+
+                <alfresco.repo.docker.build.preRun>USER root</alfresco.repo.docker.build.preRun>
+                <alfresco.repo.docker.build.postRun>USER alfresco</alfresco.repo.docker.build.postRun>
+                <alfresco.repo.docker.chown.mask>alfresco:Alfresco</alfresco.repo.docker.chown.mask>
+
+                <alfresco.repo.docker.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=${alfresco.repo.docker.tomcat.path}/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</alfresco.repo.docker.opts>
                 <alfresco.search.version>2.0.8.2</alfresco.search.version>
-                <docker.search.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</docker.search.opts>
+                <alfresco.search.docker.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</alfresco.search.docker.opts>
+
+                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
             </properties>
 
             <dependencyManagement>
@@ -725,6 +805,124 @@
                     </dependency>
                 </dependencies>
             </dependencyManagement>
+        </profile>
+
+        <profile>
+            <id>acs-docker-25.1</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <properties>
+                <alfresco.repo.docker.version>25.1.0</alfresco.repo.docker.version>
+                <alfresco.share.docker.version>25.1.0</alfresco.share.docker.version>
+
+                <alfresco.repo.docker.build.preRun>USER root</alfresco.repo.docker.build.preRun>
+                <alfresco.repo.docker.build.postRun>USER alfresco</alfresco.repo.docker.build.postRun>
+                <alfresco.repo.docker.chown.mask>alfresco:Alfresco</alfresco.repo.docker.chown.mask>
+
+                <alfresco.repo.docker.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=${alfresco.repo.docker.tomcat.path}/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</alfresco.repo.docker.opts>
+                <alfresco.search.version>2.0.15</alfresco.search.version>
+                <alfresco.search.docker.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</alfresco.search.docker.opts>
+
+                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
+            </properties>
+
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activemq-broker</artifactId>
+                        <version>5.18.6</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+
+        <profile>
+            <id>acs-docker-26.1</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <properties>
+                <alfresco.repo.docker.version>26.1.0</alfresco.repo.docker.version>
+                <alfresco.share.docker.version>26.1.0</alfresco.share.docker.version>
+
+                <alfresco.repo.docker.build.preRun>USER root</alfresco.repo.docker.build.preRun>
+                <alfresco.repo.docker.build.postRun>USER alfresco</alfresco.repo.docker.build.postRun>
+                <alfresco.repo.docker.chown.mask>alfresco:Alfresco</alfresco.repo.docker.chown.mask>
+
+                <alfresco.repo.docker.opts>-Dencryption.keystore.type=JCEKS -Dencryption.cipherAlgorithm=DESede/CBC/PKCS5Padding -Dencryption.keyAlgorithm=DESede -Dencryption.keystore.location=${alfresco.repo.docker.tomcat.path}/shared/classes/alfresco/extension/keystore/keystore -Dmetadata-keystore.password=mp6yc0UD9e -Dmetadata-keystore.aliases=metadata -Dmetadata-keystore.metadata.password=oKIWzVdEdA -Dmetadata-keystore.metadata.algorithm=DESede -Dsolr.secureComms=secret -Dsolr.sharedSecret=secret -Dalfresco.restApi.basicAuthScheme=true</alfresco.repo.docker.opts>
+                <alfresco.search.version>2.0.16</alfresco.search.version>
+                <alfresco.search.docker.opts>-Dalfresco.secureComms=secret -Dalfresco.secureComms.secret=secret</alfresco.search.docker.opts>
+
+                <docker.acs.dockerfile>DockerfileWithBuildUser</docker.acs.dockerfile>
+            </properties>
+
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activemq-broker</artifactId>
+                        <version>6.2.0</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+
+        <profile>
+            <id>github-test</id>
+
+            <modules>
+                <module>repository</module>
+                <module>share</module>
+                <module>docker-test</module>
+            </modules>
+
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-toolchains-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>toolchain</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <toolchains>
+                                    <jdk>
+                                        <version>${toolchain.jdk.version}</version>
+                                    </jdk>
+                                </toolchains>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <profile>
+            <id>Toolchains</id>
+
+            <activation>
+                <file>
+                    <exists>${user.home}/.m2/toolchains.xml</exists>
+                </file>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-toolchains-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
