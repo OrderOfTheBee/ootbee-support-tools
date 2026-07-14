@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context crossContext="true" useHttpOnly="true">
+    <Resources cacheMaxSize="51200" cacheObjectMaxSize="1024" />
+</Context>

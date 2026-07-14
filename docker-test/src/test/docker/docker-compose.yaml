@@ -1,0 +1,138 @@
+version: '3.8'
+
+services:
+
+    postgres:
+        image: postgres:${postgres.docker.version}
+        hostname: postgres
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - alf-pg
+        command: postgres -c max_connections=300
+        ports:
+          - ${postgres.docker.port}:5432
+        environment:
+          PGDATA: /srv/postgresql/data
+          POSTGRES_DB: alfresco
+          POSTGRES_USER: alfresco
+          POSTGRES_PASSWORD: alfresco
+
+    repository:
+        build:
+            context: ./repository
+            dockerfile: Dockerfile
+        hostname: repository
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - alfresco
+        depends_on:
+          postgres:
+            condition: service_started
+          activemq:
+            condition: service_started
+          transform-core-aio:
+            condition: service_healthy
+            restart: false
+            required: false
+          solr6:
+            condition: service_started
+            restart: false
+            required: true
+        ports:
+          - ${alfresco.repo.docker.port}:8080
+          - ${alfresco.repo.docker.debugPort}:8888
+        environment:
+            JAVA_OPTS: >-
+              -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888
+              -Xms2g -Xmx2g -XX:+UseG1GC -XX:+ParallelRefProcEnabled
+              -XX:+UseStringDeduplication -XX:+ScavengeBeforeFullGC
+              -XX:+DisableExplicitGC -XX:+AlwaysPreTouch
+              ${alfresco.repo.docker.opts}
+        healthcheck:
+            test: curl -f localhost:8080/alfresco/api/-default-/public/alfresco/versions/1/probes/-ready-
+            interval: 15s
+            timeout: 15s
+            retries: 6
+
+    share:
+        build:
+            context: ./share
+            dockerfile: Dockerfile
+        hostname: share
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - share
+        depends_on:
+          repository:
+            condition: service_healthy
+            restart: false
+            required: true
+        environment:
+            REPO_HOST: repository
+            REPO_PORT: 8080
+            JAVA_OPTS: >-
+              -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888
+              -Xms500m -Xmx500m
+              -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication
+              -XX:+ScavengeBeforeFullGC -XX:+DisableExplicitGC -XX:+AlwaysPreTouch
+        ports:
+          - ${alfresco.share.docker.port}:8080
+          - ${alfresco.share.docker.debugPort}:8888
+        healthcheck:
+            test: curl -f localhost:8080/share/page?pt=login
+            interval: 15s
+            timeout: 15s
+            retries: 6
+
+    solr6:
+        image: alfresco/alfresco-search-services:${alfresco.solr6.docker.version}
+        hostname: solr6
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - solr6
+        environment:
+            SOLR_ALFRESCO_HOST: repository
+            SOLR_ALFRESCO_PORT: 8080
+            SOLR_SOLR_HOST: solr6
+            SOLR_SOLR_PORT: 8983
+            SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco
+            ALFRESCO_SECURE_COMMS: secret
+            JAVA_TOOL_OPTIONS: ${alfresco.search.docker.opts}
+            SOLR_JAVA_MEM: -Xms2g -Xmx2g
+
+    activemq:
+        image: alfresco/alfresco-activemq:${alfresco.activemq.docker.version}
+        hostname: activemq
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - activemq
+
+    transform-core-aio:
+        image: alfresco/alfresco-transform-core-aio:${alfresco.aio.docker.version}
+        hostname: transform-core-aio
+        restart: unless-stopped
+        networks:
+            internal:
+               aliases:
+                 - transform-core-aio
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1536m"
+            ACTIVEMQ_URL: nio://activemq:61616
+        healthcheck:
+          test: curl -f http://localhost:8090/ready
+          interval: 20s
+          timeout: 2s
+          retries: 3
+
+networks:
+   internal:
