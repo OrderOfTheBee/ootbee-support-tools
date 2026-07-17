@@ -227,6 +227,20 @@ public class Log4j1HelperImpl implements Log4jHelper
      * {@inheritDoc}
      */
     @Override
+    public void createTailingAppenderIfNotExists(final String uuid)
+    {
+        final Logger rootLogger = Logger.getRootLogger();
+        Appender appender = rootLogger.getAppender(uuid);
+        if (appender == null) {
+            appender = new Log4j1LimitedListAppender(uuid, 10000);
+            ((Log4j1LimitedListAppender)appender).registerAsAppender(rootLogger);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Path> collectLogFilePaths(final boolean useAllLoggerAppenders)
     {
         final Set<Path> paths = new HashSet<>();
