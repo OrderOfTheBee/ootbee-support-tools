@@ -1312,7 +1312,8 @@ public class AlfrescoScriptAPITernGet extends DeclarativeWebScript implements In
         while (taskAspectsChanged)
         {
             taskAspectsChanged = false;
-            for (final QName taskAspect : taskAspects)
+            // shallow copy to avoid concurrent modification
+            for (final QName taskAspect : new ArrayList<>(taskAspects))
             {
                 final AspectDefinition aspect = this.dictionaryService.getAspect(taskAspect);
                 taskAspectsChanged = taskAspects.addAll(aspect.getDefaultAspectNames()) || taskAspectsChanged;
